@@ -1,103 +1,123 @@
 `default_nettype none
 
 module thinpad_top(
-    input wire clk_50M,           //50MHz æ—¶é’Ÿè¾“å…¥
-    input wire clk_11M0592,       //11.0592MHz æ—¶é’Ÿè¾“å…¥
+    input wire clk_50M,           //50MHz Ê±ÖÓÊäÈë
+    input wire clk_11M0592,       //11.0592MHz Ê±ÖÓÊäÈë
 
-    input wire clock_btn,         //BTN5æ‰‹åŠ¨æ—¶é’ŸæŒ‰é’®å¼€å…³ï¼Œå¸¦æ¶ˆæŠ–ç”µè·¯ï¼ŒæŒ‰ä¸‹æ—¶ä¸º1
-    input wire reset_btn,         //BTN6æ‰‹åŠ¨å¤ä½æŒ‰é’®å¼€å…³ï¼Œå¸¦æ¶ˆæŠ–ç”µè·¯ï¼ŒæŒ‰ä¸‹æ—¶ä¸º1
+    input wire clock_btn,         //BTN5ÊÖ¶¯Ê±ÖÓ°´Å¥¿ª¹Ø£¬´øÏû¶¶µçÂ·£¬°´ÏÂÊ±Îª1
+    input wire reset_btn,         //BTN6ÊÖ¶¯¸´Î»°´Å¥¿ª¹Ø£¬´øÏû¶¶µçÂ·£¬°´ÏÂÊ±Îª1
 
-    input  wire[3:0]  touch_btn,  //BTN1~BTN4ï¼ŒæŒ‰é’®å¼€å…³ï¼ŒæŒ‰ä¸‹æ—¶ä¸º1
-    input  wire[31:0] dip_sw,     //32ä½æ‹¨ç å¼€å…³ï¼Œæ‹¨åˆ°â€œONâ€æ—¶ä¸º1
-    output wire[15:0] leds,       //16ä½LEDï¼Œè¾“å‡ºæ—¶1ç‚¹äº®
-    output wire[7:0]  dpy0,       //æ•°ç ç®¡ä½ä½ä¿¡å·ï¼ŒåŒ…æ‹¬å°æ•°ç‚¹ï¼Œè¾“å‡º1ç‚¹äº®
-    output wire[7:0]  dpy1,       //æ•°ç ç®¡é«˜ä½ä¿¡å·ï¼ŒåŒ…æ‹¬å°æ•°ç‚¹ï¼Œè¾“å‡º1ç‚¹äº®
+    input  wire[3:0]  touch_btn,  //BTN1~BTN4£¬°´Å¥¿ª¹Ø£¬°´ÏÂÊ±Îª1
+    input  wire[31:0] dip_sw,     //32Î»²¦Âë¿ª¹Ø£¬²¦µ½¡°ON¡±Ê±Îª1
+    output wire[15:0] leds,       //16Î»LED£¬Êä³öÊ±1µãÁÁ
+    output wire[7:0]  dpy0,       //ÊıÂë¹ÜµÍÎ»ĞÅºÅ£¬°üÀ¨Ğ¡Êıµã£¬Êä³ö1µãÁÁ
+    output wire[7:0]  dpy1,       //ÊıÂë¹Ü¸ßÎ»ĞÅºÅ£¬°üÀ¨Ğ¡Êıµã£¬Êä³ö1µãÁÁ
 
-    //CPLDä¸²å£æ§åˆ¶å™¨ä¿¡å·
-    output wire uart_rdn,         //è¯»ä¸²å£ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-    output wire uart_wrn,         //å†™ä¸²å£ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-    input wire uart_dataready,    //ä¸²å£æ•°æ®å‡†å¤‡å¥½
-    input wire uart_tbre,         //å‘é€æ•°æ®æ ‡å¿—
-    input wire uart_tsre,         //æ•°æ®å‘é€å®Œæ¯•æ ‡å¿—
+    //CPLD´®¿Ú¿ØÖÆÆ÷ĞÅºÅ
+    output wire uart_rdn,         //¶Á´®¿ÚĞÅºÅ£¬µÍÓĞĞ§
+    output wire uart_wrn,         //Ğ´´®¿ÚĞÅºÅ£¬µÍÓĞĞ§
+    input wire uart_dataready,    //´®¿ÚÊı¾İ×¼±¸ºÃ
+    input wire uart_tbre,         //·¢ËÍÊı¾İ±êÖ¾
+    input wire uart_tsre,         //Êı¾İ·¢ËÍÍê±Ï±êÖ¾
 
-    //BaseRAMä¿¡å·
-    inout wire[31:0] base_ram_data,  //BaseRAMæ•°æ®ï¼Œä½8ä½ä¸CPLDä¸²å£æ§åˆ¶å™¨å…±äº«
-    output wire[19:0] base_ram_addr, //BaseRAMåœ°å€
-    output wire[3:0] base_ram_be_n,  //BaseRAMå­—èŠ‚ä½¿èƒ½ï¼Œä½æœ‰æ•ˆã€‚å¦‚æœä¸ä½¿ç”¨å­—èŠ‚ä½¿èƒ½ï¼Œè¯·ä¿æŒä¸º0
-    output wire base_ram_ce_n,       //BaseRAMç‰‡é€‰ï¼Œä½æœ‰æ•ˆ
-    output wire base_ram_oe_n,       //BaseRAMè¯»ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
-    output wire base_ram_we_n,       //BaseRAMå†™ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
+    //BaseRAMĞÅºÅ
+    inout wire[31:0] base_ram_data,  //BaseRAMÊı¾İ£¬µÍ8Î»ÓëCPLD´®¿Ú¿ØÖÆÆ÷¹²Ïí
+    output wire[19:0] base_ram_addr, //BaseRAMµØÖ·
+    output wire[3:0] base_ram_be_n,  //BaseRAM×Ö½ÚÊ¹ÄÜ£¬µÍÓĞĞ§¡£Èç¹û²»Ê¹ÓÃ×Ö½ÚÊ¹ÄÜ£¬Çë±£³ÖÎª0
+    output wire base_ram_ce_n,       //BaseRAMÆ¬Ñ¡£¬µÍÓĞĞ§
+    output wire base_ram_oe_n,       //BaseRAM¶ÁÊ¹ÄÜ£¬µÍÓĞĞ§
+    output wire base_ram_we_n,       //BaseRAMĞ´Ê¹ÄÜ£¬µÍÓĞĞ§
 
-    //ExtRAMä¿¡å·
-    inout wire[31:0] ext_ram_data,  //ExtRAMæ•°æ®
-    output wire[19:0] ext_ram_addr, //ExtRAMåœ°å€
-    output wire[3:0] ext_ram_be_n,  //ExtRAMå­—èŠ‚ä½¿èƒ½ï¼Œä½æœ‰æ•ˆã€‚å¦‚æœä¸ä½¿ç”¨å­—èŠ‚ä½¿èƒ½ï¼Œè¯·ä¿æŒä¸º0
-    output wire ext_ram_ce_n,       //ExtRAMç‰‡é€‰ï¼Œä½æœ‰æ•ˆ
-    output wire ext_ram_oe_n,       //ExtRAMè¯»ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
-    output wire ext_ram_we_n,       //ExtRAMå†™ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
+    //ExtRAMĞÅºÅ
+    inout wire[31:0] ext_ram_data,  //ExtRAMÊı¾İ
+    output wire[19:0] ext_ram_addr, //ExtRAMµØÖ·
+    output wire[3:0] ext_ram_be_n,  //ExtRAM×Ö½ÚÊ¹ÄÜ£¬µÍÓĞĞ§¡£Èç¹û²»Ê¹ÓÃ×Ö½ÚÊ¹ÄÜ£¬Çë±£³ÖÎª0
+    output wire ext_ram_ce_n,       //ExtRAMÆ¬Ñ¡£¬µÍÓĞĞ§
+    output wire ext_ram_oe_n,       //ExtRAM¶ÁÊ¹ÄÜ£¬µÍÓĞĞ§
+    output wire ext_ram_we_n,       //ExtRAMĞ´Ê¹ÄÜ£¬µÍÓĞĞ§
 
-    //ç›´è¿ä¸²å£ä¿¡å·
-    output wire txd,  //ç›´è¿ä¸²å£å‘é€ç«¯
-    input  wire rxd,  //ç›´è¿ä¸²å£æ¥æ”¶ç«¯
+    //Ö±Á¬´®¿ÚĞÅºÅ
+    output wire txd,  //Ö±Á¬´®¿Ú·¢ËÍ¶Ë
+    input  wire rxd,  //Ö±Á¬´®¿Ú½ÓÊÕ¶Ë
 
-    //Flashå­˜å‚¨å™¨ä¿¡å·ï¼Œå‚è€ƒ JS28F640 èŠ¯ç‰‡æ‰‹å†Œ
-    output wire [22:0]flash_a,      //Flashåœ°å€ï¼Œa0ä»…åœ¨8bitæ¨¡å¼æœ‰æ•ˆï¼Œ16bitæ¨¡å¼æ— æ„ä¹‰
-    inout  wire [15:0]flash_d,      //Flashæ•°æ®
-    output wire flash_rp_n,         //Flashå¤ä½ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-    output wire flash_vpen,         //Flashå†™ä¿æŠ¤ä¿¡å·ï¼Œä½ç”µå¹³æ—¶ä¸èƒ½æ“¦é™¤ã€çƒ§å†™
-    output wire flash_ce_n,         //Flashç‰‡é€‰ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-    output wire flash_oe_n,         //Flashè¯»ä½¿èƒ½ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-    output wire flash_we_n,         //Flashå†™ä½¿èƒ½ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-    output wire flash_byte_n,       //Flash 8bitæ¨¡å¼é€‰æ‹©ï¼Œä½æœ‰æ•ˆã€‚åœ¨ä½¿ç”¨flashçš„16ä½æ¨¡å¼æ—¶è¯·è®¾ä¸º1
+    //Flash´æ´¢Æ÷ĞÅºÅ£¬²Î¿¼ JS28F640 Ğ¾Æ¬ÊÖ²á
+    output wire [22:0]flash_a,      //FlashµØÖ·£¬a0½öÔÚ8bitÄ£Ê½ÓĞĞ§£¬16bitÄ£Ê½ÎŞÒâÒå
+    inout  wire [15:0]flash_d,      //FlashÊı¾İ
+    output wire flash_rp_n,         //Flash¸´Î»ĞÅºÅ£¬µÍÓĞĞ§
+    output wire flash_vpen,         //FlashĞ´±£»¤ĞÅºÅ£¬µÍµçÆ½Ê±²»ÄÜ²Á³ı¡¢ÉÕĞ´
+    output wire flash_ce_n,         //FlashÆ¬Ñ¡ĞÅºÅ£¬µÍÓĞĞ§
+    output wire flash_oe_n,         //Flash¶ÁÊ¹ÄÜĞÅºÅ£¬µÍÓĞĞ§
+    output wire flash_we_n,         //FlashĞ´Ê¹ÄÜĞÅºÅ£¬µÍÓĞĞ§
+    output wire flash_byte_n,       //Flash 8bitÄ£Ê½Ñ¡Ôñ£¬µÍÓĞĞ§¡£ÔÚÊ¹ÓÃflashµÄ16Î»Ä£Ê½Ê±ÇëÉèÎª1
 
-    //USB æ§åˆ¶å™¨ä¿¡å·ï¼Œå‚è€ƒ SL811 èŠ¯ç‰‡æ‰‹å†Œ
-    output wire sl811_a0,
-    //inout  wire[7:0] sl811_d,     //USBæ•°æ®çº¿ä¸ç½‘ç»œæ§åˆ¶å™¨çš„dm9k_sd[7:0]å…±äº«
-    output wire sl811_wr_n,
-    output wire sl811_rd_n,
-    output wire sl811_cs_n,
-    output wire sl811_rst_n,
-    output wire sl811_dack_n,
-    input  wire sl811_intrq,
-    input  wire sl811_drq_n,
+    //USB+SD ¿ØÖÆÆ÷ĞÅºÅ£¬²Î¿¼ CH376T Ğ¾Æ¬ÊÖ²á
+    output wire ch376t_sdi,
+    output wire ch376t_sck,
+    output wire ch376t_cs_n,
+    output wire ch376t_rst,
+    input  wire ch376t_int_n,
+    input  wire ch376t_sdo,
 
-    //ç½‘ç»œæ§åˆ¶å™¨ä¿¡å·ï¼Œå‚è€ƒ DM9000A èŠ¯ç‰‡æ‰‹å†Œ
-    output wire dm9k_cmd,
-    inout  wire[15:0] dm9k_sd,
-    output wire dm9k_iow_n,
-    output wire dm9k_ior_n,
-    output wire dm9k_cs_n,
-    output wire dm9k_pwrst_n,
-    input  wire dm9k_int,
+    //ÍøÂç½»»»»úĞÅºÅ£¬²Î¿¼ KSZ8795 Ğ¾Æ¬ÊÖ²á¼° RGMII ¹æ·¶
+    input  wire [3:0] eth_rgmii_rd,
+    input  wire eth_rgmii_rx_ctl,
+    input  wire eth_rgmii_rxc,
+    output wire [3:0] eth_rgmii_td,
+    output wire eth_rgmii_tx_ctl,
+    output wire eth_rgmii_txc,
+    output wire eth_rst_n,
+    input  wire eth_int_n,
 
-    //å›¾åƒè¾“å‡ºä¿¡å·
-    output wire[2:0] video_red,    //çº¢è‰²åƒç´ ï¼Œ3ä½
-    output wire[2:0] video_green,  //ç»¿è‰²åƒç´ ï¼Œ3ä½
-    output wire[1:0] video_blue,   //è“è‰²åƒç´ ï¼Œ2ä½
-    output wire video_hsync,       //è¡ŒåŒæ­¥ï¼ˆæ°´å¹³åŒæ­¥ï¼‰ä¿¡å·
-    output wire video_vsync,       //åœºåŒæ­¥ï¼ˆå‚ç›´åŒæ­¥ï¼‰ä¿¡å·
-    output wire video_clk,         //åƒç´ æ—¶é’Ÿè¾“å‡º
-    output wire video_de           //è¡Œæ•°æ®æœ‰æ•ˆä¿¡å·ï¼Œç”¨äºåŒºåˆ†æ¶ˆéšåŒº
+    input  wire eth_spi_miso,
+    output wire eth_spi_mosi,
+    output wire eth_spi_sck,
+    output wire eth_spi_ss_n,
+
+    //Í¼ÏñÊä³öĞÅºÅ
+    output wire[2:0] video_red,    //ºìÉ«ÏñËØ£¬3Î»
+    output wire[2:0] video_green,  //ÂÌÉ«ÏñËØ£¬3Î»
+    output wire[1:0] video_blue,   //À¶É«ÏñËØ£¬2Î»
+    output wire video_hsync,       //ĞĞÍ¬²½£¨Ë®Æ½Í¬²½£©ĞÅºÅ
+    output wire video_vsync,       //³¡Í¬²½£¨´¹Ö±Í¬²½£©ĞÅºÅ
+    output wire video_clk,         //ÏñËØÊ±ÖÓÊä³ö
+    output wire video_de           //ĞĞÊı¾İÓĞĞ§ĞÅºÅ£¬ÓÃÓÚÇø·ÖÏûÒşÇø
 );
 
 /* =========== Demo code begin =========== */
 
-// PLLåˆ†é¢‘ç¤ºä¾‹
-wire locked, clk_10M, clk_20M;
+// PLL·ÖÆµÊ¾Àı
+wire locked, clk_10M, clk_20M, clk_125M, clk_200M,clk_100M;
 pll_example clock_gen 
  (
   // Clock out ports
-  .clk_out1(clk_10M), // æ—¶é’Ÿè¾“å‡º1ï¼Œé¢‘ç‡åœ¨IPé…ç½®ç•Œé¢ä¸­è®¾ç½®
-  .clk_out2(clk_20M), // æ—¶é’Ÿè¾“å‡º2ï¼Œé¢‘ç‡åœ¨IPé…ç½®ç•Œé¢ä¸­è®¾ç½®
+  .clk_out1(clk_10M), // Ê±ÖÓÊä³ö1£¬ÆµÂÊÔÚIPÅäÖÃ½çÃæÖĞÉèÖÃ
+  .clk_out2(clk_20M), // Ê±ÖÓÊä³ö2£¬ÆµÂÊÔÚIPÅäÖÃ½çÃæÖĞÉèÖÃ
+  .clk_out3(clk_125M), // Ê±ÖÓÊä³ö3£¬ÆµÂÊÔÚIPÅäÖÃ½çÃæÖĞÉèÖÃ
+  .clk_out4(clk_200M), // Ê±ÖÓÊä³ö4£¬ÆµÂÊÔÚIPÅäÖÃ½çÃæÖĞÉèÖÃ
+  .clk_out5(clk_100M),
   // Status and control signals
-  .reset(reset_btn), // PLLå¤ä½è¾“å…¥
-  .locked(locked), // é”å®šè¾“å‡ºï¼Œ"1"è¡¨ç¤ºæ—¶é’Ÿç¨³å®šï¼Œå¯ä½œä¸ºåçº§ç”µè·¯å¤ä½
+  .reset(reset_btn), // PLL¸´Î»ÊäÈë
+  .locked(locked), // Ëø¶¨Êä³ö£¬"1"±íÊ¾Ê±ÖÓÎÈ¶¨£¬¿É×÷Îªºó¼¶µçÂ·¸´Î»
  // Clock in ports
-  .clk_in1(clk_50M) // å¤–éƒ¨æ—¶é’Ÿè¾“å…¥
+  .clk_in1(clk_50M) // Íâ²¿Ê±ÖÓÊäÈë
  );
 
+assign eth_rst_n = ~reset_btn;
+// ÒÔÌ«Íø½»»»»ú¼Ä´æÆ÷ÅäÖÃ
+eth_conf conf(
+    .clk(clk_50M),
+    .rst_in_n(locked),
+
+    .eth_spi_miso(eth_spi_miso),
+    .eth_spi_mosi(eth_spi_mosi),
+    .eth_spi_sck(eth_spi_sck),
+    .eth_spi_ss_n(eth_spi_ss_n),
+
+    .done()
+);
+
 reg reset_of_clk10M;
-// å¼‚æ­¥å¤ä½ï¼ŒåŒæ­¥é‡Šæ”¾
+// Òì²½¸´Î»£¬Í¬²½ÊÍ·Å
 always@(posedge clk_10M or negedge locked) begin
     if(~locked) reset_of_clk10M <= 1'b1;
     else        reset_of_clk10M <= 1'b0;
@@ -112,7 +132,7 @@ always@(posedge clk_10M or posedge reset_of_clk10M) begin
     end
 end
 
-// ä¸ä½¿ç”¨å†…å­˜ã€ä¸²å£æ—¶ï¼Œç¦ç”¨å…¶ä½¿èƒ½ä¿¡å·
+// ²»Ê¹ÓÃÄÚ´æ¡¢´®¿ÚÊ±£¬½ûÓÃÆäÊ¹ÄÜĞÅºÅ
 assign base_ram_ce_n = 1'b1;
 assign base_ram_oe_n = 1'b1;
 assign base_ram_we_n = 1'b1;
@@ -124,7 +144,7 @@ assign ext_ram_we_n = 1'b1;
 assign uart_rdn = 1'b1;
 assign uart_wrn = 1'b1;
 
-// æ•°ç ç®¡è¿æ¥å…³ç³»ç¤ºæ„å›¾ï¼Œdpy1åŒç†
+// ÊıÂë¹ÜÁ¬½Ó¹ØÏµÊ¾ÒâÍ¼£¬dpy1Í¬Àí
 // p=dpy0[0] // ---a---
 // c=dpy0[1] // |     |
 // d=dpy0[2] // f     b
@@ -135,41 +155,41 @@ assign uart_wrn = 1'b1;
 // g=dpy0[7] // |     |
 //           // ---d---  p
 
-// 7æ®µæ•°ç ç®¡è¯‘ç å™¨æ¼”ç¤ºï¼Œå°†numberç”¨16è¿›åˆ¶æ˜¾ç¤ºåœ¨æ•°ç ç®¡ä¸Šé¢
+// 7¶ÎÊıÂë¹ÜÒëÂëÆ÷ÑİÊ¾£¬½«numberÓÃ16½øÖÆÏÔÊ¾ÔÚÊıÂë¹ÜÉÏÃæ
 reg[7:0] number;
-SEG7_LUT segL(.oSEG1(dpy0), .iDIG(number[3:0])); //dpy0æ˜¯ä½ä½æ•°ç ç®¡
-SEG7_LUT segH(.oSEG1(dpy1), .iDIG(number[7:4])); //dpy1æ˜¯é«˜ä½æ•°ç ç®¡
+SEG7_LUT segL(.oSEG1(dpy0), .iDIG(number[3:0])); //dpy0ÊÇµÍÎ»ÊıÂë¹Ü
+SEG7_LUT segH(.oSEG1(dpy1), .iDIG(number[7:4])); //dpy1ÊÇ¸ßÎ»ÊıÂë¹Ü
 
 reg[15:0] led_bits;
 assign leds = led_bits;
 
 always@(posedge clock_btn or posedge reset_btn) begin
-    if(reset_btn)begin //å¤ä½æŒ‰ä¸‹ï¼Œè®¾ç½®LEDå’Œæ•°ç ç®¡ä¸ºåˆå§‹å€¼
+    if(reset_btn)begin //¸´Î»°´ÏÂ£¬ÉèÖÃLEDºÍÊıÂë¹ÜÎª³õÊ¼Öµ
         number<=0;
         led_bits <= 16'h1;
     end
-    else begin //æ¯æ¬¡æŒ‰ä¸‹æ—¶é’ŸæŒ‰é’®ï¼Œæ•°ç ç®¡æ˜¾ç¤ºå€¼åŠ 1ï¼ŒLEDå¾ªç¯å·¦ç§»
+    else begin //Ã¿´Î°´ÏÂÊ±ÖÓ°´Å¥£¬ÊıÂë¹ÜÏÔÊ¾Öµ¼Ó1£¬LEDÑ­»·×óÒÆ
         number <= number+1;
         led_bits <= {led_bits[14:0],led_bits[15]};
     end
 end
 
-//ç›´è¿ä¸²å£æ¥æ”¶å‘é€æ¼”ç¤ºï¼Œä»ç›´è¿ä¸²å£æ”¶åˆ°çš„æ•°æ®å†å‘é€å‡ºå»
+//Ö±Á¬´®¿Ú½ÓÊÕ·¢ËÍÑİÊ¾£¬´ÓÖ±Á¬´®¿ÚÊÕµ½µÄÊı¾İÔÙ·¢ËÍ³öÈ¥
 wire [7:0] ext_uart_rx;
 reg  [7:0] ext_uart_buffer, ext_uart_tx;
 wire ext_uart_ready, ext_uart_busy;
 reg ext_uart_start, ext_uart_avai;
 
-async_receiver #(.ClkFrequency(50000000),.Baud(9600)) //æ¥æ”¶æ¨¡å—ï¼Œ9600æ— æ£€éªŒä½
+async_receiver #(.ClkFrequency(50000000),.Baud(9600)) //½ÓÊÕÄ£¿é£¬9600ÎŞ¼ìÑéÎ»
     ext_uart_r(
-        .clk(clk_50M),                       //å¤–éƒ¨æ—¶é’Ÿä¿¡å·
-        .RxD(rxd),                           //å¤–éƒ¨ä¸²è¡Œä¿¡å·è¾“å…¥
-        .RxD_data_ready(ext_uart_ready),  //æ•°æ®æ¥æ”¶åˆ°æ ‡å¿—
-        .RxD_clear(ext_uart_ready),       //æ¸…é™¤æ¥æ”¶æ ‡å¿—
-        .RxD_data(ext_uart_rx)             //æ¥æ”¶åˆ°çš„ä¸€å­—èŠ‚æ•°æ®
+        .clk(clk_50M),                       //Íâ²¿Ê±ÖÓĞÅºÅ
+        .RxD(rxd),                           //Íâ²¿´®ĞĞĞÅºÅÊäÈë
+        .RxD_data_ready(ext_uart_ready),  //Êı¾İ½ÓÊÕµ½±êÖ¾
+        .RxD_clear(ext_uart_ready),       //Çå³ı½ÓÊÕ±êÖ¾
+        .RxD_data(ext_uart_rx)             //½ÓÊÕµ½µÄÒ»×Ö½ÚÊı¾İ
     );
     
-always @(posedge clk_50M) begin //æ¥æ”¶åˆ°ç¼“å†²åŒºext_uart_buffer
+always @(posedge clk_50M) begin //½ÓÊÕµ½»º³åÇøext_uart_buffer
     if(ext_uart_ready)begin
         ext_uart_buffer <= ext_uart_rx;
         ext_uart_avai <= 1;
@@ -177,7 +197,7 @@ always @(posedge clk_50M) begin //æ¥æ”¶åˆ°ç¼“å†²åŒºext_uart_buffer
         ext_uart_avai <= 0;
     end
 end
-always @(posedge clk_50M) begin //å°†ç¼“å†²åŒºext_uart_bufferå‘é€å‡ºå»
+always @(posedge clk_50M) begin //½«»º³åÇøext_uart_buffer·¢ËÍ³öÈ¥
     if(!ext_uart_busy && ext_uart_avai)begin 
         ext_uart_tx <= ext_uart_buffer;
         ext_uart_start <= 1;
@@ -186,29 +206,199 @@ always @(posedge clk_50M) begin //å°†ç¼“å†²åŒºext_uart_bufferå‘é€å‡ºå»
     end
 end
 
-async_transmitter #(.ClkFrequency(50000000),.Baud(9600)) //å‘é€æ¨¡å—ï¼Œ9600æ— æ£€éªŒä½
+async_transmitter #(.ClkFrequency(50000000),.Baud(9600)) //·¢ËÍÄ£¿é£¬9600ÎŞ¼ìÑéÎ»
     ext_uart_t(
-        .clk(clk_50M),                  //å¤–éƒ¨æ—¶é’Ÿä¿¡å·
-        .TxD(txd),                      //ä¸²è¡Œä¿¡å·è¾“å‡º
-        .TxD_busy(ext_uart_busy),       //å‘é€å™¨å¿™çŠ¶æ€æŒ‡ç¤º
-        .TxD_start(ext_uart_start),    //å¼€å§‹å‘é€ä¿¡å·
-        .TxD_data(ext_uart_tx)        //å¾…å‘é€çš„æ•°æ®
+        .clk(clk_50M),                  //Íâ²¿Ê±ÖÓĞÅºÅ
+        .TxD(txd),                      //´®ĞĞĞÅºÅÊä³ö
+        .TxD_busy(ext_uart_busy),       //·¢ËÍÆ÷Ã¦×´Ì¬Ö¸Ê¾
+        .TxD_start(ext_uart_start),    //¿ªÊ¼·¢ËÍĞÅºÅ
+        .TxD_data(ext_uart_tx)        //´ı·¢ËÍµÄÊı¾İ
     );
 
-//å›¾åƒè¾“å‡ºæ¼”ç¤ºï¼Œåˆ†è¾¨ç‡800x600@75Hzï¼Œåƒç´ æ—¶é’Ÿä¸º50MHz
+//Í¼ÏñÊä³öÑİÊ¾£¬·Ö±æÂÊ800x600@75Hz£¬ÏñËØÊ±ÖÓÎª50MHz
 wire [11:0] hdata;
-assign video_red = hdata < 266 ? 3'b111 : 0; //çº¢è‰²ç«–æ¡
-assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0; //ç»¿è‰²ç«–æ¡
-assign video_blue = hdata >= 532 ? 2'b11 : 0; //è“è‰²ç«–æ¡
+assign video_red = hdata < 266 ? 3'b111 : 0; //ºìÉ«ÊúÌõ
+assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0; //ÂÌÉ«ÊúÌõ
+assign video_blue = hdata >= 532 ? 2'b11 : 0; //À¶É«ÊúÌõ
 assign video_clk = clk_50M;
 vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
     .clk(clk_50M), 
-    .hdata(hdata), //æ¨ªåæ ‡
-    .vdata(),      //çºµåæ ‡
+    .hdata(hdata), //ºá×ø±ê
+    .vdata(),      //×İ×ø±ê
     .hsync(video_hsync),
     .vsync(video_vsync),
     .data_enable(video_de)
 );
+
+
+/*
+reg gtx_pre_resetn = 0, gtx_resetn = 0;
+
+always @(posedge clk_125M)
+begin
+    gtx_resetn      <= gtx_pre_resetn;
+    gtx_pre_resetn  <= 1;
+end
+*/
+wire gtx_resetn;
+wire rx_reset,tx_reset;
+wire glbl_rst_intn;
+eth_mac_example_design_resets example_resets
+   (
+      // clocks
+      .s_axi_aclk       (clk_100M),
+      .gtx_clk          (clk_125M),
+
+      // asynchronous resets
+      .glbl_rst         (reset_btn),
+      .reset_error      (1'b0),
+      .rx_reset         (rx_reset),
+      .tx_reset         (tx_reset),
+
+      .dcm_locked       (locked),
+
+      // synchronous reset outputs
+  
+      .glbl_rst_intn    (glbl_rst_intn),
+   
+   
+      .gtx_resetn       (gtx_resetn)
+   
+   );
+
+
+wire [7:0] eth_rx_axis_fifo_tdata;
+wire eth_rx_axis_fifo_tvalid;
+wire eth_rx_axis_fifo_tlast;
+wire eth_rx_axis_fifo_tready;
+wire [7:0] eth_tx_axis_fifo_tdata;
+wire eth_tx_axis_fifo_tvalid;
+wire eth_tx_axis_fifo_tlast;
+wire eth_tx_axis_fifo_tready;
+
+
+eth_mac_fifo_block trimac_fifo_block (
+    .gtx_clk                        (clk_125M),
+    .refclk                         (clk_200M),
+
+    .glbl_rstn                      (glbl_rst_intn),
+    .rx_axi_rstn                    (1'b1),
+    .tx_axi_rstn                    (1'b1),
+
+    .rx_fifo_clock                  (clk_125M),
+    .rx_fifo_resetn                 (gtx_resetn),
+    .rx_axis_fifo_tdata             (eth_rx_axis_fifo_tdata),
+    .rx_axis_fifo_tvalid            (eth_rx_axis_fifo_tvalid),
+    .rx_axis_fifo_tready            (eth_rx_axis_fifo_tready),
+    .rx_axis_fifo_tlast             (eth_rx_axis_fifo_tlast),
+    .rx_reset(rx_reset),
+
+    .tx_ifg_delay                   (8'b0),
+    .tx_fifo_clock                  (clk_125M),
+    .tx_fifo_resetn                 (gtx_resetn),
+    .tx_axis_fifo_tdata             (eth_tx_axis_fifo_tdata),
+    .tx_axis_fifo_tvalid            (eth_tx_axis_fifo_tvalid),
+    .tx_axis_fifo_tready            (eth_tx_axis_fifo_tready),
+    .tx_axis_fifo_tlast             (eth_tx_axis_fifo_tlast),
+    .tx_reset(tx_reset),
+    
+    .pause_req                      (1'b0),
+    .pause_val                      (16'b0),
+
+    .rgmii_txd                      (eth_rgmii_td),
+    .rgmii_tx_ctl                   (eth_rgmii_tx_ctl),
+    .rgmii_txc                      (eth_rgmii_txc),
+    .rgmii_rxd                      (eth_rgmii_rd),
+    .rgmii_rx_ctl                   (eth_rgmii_rx_ctl),
+    .rgmii_rxc                      (eth_rgmii_rxc),
+
+    .rx_configuration_vector        (80'b10100000101110),
+    .tx_configuration_vector        (80'b10000000000110)
+);
+
+
+eth_mac_basic_pat_gen temac_pat_gen(
+    .axi_tclk                       (clk_125M),
+    .axi_tresetn                    (gtx_resetn),
+    //.check_resetn,
+
+    .enable_pat_gen                 (1'b0),
+    .enable_pat_chk                 (1'b0),
+    .enable_address_swap            (1'b1),
+    //.speed,
+
+    // data from the RX data path
+    .rx_axis_tdata                  (eth_rx_axis_fifo_tdata),
+    .rx_axis_tvalid                 (eth_rx_axis_fifo_tvalid),
+    .rx_axis_tlast                  (eth_rx_axis_fifo_tlast),
+    .rx_axis_tuser                  (1'b0),
+    .rx_axis_tready                 (eth_rx_axis_fifo_tready),
+    // data TO the TX data path
+    .tx_axis_tdata                  (eth_tx_axis_fifo_tdata),
+    .tx_axis_tvalid                 (eth_tx_axis_fifo_tvalid),
+    .tx_axis_tlast                  (eth_tx_axis_fifo_tlast),
+    .tx_axis_tready                 (eth_tx_axis_fifo_tready)
+
+    //.frame_error,
+    //.activity_flash
+);
+
+
+
+// ÒÔÌ«Íø MAC ÅäÖÃÑİÊ¾
+/*
+wire [7:0] eth_rx_axis_mac_tdata;
+wire eth_rx_axis_mac_tvalid;
+wire eth_rx_axis_mac_tlast;
+wire eth_rx_axis_mac_tuser;
+wire [7:0] eth_tx_axis_mac_tdata = 0;
+wire eth_tx_axis_mac_tvalid = 0;
+wire eth_tx_axis_mac_tlast = 0;
+wire eth_tx_axis_mac_tuser = 0;
+wire eth_tx_axis_mac_tready;
+
+wire eth_rx_mac_aclk;
+wire eth_tx_mac_aclk;
+
+eth_mac eth_mac_inst (
+    .gtx_clk(clk_125M),
+    .refclk(clk_200M),
+
+    .glbl_rstn(eth_rst_n),
+    .rx_axi_rstn(eth_rst_n),
+    .tx_axi_rstn(eth_rst_n),
+
+    .rx_mac_aclk(eth_rx_mac_aclk),
+    .rx_axis_mac_tdata(eth_rx_axis_mac_tdata),
+    .rx_axis_mac_tvalid(eth_rx_axis_mac_tvalid),
+    .rx_axis_mac_tlast(eth_rx_axis_mac_tlast),
+    .rx_axis_mac_tuser(eth_rx_axis_mac_tuser),
+
+    .tx_ifg_delay(8'b0),
+    .tx_mac_aclk(eth_tx_mac_aclk),
+    .tx_axis_mac_tdata(eth_tx_axis_mac_tdata),
+    .tx_axis_mac_tvalid(eth_tx_axis_mac_tvalid),
+    .tx_axis_mac_tlast(eth_tx_axis_mac_tlast),
+    .tx_axis_mac_tuser(eth_tx_axis_mac_tuser),
+    .tx_axis_mac_tready(eth_tx_axis_mac_tready),
+
+    .pause_req(1'b0),
+    .pause_val(16'b0),
+
+    .rgmii_txd(eth_rgmii_td),
+    .rgmii_tx_ctl(eth_rgmii_tx_ctl),
+    .rgmii_txc(eth_rgmii_txc),
+    .rgmii_rxd(eth_rgmii_rd),
+    .rgmii_rx_ctl(eth_rgmii_rx_ctl),
+    .rgmii_rxc(eth_rgmii_rxc),
+
+    // receive 1Gb/s | promiscuous | flow control | fcs | vlan | enable
+    .rx_configuration_vector(80'b10100000101110),
+    // transmit 1Gb/s | vlan | enable
+    .tx_configuration_vector(80'b10000000000110)
+);
+*/
 /* =========== Demo code end =========== */
 
 endmodule
+

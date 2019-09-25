@@ -1,0 +1,153 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/ip/eth_mac/eth_mac_sim_netlist.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_block
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_block_reset_sync
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_block_reset_sync__1
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_block_sync_block
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_block_sync_block__1
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_block_sync_block__2
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_block_sync_block__3
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_block_sync_block__4
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_block_sync_block__5
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_clk_en_gen
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_rgmii_v2_0_if
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_support
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_support_clocking
+INFO: [VRFC 10-311] analyzing module eth_mac_eth_mac_support_resets
+INFO: [VRFC 10-311] analyzing module eth_mac_CC2CE
+INFO: [VRFC 10-311] analyzing module eth_mac_CC2CE_17
+INFO: [VRFC 10-311] analyzing module eth_mac_CC8CE
+INFO: [VRFC 10-311] analyzing module eth_mac_CC8CE_13
+INFO: [VRFC 10-311] analyzing module eth_mac_CC8CE_14
+INFO: [VRFC 10-311] analyzing module eth_mac_CC8CE_15
+INFO: [VRFC 10-311] analyzing module eth_mac_CC8CE_16
+INFO: [VRFC 10-311] analyzing module eth_mac_CC8CE_6
+INFO: [VRFC 10-311] analyzing module eth_mac_CC8CE_7
+INFO: [VRFC 10-311] analyzing module eth_mac_CC8CE_8
+INFO: [VRFC 10-311] analyzing module eth_mac_CRC32_8
+INFO: [VRFC 10-311] analyzing module eth_mac_CRC32_8_12
+INFO: [VRFC 10-311] analyzing module eth_mac_CRC_64_32
+INFO: [VRFC 10-311] analyzing module eth_mac_CRC_64_32_9
+INFO: [VRFC 10-311] analyzing module eth_mac_DECODE_FRAME
+INFO: [VRFC 10-311] analyzing module eth_mac_PARAM_CHECK
+INFO: [VRFC 10-311] analyzing module eth_mac_STATE_MACHINES
+INFO: [VRFC 10-311] analyzing module eth_mac_TX_STATE_MACH
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_addr_filter
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_addr_filter_wrap
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_control
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_gmii_mii_rx
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_gmii_mii_tx
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_pfc_tx_cntl
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_rx
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_rx_axi_intf
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_rx_cntl
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_rx_sync_req
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_block
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_block_18
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_block_19
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_block_20
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_block__parameterized1
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_block__parameterized1_10
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_block__parameterized1_11
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_block__parameterized1_5
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_reset
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_reset_2
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_reset_3
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_reset__parameterized0
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_reset__parameterized0_0
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_reset__parameterized0_1
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_sync_reset__parameterized0_4
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_tx
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_tx_axi_intf
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_tx_cntl
+INFO: [VRFC 10-311] analyzing module eth_mac_tri_mode_ethernet_mac_v9_0_13_tx_pause
+INFO: [VRFC 10-311] analyzing module glbl
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/ip/pll_example/pll_example_clk_wiz.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module pll_example_clk_wiz
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/ip/pll_example/pll_example.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module pll_example
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sim_1/new/28F640P30.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module BankLib
+INFO: [VRFC 10-311] analyzing module TimingDataModule
+INFO: [VRFC 10-311] analyzing module TimingLibModule
+INFO: [VRFC 10-311] analyzing module BlockLockModule
+INFO: [VRFC 10-311] analyzing module CFIqueryModule
+INFO: [VRFC 10-311] analyzing module DataErrorModule
+INFO: [VRFC 10-311] analyzing module ConfigRegModule
+INFO: [VRFC 10-311] analyzing module SignatureModule
+INFO: [VRFC 10-311] analyzing module CUIdecoder1
+INFO: [VRFC 10-311] analyzing module CUIdecoder2
+INFO: [VRFC 10-311] analyzing module CUIdecoder_Busy1
+INFO: [VRFC 10-311] analyzing module EraseModule
+INFO: [VRFC 10-311] analyzing module MemoryModule
+INFO: [VRFC 10-311] analyzing module OutputBufferModule
+INFO: [VRFC 10-311] analyzing module ProgramModule
+INFO: [VRFC 10-311] analyzing module BuffEnhancedFactProgramModule
+INFO: [VRFC 10-311] analyzing module ProtectRegModule
+INFO: [VRFC 10-311] analyzing module ReadModule
+INFO: [VRFC 10-311] analyzing module StatusRegModule
+INFO: [VRFC 10-311] analyzing module KernelModule
+INFO: [VRFC 10-311] analyzing module x28fxxxp30
+INFO: [VRFC 10-311] analyzing module BurstModule
+INFO: [VRFC 10-311] analyzing module BlankCheckModule
+INFO: [VRFC 10-311] analyzing module ProgramBufferModule
+INFO: [VRFC 10-311] analyzing module DebugModule
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/SEG7_LUT.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module SEG7_LUT
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/async.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module async_transmitter
+INFO: [VRFC 10-311] analyzing module async_receiver
+INFO: [VRFC 10-311] analyzing module ASSERTION_ERROR
+INFO: [VRFC 10-311] analyzing module BaudTickGen
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sim_1/new/clock.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module clock
+WARNING: [VRFC 10-3676] redeclaration of ansi port 'clk_50M' is not allowed [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sim_1/new/clock.v:10]
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sim_1/new/cpld_model.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module cpld_model
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/eth_conf.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_conf
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_address_swap.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_address_swap
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_mux.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_axi_mux
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pat_check.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_axi_pat_check
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pat_gen.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_axi_pat_gen
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pipe.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_axi_pipe
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_basic_pat_gen.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_basic_pat_gen
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_bram_tdp.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_bram_tdp
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_example_design_resets.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_example_design_resets
+INFO: [VRFC 10-2458] undeclared symbol glbl_rst_int, assumed default net type wire [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_example_design_resets.v:113]
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_fifo_block
+INFO: [VRFC 10-2458] undeclared symbol rx_mac_reset, assumed default net type wire [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v:275]
+INFO: [VRFC 10-2458] undeclared symbol tx_mac_reset, assumed default net type wire [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v:282]
+INFO: [VRFC 10-2458] undeclared symbol tx_mac_resetn, assumed default net type wire [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v:286]
+INFO: [VRFC 10-2458] undeclared symbol rx_mac_resetn, assumed default net type wire [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v:287]
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_reset_sync.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_reset_sync
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_rx_client_fifo.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_rx_client_fifo
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_sync_block.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_sync_block
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_ten_100_1g_eth_fifo.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_ten_100_1g_eth_fifo
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_tx_client_fifo.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module eth_mac_tx_client_fifo
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sim_1/new/flag_sync_cpld.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module flag_sync_cpld
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sim_1/new/sram_model.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module sram_model
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module thinpad_top
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/vga.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module vga
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.sim/sim_1/behav/xsim/glbl.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module glbl
+WARNING: [VRFC 10-3609] overwriting previous definition of module 'glbl' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.sim/sim_1/behav/xsim/glbl.v:6]

@@ -1,74 +1,78 @@
 `timescale 1ns / 1ps
 module tb;
 
-wire clk_50M, clk_11M0592;
+wire clk_50M, clk_11M0592, clk_125M, clk_125M_90deg;
 
-reg clock_btn = 0;         //BTN5æ‰‹åŠ¨æ—¶é’ŸæŒ‰é’®å¼€å…³ï¼Œå¸¦æ¶ˆæŠ–ç”µè·¯ï¼ŒæŒ‰ä¸‹æ—¶ä¸º1
-reg reset_btn = 0;         //BTN6æ‰‹åŠ¨å¤ä½æŒ‰é’®å¼€å…³ï¼Œå¸¦æ¶ˆæŠ–ç”µè·¯ï¼ŒæŒ‰ä¸‹æ—¶ä¸º1
+reg clock_btn = 0;         //BTN5ÊÖ¶¯Ê±ÖÓ°´Å¥¿ª¹Ø£¬´øÏû¶¶µçÂ·£¬°´ÏÂÊ±Îª1
+reg reset_btn = 0;         //BTN6ÊÖ¶¯¸´Î»°´Å¥¿ª¹Ø£¬´øÏû¶¶µçÂ·£¬°´ÏÂÊ±Îª1
 
-reg[3:0]  touch_btn;  //BTN1~BTN4ï¼ŒæŒ‰é’®å¼€å…³ï¼ŒæŒ‰ä¸‹æ—¶ä¸º1
-reg[31:0] dip_sw;     //32ä½æ‹¨ç å¼€å…³ï¼Œæ‹¨åˆ°â€œONâ€æ—¶ä¸º1
+reg[3:0]  touch_btn;  //BTN1~BTN4£¬°´Å¥¿ª¹Ø£¬°´ÏÂÊ±Îª1
+reg[31:0] dip_sw;     //32Î»²¦Âë¿ª¹Ø£¬²¦µ½¡°ON¡±Ê±Îª1
 
-wire[15:0] leds;       //16ä½LEDï¼Œè¾“å‡ºæ—¶1ç‚¹äº®
-wire[7:0]  dpy0;       //æ•°ç ç®¡ä½ä½ä¿¡å·ï¼ŒåŒ…æ‹¬å°æ•°ç‚¹ï¼Œè¾“å‡º1ç‚¹äº®
-wire[7:0]  dpy1;       //æ•°ç ç®¡é«˜ä½ä¿¡å·ï¼ŒåŒ…æ‹¬å°æ•°ç‚¹ï¼Œè¾“å‡º1ç‚¹äº®
+wire[15:0] leds;       //16Î»LED£¬Êä³öÊ±1µãÁÁ
+wire[7:0]  dpy0;       //ÊıÂë¹ÜµÍÎ»ĞÅºÅ£¬°üÀ¨Ğ¡Êıµã£¬Êä³ö1µãÁÁ
+wire[7:0]  dpy1;       //ÊıÂë¹Ü¸ßÎ»ĞÅºÅ£¬°üÀ¨Ğ¡Êıµã£¬Êä³ö1µãÁÁ
 
-wire txd;  //ç›´è¿ä¸²å£å‘é€ç«¯
-wire rxd;  //ç›´è¿ä¸²å£æ¥æ”¶ç«¯
+wire txd;  //Ö±Á¬´®¿Ú·¢ËÍ¶Ë
+wire rxd;  //Ö±Á¬´®¿Ú½ÓÊÕ¶Ë
 
-wire[31:0] base_ram_data; //BaseRAMæ•°æ®ï¼Œä½8ä½ä¸CPLDä¸²å£æ§åˆ¶å™¨å…±äº«
-wire[19:0] base_ram_addr; //BaseRAMåœ°å€
-wire[3:0] base_ram_be_n;  //BaseRAMå­—èŠ‚ä½¿èƒ½ï¼Œä½æœ‰æ•ˆã€‚å¦‚æœä¸ä½¿ç”¨å­—èŠ‚ä½¿èƒ½ï¼Œè¯·ä¿æŒä¸º0
-wire base_ram_ce_n;       //BaseRAMç‰‡é€‰ï¼Œä½æœ‰æ•ˆ
-wire base_ram_oe_n;       //BaseRAMè¯»ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
-wire base_ram_we_n;       //BaseRAMå†™ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
+wire[31:0] base_ram_data; //BaseRAMÊı¾İ£¬µÍ8Î»ÓëCPLD´®¿Ú¿ØÖÆÆ÷¹²Ïí
+wire[19:0] base_ram_addr; //BaseRAMµØÖ·
+wire[3:0] base_ram_be_n;  //BaseRAM×Ö½ÚÊ¹ÄÜ£¬µÍÓĞĞ§¡£Èç¹û²»Ê¹ÓÃ×Ö½ÚÊ¹ÄÜ£¬Çë±£³ÖÎª0
+wire base_ram_ce_n;       //BaseRAMÆ¬Ñ¡£¬µÍÓĞĞ§
+wire base_ram_oe_n;       //BaseRAM¶ÁÊ¹ÄÜ£¬µÍÓĞĞ§
+wire base_ram_we_n;       //BaseRAMĞ´Ê¹ÄÜ£¬µÍÓĞĞ§
 
-wire[31:0] ext_ram_data; //ExtRAMæ•°æ®
-wire[19:0] ext_ram_addr; //ExtRAMåœ°å€
-wire[3:0] ext_ram_be_n;  //ExtRAMå­—èŠ‚ä½¿èƒ½ï¼Œä½æœ‰æ•ˆã€‚å¦‚æœä¸ä½¿ç”¨å­—èŠ‚ä½¿èƒ½ï¼Œè¯·ä¿æŒä¸º0
-wire ext_ram_ce_n;       //ExtRAMç‰‡é€‰ï¼Œä½æœ‰æ•ˆ
-wire ext_ram_oe_n;       //ExtRAMè¯»ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
-wire ext_ram_we_n;       //ExtRAMå†™ä½¿èƒ½ï¼Œä½æœ‰æ•ˆ
+wire[31:0] ext_ram_data; //ExtRAMÊı¾İ
+wire[19:0] ext_ram_addr; //ExtRAMµØÖ·
+wire[3:0] ext_ram_be_n;  //ExtRAM×Ö½ÚÊ¹ÄÜ£¬µÍÓĞĞ§¡£Èç¹û²»Ê¹ÓÃ×Ö½ÚÊ¹ÄÜ£¬Çë±£³ÖÎª0
+wire ext_ram_ce_n;       //ExtRAMÆ¬Ñ¡£¬µÍÓĞĞ§
+wire ext_ram_oe_n;       //ExtRAM¶ÁÊ¹ÄÜ£¬µÍÓĞĞ§
+wire ext_ram_we_n;       //ExtRAMĞ´Ê¹ÄÜ£¬µÍÓĞĞ§
 
-wire [22:0]flash_a;      //Flashåœ°å€ï¼Œa0ä»…åœ¨8bitæ¨¡å¼æœ‰æ•ˆï¼Œ16bitæ¨¡å¼æ— æ„ä¹‰
-wire [15:0]flash_d;      //Flashæ•°æ®
-wire flash_rp_n;         //Flashå¤ä½ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-wire flash_vpen;         //Flashå†™ä¿æŠ¤ä¿¡å·ï¼Œä½ç”µå¹³æ—¶ä¸èƒ½æ“¦é™¤ã€çƒ§å†™
-wire flash_ce_n;         //Flashç‰‡é€‰ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-wire flash_oe_n;         //Flashè¯»ä½¿èƒ½ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-wire flash_we_n;         //Flashå†™ä½¿èƒ½ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-wire flash_byte_n;       //Flash 8bitæ¨¡å¼é€‰æ‹©ï¼Œä½æœ‰æ•ˆã€‚åœ¨ä½¿ç”¨flashçš„16ä½æ¨¡å¼æ—¶è¯·è®¾ä¸º1
+wire [22:0]flash_a;      //FlashµØÖ·£¬a0½öÔÚ8bitÄ£Ê½ÓĞĞ§£¬16bitÄ£Ê½ÎŞÒâÒå
+wire [15:0]flash_d;      //FlashÊı¾İ
+wire flash_rp_n;         //Flash¸´Î»ĞÅºÅ£¬µÍÓĞĞ§
+wire flash_vpen;         //FlashĞ´±£»¤ĞÅºÅ£¬µÍµçÆ½Ê±²»ÄÜ²Á³ı¡¢ÉÕĞ´
+wire flash_ce_n;         //FlashÆ¬Ñ¡ĞÅºÅ£¬µÍÓĞĞ§
+wire flash_oe_n;         //Flash¶ÁÊ¹ÄÜĞÅºÅ£¬µÍÓĞĞ§
+wire flash_we_n;         //FlashĞ´Ê¹ÄÜĞÅºÅ£¬µÍÓĞĞ§
+wire flash_byte_n;       //Flash 8bitÄ£Ê½Ñ¡Ôñ£¬µÍÓĞĞ§¡£ÔÚÊ¹ÓÃflashµÄ16Î»Ä£Ê½Ê±ÇëÉèÎª1
 
-wire uart_rdn;           //è¯»ä¸²å£ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-wire uart_wrn;           //å†™ä¸²å£ä¿¡å·ï¼Œä½æœ‰æ•ˆ
-wire uart_dataready;     //ä¸²å£æ•°æ®å‡†å¤‡å¥½
-wire uart_tbre;          //å‘é€æ•°æ®æ ‡å¿—
-wire uart_tsre;          //æ•°æ®å‘é€å®Œæ¯•æ ‡å¿—
+wire uart_rdn;           //¶Á´®¿ÚĞÅºÅ£¬µÍÓĞĞ§
+wire uart_wrn;           //Ğ´´®¿ÚĞÅºÅ£¬µÍÓĞĞ§
+wire uart_dataready;     //´®¿ÚÊı¾İ×¼±¸ºÃ
+wire uart_tbre;          //·¢ËÍÊı¾İ±êÖ¾
+wire uart_tsre;          //Êı¾İ·¢ËÍÍê±Ï±êÖ¾
 
-//Windowséœ€è¦æ³¨æ„è·¯å¾„åˆ†éš”ç¬¦çš„è½¬ä¹‰ï¼Œä¾‹å¦‚"D:\\foo\\bar.bin"
-parameter BASE_RAM_INIT_FILE = "/tmp/main.bin"; //BaseRAMåˆå§‹åŒ–æ–‡ä»¶ï¼Œè¯·ä¿®æ”¹ä¸ºå®é™…çš„ç»å¯¹è·¯å¾„
-parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAMåˆå§‹åŒ–æ–‡ä»¶ï¼Œè¯·ä¿®æ”¹ä¸ºå®é™…çš„ç»å¯¹è·¯å¾„
-parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flashåˆå§‹åŒ–æ–‡ä»¶ï¼Œè¯·ä¿®æ”¹ä¸ºå®é™…çš„ç»å¯¹è·¯å¾„
+wire [3:0] eth_rgmii_rd; //RGMII RX Êı¾İ
+wire eth_rgmii_rx_ctl;   //RGMII RX ¿ØÖÆ
+wire eth_rgmii_rxc;      //RGMII RX Ê±ÖÓ
+
+//WindowsĞèÒª×¢ÒâÂ·¾¶·Ö¸ô·ûµÄ×ªÒå£¬ÀıÈç"D:\\foo\\bar.bin"
+parameter BASE_RAM_INIT_FILE = "/tmp/main.bin"; //BaseRAM³õÊ¼»¯ÎÄ¼ş£¬ÇëĞŞ¸ÄÎªÊµ¼ÊµÄ¾ø¶ÔÂ·¾¶
+parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM³õÊ¼»¯ÎÄ¼ş£¬ÇëĞŞ¸ÄÎªÊµ¼ÊµÄ¾ø¶ÔÂ·¾¶
+parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flash³õÊ¼»¯ÎÄ¼ş£¬ÇëĞŞ¸ÄÎªÊµ¼ÊµÄ¾ø¶ÔÂ·¾¶
 
 assign rxd = 1'b1; //idle state
 
 initial begin 
-    //åœ¨è¿™é‡Œå¯ä»¥è‡ªå®šä¹‰æµ‹è¯•è¾“å…¥åºåˆ—ï¼Œä¾‹å¦‚ï¼š
+    //ÔÚÕâÀï¿ÉÒÔ×Ô¶¨Òå²âÊÔÊäÈëĞòÁĞ£¬ÀıÈç£º
     dip_sw = 32'h2;
     touch_btn = 0;
     for (integer i = 0; i < 20; i = i+1) begin
-        #100; //ç­‰å¾…100ns
-        clock_btn = 1; //æŒ‰ä¸‹æ‰‹å·¥æ—¶é’ŸæŒ‰é’®
-        #100; //ç­‰å¾…100ns
-        clock_btn = 0; //æ¾å¼€æ‰‹å·¥æ—¶é’ŸæŒ‰é’®
+        #100; //µÈ´ı100ns
+        clock_btn = 1; //°´ÏÂÊÖ¹¤Ê±ÖÓ°´Å¥
+        #100; //µÈ´ı100ns
+        clock_btn = 0; //ËÉ¿ªÊÖ¹¤Ê±ÖÓ°´Å¥
     end
-    // æ¨¡æ‹ŸPCé€šè¿‡ä¸²å£å‘é€å­—ç¬¦
+    // Ä£ÄâPCÍ¨¹ı´®¿Ú·¢ËÍ×Ö·û
     cpld.pc_send_byte(8'h32);
     #10000;
     cpld.pc_send_byte(8'h33);
 end
 
-// å¾…æµ‹è¯•ç”¨æˆ·è®¾è®¡
+// ´ı²âÊÔÓÃ»§Éè¼Æ
 thinpad_top dut(
     .clk_50M(clk_50M),
     .clk_11M0592(clk_11M0592),
@@ -105,14 +109,19 @@ thinpad_top dut(
     .flash_oe_n(flash_oe_n),
     .flash_ce_n(flash_ce_n),
     .flash_byte_n(flash_byte_n),
-    .flash_we_n(flash_we_n)
+    .flash_we_n(flash_we_n),
+    .eth_rgmii_rd(eth_rgmii_rd),
+    .eth_rgmii_rx_ctl(eth_rgmii_rx_ctl),
+    .eth_rgmii_rxc(eth_rgmii_rxc)
 );
-// æ—¶é’Ÿæº
+// Ê±ÖÓÔ´
 clock osc(
-    .clk_11M0592(clk_11M0592),
-    .clk_50M    (clk_50M)
+    .clk_11M0592   (clk_11M0592),
+    .clk_50M       (clk_50M),
+    .clk_125M      (clk_125M),
+    .clk_125M_90deg(clk_125M_90deg)
 );
-// CPLD ä¸²å£ä»¿çœŸæ¨¡å‹
+// CPLD ´®¿Ú·ÂÕæÄ£ĞÍ
 cpld_model cpld(
     .clk_uart(clk_11M0592),
     .uart_rdn(uart_rdn),
@@ -122,7 +131,7 @@ cpld_model cpld(
     .uart_tsre(uart_tsre),
     .data(base_ram_data[7:0])
 );
-// BaseRAM ä»¿çœŸæ¨¡å‹
+// BaseRAM ·ÂÕæÄ£ĞÍ
 sram_model base1(/*autoinst*/
             .DataIO(base_ram_data[15:0]),
             .Address(base_ram_addr[19:0]),
@@ -139,7 +148,7 @@ sram_model base2(/*autoinst*/
             .WE_n(base_ram_we_n),
             .LB_n(base_ram_be_n[2]),
             .UB_n(base_ram_be_n[3]));
-// ExtRAM ä»¿çœŸæ¨¡å‹
+// ExtRAM ·ÂÕæÄ£ĞÍ
 sram_model ext1(/*autoinst*/
             .DataIO(ext_ram_data[15:0]),
             .Address(ext_ram_addr[19:0]),
@@ -156,7 +165,7 @@ sram_model ext2(/*autoinst*/
             .WE_n(ext_ram_we_n),
             .LB_n(ext_ram_be_n[2]),
             .UB_n(ext_ram_be_n[3]));
-// Flash ä»¿çœŸæ¨¡å‹
+// Flash ·ÂÕæÄ£ĞÍ
 x28fxxxp30 #(.FILENAME_MEM(FLASH_INIT_FILE)) flash(
     .A(flash_a[1+:22]), 
     .DQ(flash_d), 
@@ -179,7 +188,7 @@ initial begin
     $stop;
 end
 
-// ä»æ–‡ä»¶åŠ è½½ BaseRAM
+// ´ÓÎÄ¼ş¼ÓÔØ BaseRAM
 initial begin 
     reg [31:0] tmp_array[0:1048575];
     integer n_File_ID, n_Init_Size;
@@ -201,7 +210,7 @@ initial begin
     end
 end
 
-// ä»æ–‡ä»¶åŠ è½½ ExtRAM
+// ´ÓÎÄ¼ş¼ÓÔØ ExtRAM
 initial begin 
     reg [31:0] tmp_array[0:1048575];
     integer n_File_ID, n_Init_Size;
@@ -222,4 +231,16 @@ initial begin
         ext2.mem_array1[i] = tmp_array[i][0+:8];
     end
 end
+
+// RGMII ·ÂÕæÄ£ĞÍ
+
+rgmii_model rgmii(
+    .clk_125M(clk_125M),
+    .clk_125M_90deg(clk_125M_90deg),
+
+    .rgmii_rd(eth_rgmii_rd),
+    .rgmii_rxc(eth_rgmii_rxc),
+    .rgmii_rx_ctl(eth_rgmii_rx_ctl)
+);
 endmodule
+
