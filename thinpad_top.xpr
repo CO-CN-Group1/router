@@ -31,7 +31,7 @@
     <Option Name="EnableBDX" Val="FALSE"/>
     <Option Name="DSAVendor" Val="xilinx"/>
     <Option Name="DSANumComputeUnits" Val="16"/>
-    <Option Name="WTXSimLaunchSim" Val="247"/>
+    <Option Name="WTXSimLaunchSim" Val="273"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -140,15 +140,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/imports/eth_mac_example_design_resets.v">
-        <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../vivado_examples/eth_mac_ex/imports/eth_mac_example_design_resets.v"/>
-          <Attr Name="ImportTime" Val="1569329951"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/imports/imports/eth_mac_fifo_block.v">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../vivado_examples/eth_mac_ex/imports/eth_mac_fifo_block.v"/>
@@ -217,6 +208,16 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sources_1/imports/imports/eth_mac_example_design_resets.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../vivado_examples/eth_mac_ex/imports/eth_mac_example_design_resets.v"/>
+          <Attr Name="ImportTime" Val="1569329951"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/imports/imports/eth_mac_clk_wiz.v">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
@@ -231,16 +232,6 @@
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../vivado_examples/eth_mac_ex/imports/eth_mac_frame_typ.v"/>
-          <Attr Name="ImportTime" Val="1569329953"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/imports/imports/demo_tb.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../vivado_examples/eth_mac_ex/imports/demo_tb.v"/>
           <Attr Name="ImportTime" Val="1569329953"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -271,6 +262,16 @@
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../vivado_examples/eth_mac_ex/imports/eth_mac_example_design.v"/>
+          <Attr Name="ImportTime" Val="1569329953"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/imports/demo_tb.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../vivado_examples/eth_mac_ex/imports/demo_tb.v"/>
           <Attr Name="ImportTime" Val="1569329953"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>

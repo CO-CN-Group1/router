@@ -41,7 +41,6 @@ read_verilog -library xil_defaultlib {
   C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pipe.v
   C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_basic_pat_gen.v
   C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_bram_tdp.v
-  C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_example_design_resets.v
   C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v
   C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_reset_sync.v
   C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_rx_client_fifo.v

@@ -231,41 +231,12 @@ vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
 );
 
 
-/*
 reg gtx_pre_resetn = 0, gtx_resetn = 0;
-
 always @(posedge clk_125M)
 begin
     gtx_resetn      <= gtx_pre_resetn;
     gtx_pre_resetn  <= 1;
 end
-*/
-wire gtx_resetn;
-wire rx_reset,tx_reset;
-wire glbl_rst_intn;
-eth_mac_example_design_resets example_resets
-   (
-      // clocks
-      .s_axi_aclk       (clk_100M),
-      .gtx_clk          (clk_125M),
-
-      // asynchronous resets
-      .glbl_rst         (reset_btn),
-      .reset_error      (1'b0),
-      .rx_reset         (rx_reset),
-      .tx_reset         (tx_reset),
-
-      .dcm_locked       (locked),
-
-      // synchronous reset outputs
-  
-      .glbl_rst_intn    (glbl_rst_intn),
-   
-   
-      .gtx_resetn       (gtx_resetn)
-   
-   );
-
 
 wire [7:0] eth_rx_axis_fifo_tdata;
 wire eth_rx_axis_fifo_tvalid;
@@ -281,7 +252,7 @@ eth_mac_fifo_block trimac_fifo_block (
     .gtx_clk                        (clk_125M),
     .refclk                         (clk_200M),
 
-    .glbl_rstn                      (glbl_rst_intn),
+    .glbl_rstn                      (eth_rst_n),
     .rx_axi_rstn                    (1'b1),
     .tx_axi_rstn                    (1'b1),
 
@@ -291,7 +262,6 @@ eth_mac_fifo_block trimac_fifo_block (
     .rx_axis_fifo_tvalid            (eth_rx_axis_fifo_tvalid),
     .rx_axis_fifo_tready            (eth_rx_axis_fifo_tready),
     .rx_axis_fifo_tlast             (eth_rx_axis_fifo_tlast),
-    .rx_reset(rx_reset),
 
     .tx_ifg_delay                   (8'b0),
     .tx_fifo_clock                  (clk_125M),
@@ -300,7 +270,6 @@ eth_mac_fifo_block trimac_fifo_block (
     .tx_axis_fifo_tvalid            (eth_tx_axis_fifo_tvalid),
     .tx_axis_fifo_tready            (eth_tx_axis_fifo_tready),
     .tx_axis_fifo_tlast             (eth_tx_axis_fifo_tlast),
-    .tx_reset(tx_reset),
     
     .pause_req                      (1'b0),
     .pause_val                      (16'b0),
@@ -320,7 +289,6 @@ eth_mac_fifo_block trimac_fifo_block (
 eth_mac_basic_pat_gen temac_pat_gen(
     .axi_tclk                       (clk_125M),
     .axi_tresetn                    (gtx_resetn),
-    //.check_resetn,
 
     .enable_pat_gen                 (1'b0),
     .enable_pat_chk                 (1'b0),

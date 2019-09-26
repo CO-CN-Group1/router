@@ -2,8 +2,8 @@
 # Vivado v2018.3 (64-bit)
 # SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
 # IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
-# Start of session at: Wed Sep 25 11:37:09 2019
-# Process ID: 4204
+# Start of session at: Thu Sep 26 21:14:14 2019
+# Process ID: 4200
 # Current directory: C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1
 # Command line: vivado.exe -log thinpad_top.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source thinpad_top.tcl
 # Log file: C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/thinpad_top.vds
@@ -15,13 +15,13 @@ Starting synth_design
 Attempting to get a license for feature 'Synthesis' and/or device 'xc7a100t'
 INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a100t'
 INFO: Launching helper process for spawning children vivado processes
-INFO: Helper process launched with PID 2520 
+INFO: Helper process launched with PID 4076 
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:02 . Memory (MB): peak = 368.664 ; gain = 102.445
+Starting RTL Elaboration : Time (s): cpu = 00:00:02 ; elapsed = 00:00:03 . Memory (MB): peak = 368.918 ; gain = 99.762
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-6157] synthesizing module 'thinpad_top' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:3]
-INFO: [Synth 8-6157] synthesizing module 'pll_example' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/.Xil/Vivado-4204-LIANGZHAOA230/realtime/pll_example_stub.v:5]
-INFO: [Synth 8-6155] done synthesizing module 'pll_example' (1#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/.Xil/Vivado-4204-LIANGZHAOA230/realtime/pll_example_stub.v:5]
+INFO: [Synth 8-6157] synthesizing module 'pll_example' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/.Xil/Vivado-4200-LIANGZHAOA230/realtime/pll_example_stub.v:5]
+INFO: [Synth 8-6155] done synthesizing module 'pll_example' (1#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/.Xil/Vivado-4200-LIANGZHAOA230/realtime/pll_example_stub.v:5]
 INFO: [Synth 8-6157] synthesizing module 'eth_conf' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/eth_conf.v:1]
 	Parameter N_CONFIG_ENTRY bound to: 14 - type: integer 
 INFO: [Synth 8-155] case statement is not full and has no default [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/eth_conf.v:85]
@@ -70,17 +70,9 @@ INFO: [Synth 8-6157] synthesizing module 'vga' [C:/Users/liangzhao/thinpad_top-t
 	Parameter HSPP bound to: 1 - type: integer 
 	Parameter VSPP bound to: 1 - type: integer 
 INFO: [Synth 8-6155] done synthesizing module 'vga' (7#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/vga.v:15]
-INFO: [Synth 8-6157] synthesizing module 'eth_mac_example_design_resets' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_example_design_resets.v:54]
-INFO: [Synth 8-6157] synthesizing module 'eth_mac_sync_block' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_sync_block.v:63]
-	Parameter INITIALISE bound to: 1'b0 
-	Parameter DEPTH bound to: 5 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'FDRE' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:3971]
-	Parameter INIT bound to: 1'b0 
-	Parameter IS_C_INVERTED bound to: 1'b0 
-	Parameter IS_D_INVERTED bound to: 1'b0 
-	Parameter IS_R_INVERTED bound to: 1'b0 
-INFO: [Synth 8-6155] done synthesizing module 'FDRE' (8#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:3971]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_sync_block' (9#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_sync_block.v:63]
+INFO: [Synth 8-6157] synthesizing module 'eth_mac_fifo_block' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v:89]
+INFO: [Synth 8-6157] synthesizing module 'eth_mac' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/.Xil/Vivado-4200-LIANGZHAOA230/realtime/eth_mac_stub.v:6]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac' (8#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/.Xil/Vivado-4200-LIANGZHAOA230/realtime/eth_mac_stub.v:6]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_reset_sync' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_reset_sync.v:66]
 	Parameter INITIALISE bound to: 1'b1 
 	Parameter DEPTH bound to: 5 - type: integer 
@@ -89,13 +81,8 @@ INFO: [Synth 8-6157] synthesizing module 'FDPE' [C:/Xilinx/Vivado/2018.3/scripts
 	Parameter IS_C_INVERTED bound to: 1'b0 
 	Parameter IS_D_INVERTED bound to: 1'b0 
 	Parameter IS_PRE_INVERTED bound to: 1'b0 
-INFO: [Synth 8-6155] done synthesizing module 'FDPE' (10#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:3911]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_reset_sync' (11#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_reset_sync.v:66]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_example_design_resets' (12#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_example_design_resets.v:54]
-WARNING: [Synth 8-350] instance 'example_resets' of module 'eth_mac_example_design_resets' requires 12 connections, but only 9 given [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:246]
-INFO: [Synth 8-6157] synthesizing module 'eth_mac_fifo_block' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v:89]
-INFO: [Synth 8-6157] synthesizing module 'eth_mac' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/.Xil/Vivado-4204-LIANGZHAOA230/realtime/eth_mac_stub.v:6]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac' (13#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/.Xil/Vivado-4204-LIANGZHAOA230/realtime/eth_mac_stub.v:6]
+INFO: [Synth 8-6155] done synthesizing module 'FDPE' (9#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:3911]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_reset_sync' (10#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_reset_sync.v:66]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_ten_100_1g_eth_fifo' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_ten_100_1g_eth_fifo.v:71]
 	Parameter FULL_DUPLEX_ONLY bound to: 1 - type: integer 
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_tx_client_fifo' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_tx_client_fifo.v:100]
@@ -123,12 +110,22 @@ INFO: [Synth 8-6157] synthesizing module 'eth_mac_tx_client_fifo' [C:/Users/lian
 INFO: [Synth 8-5534] Detected attribute (* ASYNC_REG = "TRUE" *) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_tx_client_fifo.v:248]
 INFO: [Synth 8-5534] Detected attribute (* ASYNC_REG = "TRUE" *) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_tx_client_fifo.v:270]
 INFO: [Synth 8-226] default block is never used [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_tx_client_fifo.v:324]
+INFO: [Synth 8-6157] synthesizing module 'eth_mac_sync_block' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_sync_block.v:63]
+	Parameter INITIALISE bound to: 1'b0 
+	Parameter DEPTH bound to: 5 - type: integer 
+INFO: [Synth 8-6157] synthesizing module 'FDRE' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:3971]
+	Parameter INIT bound to: 1'b0 
+	Parameter IS_C_INVERTED bound to: 1'b0 
+	Parameter IS_D_INVERTED bound to: 1'b0 
+	Parameter IS_R_INVERTED bound to: 1'b0 
+INFO: [Synth 8-6155] done synthesizing module 'FDRE' (11#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:3971]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_sync_block' (12#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_sync_block.v:63]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_bram_tdp' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_bram_tdp.v:66]
 	Parameter DATA_WIDTH bound to: 9 - type: integer 
 	Parameter ADDR_WIDTH bound to: 12 - type: integer 
 	Parameter RAM_DEPTH bound to: 4096 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_bram_tdp' (14#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_bram_tdp.v:66]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_tx_client_fifo' (15#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_tx_client_fifo.v:100]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_bram_tdp' (13#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_bram_tdp.v:66]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_tx_client_fifo' (14#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_tx_client_fifo.v:100]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_rx_client_fifo' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_rx_client_fifo.v:111]
 	Parameter WAIT_s bound to: 3'b000 
 	Parameter QUEUE1_s bound to: 3'b001 
@@ -144,10 +141,10 @@ INFO: [Synth 8-6157] synthesizing module 'eth_mac_rx_client_fifo' [C:/Users/lian
 	Parameter BF_s bound to: 3'b011 
 	Parameter OVFLOW_s bound to: 3'b100 
 INFO: [Synth 8-226] default block is never used [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_rx_client_fifo.v:255]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_rx_client_fifo' (16#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_rx_client_fifo.v:111]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_ten_100_1g_eth_fifo' (17#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_ten_100_1g_eth_fifo.v:71]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_fifo_block' (18#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v:89]
-WARNING: [Synth 8-350] instance 'trimac_fifo_block' of module 'eth_mac_fifo_block' requires 39 connections, but only 30 given [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:280]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_rx_client_fifo' (15#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_rx_client_fifo.v:111]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_ten_100_1g_eth_fifo' (16#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_ten_100_1g_eth_fifo.v:71]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_fifo_block' (17#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v:89]
+WARNING: [Synth 8-350] instance 'trimac_fifo_block' of module 'eth_mac_fifo_block' requires 39 connections, but only 28 given [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:251]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_basic_pat_gen' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_basic_pat_gen.v:67]
 	Parameter DEST_ADDR bound to: 48'b110110100000000100000010000000110000010000000101 
 	Parameter SRC_ADDR bound to: 48'b010110100000000100000010000000110000010000000101 
@@ -177,27 +174,27 @@ INFO: [Synth 8-6157] synthesizing module 'eth_mac_axi_pat_gen' [C:/Users/liangzh
 	Parameter BW_10M bound to: 2 - type: integer 
 INFO: [Synth 8-6157] synthesizing module 'LUT6' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 	Parameter INIT bound to: 64'b0000000000000000000000000000000000000000000000000001101010101010 
-INFO: [Synth 8-6155] done synthesizing module 'LUT6' (19#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
+INFO: [Synth 8-6155] done synthesizing module 'LUT6' (18#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 INFO: [Synth 8-6157] synthesizing module 'LUT6__parameterized0' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 	Parameter INIT bound to: 64'b0000000000000000000000000000000000000000000000001000001101001101 
-INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized0' (19#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
+INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized0' (18#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 INFO: [Synth 8-6157] synthesizing module 'LUT6__parameterized1' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 	Parameter INIT bound to: 64'b0000000000000000000000000000000000000000000000000000110000110000 
-INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized1' (19#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
+INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized1' (18#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 INFO: [Synth 8-6157] synthesizing module 'LUT6__parameterized2' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 	Parameter INIT bound to: 64'b0000000000000000000000000000000000000000000000000000000001000001 
-INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized2' (19#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
+INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized2' (18#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 INFO: [Synth 8-6157] synthesizing module 'LUT6__parameterized3' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 	Parameter INIT bound to: 64'b0000000000000000000000000000000000000000000000000000000000000000 
-INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized3' (19#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
+INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized3' (18#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 INFO: [Synth 8-6157] synthesizing module 'LUT6__parameterized4' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 	Parameter INIT bound to: 64'b0000000000000000000000000000000000000000000000000100000001000001 
-INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized4' (19#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
+INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized4' (18#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 INFO: [Synth 8-6157] synthesizing module 'LUT6__parameterized5' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 	Parameter INIT bound to: 64'b0000000000000000000000000000000000000000000000000001000000000001 
-INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized5' (19#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
+INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized5' (18#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 WARNING: [Synth 8-567] referenced signal 'byte_count_eq_1' should be on the sensitivity list [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pat_gen.v:286]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_axi_pat_gen' (20#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pat_gen.v:66]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_axi_pat_gen' (19#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pat_gen.v:66]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_axi_pat_check' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pat_check.v:61]
 	Parameter DEST_ADDR bound to: 48'b110110100000000100000010000000110000010000000101 
 	Parameter SRC_ADDR bound to: 48'b010110100000000100000010000000110000010000000101 
@@ -215,16 +212,16 @@ INFO: [Synth 8-6157] synthesizing module 'eth_mac_axi_pat_check' [C:/Users/liang
 	Parameter HEADER_LENGTH bound to: 11 - type: integer 
 INFO: [Synth 8-6157] synthesizing module 'LUT6__parameterized6' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
 	Parameter INIT bound to: 64'b0000000000000000000000000000000000000000000000000001000001000000 
-INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized6' (20#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_axi_pat_check' (21#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pat_check.v:61]
+INFO: [Synth 8-6155] done synthesizing module 'LUT6__parameterized6' (19#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:26626]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_axi_pat_check' (20#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pat_check.v:61]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_axi_mux' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_mux.v:57]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_axi_mux' (22#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_mux.v:57]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_axi_mux' (21#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_mux.v:57]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_axi_pipe' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pipe.v:58]
 INFO: [Synth 8-6157] synthesizing module 'RAM64X1D' [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:45535]
 	Parameter INIT bound to: 64'b0000000000000000000000000000000000000000000000000000000000000000 
 	Parameter IS_WCLK_INVERTED bound to: 1'b0 
-INFO: [Synth 8-6155] done synthesizing module 'RAM64X1D' (23#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:45535]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_axi_pipe' (24#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pipe.v:58]
+INFO: [Synth 8-6155] done synthesizing module 'RAM64X1D' (22#1) [C:/Xilinx/Vivado/2018.3/scripts/rt/data/unisim_comp.v:45535]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_axi_pipe' (23#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pipe.v:58]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_address_swap' [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_address_swap.v:59]
 	Parameter IDLE bound to: 3'b000 
 	Parameter WAIT bound to: 3'b001 
@@ -237,9 +234,9 @@ INFO: [Synth 8-6157] synthesizing module 'eth_mac_address_swap' [C:/Users/liangz
 	Parameter WRITE_SLOT2 bound to: 2'b10 
 	Parameter WRITE bound to: 2'b11 
 INFO: [Synth 8-226] default block is never used [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_address_swap.v:161]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_address_swap' (25#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_address_swap.v:59]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac_basic_pat_gen' (26#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_basic_pat_gen.v:67]
-WARNING: [Synth 8-350] instance 'temac_pat_gen' of module 'eth_mac_basic_pat_gen' requires 18 connections, but only 14 given [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:320]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_address_swap' (24#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_address_swap.v:59]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac_basic_pat_gen' (25#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/imports/imports/eth_mac_basic_pat_gen.v:67]
+WARNING: [Synth 8-350] instance 'temac_pat_gen' of module 'eth_mac_basic_pat_gen' requires 18 connections, but only 14 given [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:289]
 WARNING: [Synth 8-3848] Net base_ram_addr in module/entity thinpad_top does not have driver. [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:25]
 WARNING: [Synth 8-3848] Net base_ram_be_n in module/entity thinpad_top does not have driver. [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:26]
 WARNING: [Synth 8-3848] Net ext_ram_addr in module/entity thinpad_top does not have driver. [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:33]
@@ -255,7 +252,7 @@ WARNING: [Synth 8-3848] Net ch376t_sdi in module/entity thinpad_top does not hav
 WARNING: [Synth 8-3848] Net ch376t_sck in module/entity thinpad_top does not have driver. [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:55]
 WARNING: [Synth 8-3848] Net ch376t_cs_n in module/entity thinpad_top does not have driver. [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:56]
 WARNING: [Synth 8-3848] Net ch376t_rst in module/entity thinpad_top does not have driver. [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:57]
-INFO: [Synth 8-6155] done synthesizing module 'thinpad_top' (27#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:3]
+INFO: [Synth 8-6155] done synthesizing module 'thinpad_top' (26#1) [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:3]
 WARNING: [Synth 8-3917] design thinpad_top has port uart_rdn driven by constant 1
 WARNING: [Synth 8-3917] design thinpad_top has port uart_wrn driven by constant 1
 WARNING: [Synth 8-3917] design thinpad_top has port base_ram_ce_n driven by constant 1
@@ -266,7 +263,6 @@ WARNING: [Synth 8-3917] design thinpad_top has port ext_ram_oe_n driven by const
 WARNING: [Synth 8-3917] design thinpad_top has port ext_ram_we_n driven by constant 1
 WARNING: [Synth 8-3331] design eth_mac_tx_client_fifo has unconnected port tx_collision
 WARNING: [Synth 8-3331] design eth_mac_tx_client_fifo has unconnected port tx_retransmit
-WARNING: [Synth 8-3331] design eth_mac_example_design_resets has unconnected port s_axi_aclk
 WARNING: [Synth 8-3331] design eth_conf has unconnected port eth_spi_miso
 WARNING: [Synth 8-3331] design thinpad_top has unconnected port base_ram_addr[19]
 WARNING: [Synth 8-3331] design thinpad_top has unconnected port base_ram_addr[18]
@@ -364,9 +360,10 @@ WARNING: [Synth 8-3331] design thinpad_top has unconnected port base_ram_data[20
 WARNING: [Synth 8-3331] design thinpad_top has unconnected port base_ram_data[19]
 WARNING: [Synth 8-3331] design thinpad_top has unconnected port base_ram_data[18]
 WARNING: [Synth 8-3331] design thinpad_top has unconnected port base_ram_data[17]
+WARNING: [Synth 8-3331] design thinpad_top has unconnected port base_ram_data[16]
 INFO: [Common 17-14] Message 'Synth 8-3331' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 427.395 ; gain = 161.176
+Finished RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:06 . Memory (MB): peak = 426.406 ; gain = 157.250
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -375,20 +372,20 @@ Report Check Netlist:
 +------+------------------+-------+---------+-------+------------------+
 |1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
 +------+------------------+-------+---------+-------+------------------+
-WARNING: [Synth 8-3295] tying undriven pin temac_pat_gen:check_resetn to constant 0 [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:320]
-WARNING: [Synth 8-3295] tying undriven pin temac_pat_gen:speed[1] to constant 0 [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:320]
-WARNING: [Synth 8-3295] tying undriven pin temac_pat_gen:speed[0] to constant 0 [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:320]
+WARNING: [Synth 8-3295] tying undriven pin temac_pat_gen:check_resetn to constant 0 [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:289]
+WARNING: [Synth 8-3295] tying undriven pin temac_pat_gen:speed[1] to constant 0 [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:289]
+WARNING: [Synth 8-3295] tying undriven pin temac_pat_gen:speed[0] to constant 0 [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/sources_1/new/thinpad_top.v:289]
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 427.395 ; gain = 161.176
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:04 ; elapsed = 00:00:06 . Memory (MB): peak = 426.406 ; gain = 157.250
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 427.395 ; gain = 161.176
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:04 ; elapsed = 00:00:06 . Memory (MB): peak = 426.406 ; gain = 157.250
 ---------------------------------------------------------------------------------
 INFO: [Netlist 29-17] Analyzing 18 Unisim elements for replacement
-INFO: [Netlist 29-28] Unisim Transformation completed in 1 CPU seconds
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Device 21-403] Loading part xc7a100tfgg676-2L
 INFO: [Project 1-570] Preparing netlist for logic optimization
 
@@ -407,25 +404,25 @@ Finished Parsing XDC File [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_t
 WARNING: [Project 1-498] One or more constraints failed evaluation while reading constraint file [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/constrs_1/new/thinpad_top.xdc] and the design contains unresolved black boxes. These constraints will be read post-synthesis (as long as their source constraint file is marked as used_in_implementation) and should be applied correctly then. You should review the constraints listed in the file [.Xil/thinpad_top_propImpl.xdc] and check the run log file to verify that these constraints were correctly applied.
 INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.srcs/constrs_1/new/thinpad_top.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/thinpad_top_propImpl.xdc].
 Resolution: To avoid this warning, move constraints listed in [.Xil/thinpad_top_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 781.973 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 781.488 ; gain = 0.000
 Completed Processing XDC Constraints
 
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 781.973 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 781.488 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
   A total of 18 instances were transformed.
   RAM64X1D => RAM64X1D (RAMD64E, RAMD64E): 18 instances
 
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 781.973 ; gain = 0.000
-Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.021 . Memory (MB): peak = 781.973 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 781.488 ; gain = 0.000
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.018 . Memory (MB): peak = 781.488 ; gain = 0.000
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:13 ; elapsed = 00:00:15 . Memory (MB): peak = 781.973 ; gain = 515.754
+Finished Constraint Validation : Time (s): cpu = 00:00:13 ; elapsed = 00:00:22 . Memory (MB): peak = 781.488 ; gain = 512.332
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7a100tfgg676-2L
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:13 ; elapsed = 00:00:15 . Memory (MB): peak = 781.973 ; gain = 515.754
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:13 ; elapsed = 00:00:22 . Memory (MB): peak = 781.488 ; gain = 512.332
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
@@ -459,7 +456,7 @@ Applied set_property CLOCK_BUFFER_TYPE = NONE for eth_rgmii_td[3]. (constraint f
 Applied set_property DONT_TOUCH = true for clock_gen. (constraint file  auto generated constraint, line ).
 Applied set_property DONT_TOUCH = true for trimac_fifo_block/tri_mode_ethernet_mac_i. (constraint file  auto generated constraint, line ).
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:13 ; elapsed = 00:00:16 . Memory (MB): peak = 781.973 ; gain = 515.754
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:13 ; elapsed = 00:00:22 . Memory (MB): peak = 781.488 ; gain = 512.332
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-5544] ROM "conf_state" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
 INFO: [Synth 8-5544] ROM "wait_counter" won't be mapped to Block RAM because address size (3) smaller than threshold (5)
@@ -637,14 +634,14 @@ INFO: [Synth 8-3354] encoded FSM with state register 'rx_state_reg' using encodi
 ---------------------------------------------------------------------------------------------------
                    State |                     New Encoding |                Previous Encoding 
 ---------------------------------------------------------------------------------------------------
-              P_1A562A80 |                               00 |                               00
-              P_1A5633E0 |                               01 |                               01
-              P_1A562C60 |                               10 |                               10
-              P_1A563560 |                               11 |                               11
+              P_1A43AFB0 |                               00 |                               00
+              P_1A431200 |                               01 |                               01
+              P_1A431710 |                               10 |                               10
+              P_1A430AB0 |                               11 |                               11
 ---------------------------------------------------------------------------------------------------
 INFO: [Synth 8-3354] encoded FSM with state register 'wr_state_reg' using encoding 'sequential' in module 'eth_mac_address_swap'
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:16 ; elapsed = 00:00:18 . Memory (MB): peak = 781.973 ; gain = 515.754
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:15 ; elapsed = 00:00:27 . Memory (MB): peak = 781.488 ; gain = 512.332
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -663,7 +660,7 @@ Detailed RTL Component Info :
 	   3 Input     12 Bit       Adders := 2     
 	   2 Input      9 Bit       Adders := 2     
 	   2 Input      8 Bit       Adders := 3     
-	   2 Input      6 Bit       Adders := 4     
+	   2 Input      6 Bit       Adders := 3     
 	   2 Input      5 Bit       Adders := 3     
 	   2 Input      4 Bit       Adders := 6     
 	   2 Input      3 Bit       Adders := 5     
@@ -679,12 +676,12 @@ Detailed RTL Component Info :
 	                9 Bit    Registers := 4     
 	                8 Bit    Registers := 23    
 	                7 Bit    Registers := 1     
-	                6 Bit    Registers := 5     
+	                6 Bit    Registers := 4     
 	                5 Bit    Registers := 3     
 	                4 Bit    Registers := 8     
 	                3 Bit    Registers := 7     
 	                2 Bit    Registers := 4     
-	                1 Bit    Registers := 93    
+	                1 Bit    Registers := 88    
 +---RAMs : 
 	              36K Bit         RAMs := 2     
 +---Muxes : 
@@ -737,7 +734,7 @@ Detailed RTL Component Info :
 +---Registers : 
 	               16 Bit    Registers := 1     
 	                8 Bit    Registers := 3     
-	                1 Bit    Registers := 2     
+	                1 Bit    Registers := 4     
 Module eth_conf 
 Detailed RTL Component Info : 
 +---Adders : 
@@ -818,13 +815,6 @@ Detailed RTL Component Info :
 +---Muxes : 
 	   2 Input     12 Bit        Muxes := 2     
 	   2 Input      1 Bit        Muxes := 1     
-Module eth_mac_example_design_resets 
-Detailed RTL Component Info : 
-+---Adders : 
-	   2 Input      6 Bit       Adders := 1     
-+---Registers : 
-	                6 Bit    Registers := 1     
-	                1 Bit    Registers := 7     
 Module eth_mac_bram_tdp 
 Detailed RTL Component Info : 
 +---Registers : 
@@ -1017,7 +1007,7 @@ WARNING: [Synth 8-3332] Sequential element (temac_pat_gen/axi_pat_check_inst/FSM
 WARNING: [Synth 8-3332] Sequential element (temac_pat_gen/axi_pat_check_inst/FSM_sequential_rx_state_reg[0]) is unused and will be removed from module thinpad_top.
 INFO: [Synth 8-3333] propagating constant 0 across sequential element (\trimac_fifo_block/user_side_FIFO/tx_fifo_i/tx_axis_mac_tuser_reg )
 ---------------------------------------------------------------------------------
-Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:20 ; elapsed = 00:00:23 . Memory (MB): peak = 781.973 ; gain = 515.754
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:19 ; elapsed = 00:00:33 . Memory (MB): peak = 781.488 ; gain = 512.332
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP and Shift Register Reporting
@@ -1064,13 +1054,13 @@ INFO: [Synth 8-5783] Moving clock source from hierarchical pin 'trimac_fifo_bloc
 WARNING: [Synth 8-565] redefining clock 'clk_50M'
 INFO: [Synth 8-5819] Moved 11 constraints on hierarchical pins to their respective driving/loading pins
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:29 ; elapsed = 00:00:36 . Memory (MB): peak = 784.086 ; gain = 517.867
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:27 ; elapsed = 00:00:41 . Memory (MB): peak = 781.828 ; gain = 512.672
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Timing Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:00:29 ; elapsed = 00:00:36 . Memory (MB): peak = 786.813 ; gain = 520.594
+Finished Timing Optimization : Time (s): cpu = 00:00:27 ; elapsed = 00:00:41 . Memory (MB): peak = 784.305 ; gain = 515.148
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP and Shift Register Reporting
@@ -1100,7 +1090,7 @@ Report RTL Partitions:
 Start Technology Mapping
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:00:30 ; elapsed = 00:00:38 . Memory (MB): peak = 809.551 ; gain = 543.332
+Finished Technology Mapping : Time (s): cpu = 00:00:27 ; elapsed = 00:00:42 . Memory (MB): peak = 806.938 ; gain = 537.781
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -1124,7 +1114,7 @@ Start Final Netlist Cleanup
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:00:31 ; elapsed = 00:00:39 . Memory (MB): peak = 809.551 ; gain = 543.332
+Finished IO Insertion : Time (s): cpu = 00:00:29 ; elapsed = 00:00:43 . Memory (MB): peak = 806.938 ; gain = 537.781
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -1137,7 +1127,7 @@ Report Check Netlist:
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:00:31 ; elapsed = 00:00:39 . Memory (MB): peak = 809.551 ; gain = 543.332
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:29 ; elapsed = 00:00:43 . Memory (MB): peak = 806.938 ; gain = 537.781
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -1149,25 +1139,25 @@ Report RTL Partitions:
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:31 ; elapsed = 00:00:39 . Memory (MB): peak = 809.551 ; gain = 543.332
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:29 ; elapsed = 00:00:43 . Memory (MB): peak = 806.938 ; gain = 537.781
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:00:31 ; elapsed = 00:00:39 . Memory (MB): peak = 809.551 ; gain = 543.332
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:29 ; elapsed = 00:00:43 . Memory (MB): peak = 806.938 ; gain = 537.781
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:31 ; elapsed = 00:00:39 . Memory (MB): peak = 809.551 ; gain = 543.332
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:29 ; elapsed = 00:00:43 . Memory (MB): peak = 806.938 ; gain = 537.781
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:00:31 ; elapsed = 00:00:39 . Memory (MB): peak = 809.551 ; gain = 543.332
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:29 ; elapsed = 00:00:43 . Memory (MB): peak = 806.938 ; gain = 537.781
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP and Shift Register Reporting
@@ -1203,9 +1193,9 @@ Report Cell Usage:
 |2     |pll_example |     1|
 |3     |BUFG        |     1|
 |4     |CARRY4      |    50|
-|5     |LUT1        |    52|
-|6     |LUT2        |    90|
-|7     |LUT3        |    55|
+|5     |LUT1        |    50|
+|6     |LUT2        |    89|
+|7     |LUT3        |    54|
 |8     |LUT4        |   110|
 |9     |LUT5        |    39|
 |10    |LUT6        |   105|
@@ -1213,8 +1203,8 @@ Report Cell Usage:
 |12    |RAMB36E1_1  |     2|
 |13    |SRL16E      |     8|
 |14    |FDCE        |    24|
-|15    |FDPE        |    31|
-|16    |FDRE        |   598|
+|15    |FDPE        |    11|
+|16    |FDRE        |   593|
 |17    |FDSE        |    10|
 |18    |IBUF        |     3|
 |19    |OBUF        |    57|
@@ -1222,47 +1212,41 @@ Report Cell Usage:
 +------+------------+------+
 
 Report Instance Areas: 
-+------+----------------------------------+------------------------------+------+
-|      |Instance                          |Module                        |Cells |
-+------+----------------------------------+------------------------------+------+
-|1     |top                               |                              |  1434|
-|2     |  conf                            |eth_conf                      |   131|
-|3     |  example_resets                  |eth_mac_example_design_resets |    31|
-|4     |    dcm_sync                      |eth_mac_sync_block__1         |     5|
-|5     |    glbl_reset_gen                |eth_mac_reset_sync__1         |     5|
-|6     |    vector_reset_gen              |eth_mac_reset_sync__2         |     5|
-|7     |    gtx_reset_gen                 |eth_mac_reset_sync__3         |     5|
-|8     |    chk_reset_gen                 |eth_mac_reset_sync__4         |     5|
-|9     |  ext_uart_r                      |async_receiver                |    77|
-|10    |    tickgen                       |BaudTickGen                   |    47|
-|11    |  ext_uart_t                      |async_transmitter             |    69|
-|12    |    tickgen                       |BaudTickGen__parameterized0   |    37|
-|13    |  temac_pat_gen                   |eth_mac_basic_pat_gen         |   157|
-|14    |    address_swap_inst             |eth_mac_address_swap          |   116|
-|15    |    axi_pipe_inst                 |eth_mac_axi_pipe              |    41|
-|16    |  trimac_fifo_block               |eth_mac_fifo_block            |   694|
-|17    |    rx_mac_reset_gen              |eth_mac_reset_sync__5         |     5|
-|18    |    tx_mac_reset_gen              |eth_mac_reset_sync            |     5|
-|19    |    user_side_FIFO                |eth_mac_ten_100_1g_eth_fifo   |   585|
-|20    |      rx_fifo_i                   |eth_mac_rx_client_fifo        |   238|
-|21    |        resync_wr_store_frame_tog |eth_mac_sync_block__7         |     5|
-|22    |        sync_rd_addr_tog          |eth_mac_sync_block            |     5|
-|23    |        rx_ramgen_i               |eth_mac_bram_tdp_0            |    10|
-|24    |      tx_fifo_i                   |eth_mac_tx_client_fifo        |   347|
-|25    |        resync_rd_tran_frame_tog  |eth_mac_sync_block__2         |     5|
-|26    |        resync_wr_frame_in_fifo   |eth_mac_sync_block__3         |     5|
-|27    |        resync_wr_frames_in_fifo  |eth_mac_sync_block__4         |     5|
-|28    |        resync_fif_valid_tog      |eth_mac_sync_block__5         |     5|
-|29    |        resync_rd_txfer_tog       |eth_mac_sync_block__6         |     5|
-|30    |        tx_ramgen_i               |eth_mac_bram_tdp              |     5|
-|31    |  vga800x600at75                  |vga                           |    60|
-+------+----------------------------------+------------------------------+------+
++------+----------------------------------+----------------------------+------+
+|      |Instance                          |Module                      |Cells |
++------+----------------------------------+----------------------------+------+
+|1     |top                               |                            |  1405|
+|2     |  conf                            |eth_conf                    |   131|
+|3     |  ext_uart_r                      |async_receiver              |    77|
+|4     |    tickgen                       |BaudTickGen                 |    47|
+|5     |  ext_uart_t                      |async_transmitter           |    69|
+|6     |    tickgen                       |BaudTickGen__parameterized0 |    37|
+|7     |  temac_pat_gen                   |eth_mac_basic_pat_gen       |   157|
+|8     |    address_swap_inst             |eth_mac_address_swap        |   116|
+|9     |    axi_pipe_inst                 |eth_mac_axi_pipe            |    41|
+|10    |  trimac_fifo_block               |eth_mac_fifo_block          |   695|
+|11    |    rx_mac_reset_gen              |eth_mac_reset_sync__1       |     5|
+|12    |    tx_mac_reset_gen              |eth_mac_reset_sync          |     5|
+|13    |    user_side_FIFO                |eth_mac_ten_100_1g_eth_fifo |   586|
+|14    |      rx_fifo_i                   |eth_mac_rx_client_fifo      |   238|
+|15    |        resync_wr_store_frame_tog |eth_mac_sync_block__6       |     5|
+|16    |        sync_rd_addr_tog          |eth_mac_sync_block          |     5|
+|17    |        rx_ramgen_i               |eth_mac_bram_tdp_0          |    10|
+|18    |      tx_fifo_i                   |eth_mac_tx_client_fifo      |   348|
+|19    |        resync_rd_tran_frame_tog  |eth_mac_sync_block__1       |     5|
+|20    |        resync_wr_frame_in_fifo   |eth_mac_sync_block__2       |     5|
+|21    |        resync_wr_frames_in_fifo  |eth_mac_sync_block__3       |     5|
+|22    |        resync_fif_valid_tog      |eth_mac_sync_block__4       |     5|
+|23    |        resync_rd_txfer_tog       |eth_mac_sync_block__5       |     5|
+|24    |        tx_ramgen_i               |eth_mac_bram_tdp            |     5|
+|25    |  vga800x600at75                  |vga                         |    60|
++------+----------------------------------+----------------------------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:00:31 ; elapsed = 00:00:39 . Memory (MB): peak = 809.551 ; gain = 543.332
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:29 ; elapsed = 00:00:43 . Memory (MB): peak = 806.938 ; gain = 537.781
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 0 critical warnings and 219 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:20 ; elapsed = 00:00:31 . Memory (MB): peak = 809.551 ; gain = 188.754
-Synthesis Optimization Complete : Time (s): cpu = 00:00:31 ; elapsed = 00:00:39 . Memory (MB): peak = 809.551 ; gain = 543.332
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:19 ; elapsed = 00:00:30 . Memory (MB): peak = 806.938 ; gain = 182.699
+Synthesis Optimization Complete : Time (s): cpu = 00:00:29 ; elapsed = 00:00:43 . Memory (MB): peak = 806.938 ; gain = 537.781
 INFO: [Project 1-571] Translating synthesized netlist
 WARNING: [Synth 37-28] Duplicate attribute 'INIT' found for instance 'rd_store_frame_delay_reg' of module 'FDRE'.
 Resolution: Check your design sources near the definition of the module or any related 'include files, looking for duplicate definitions with different values.
@@ -1279,22 +1263,22 @@ Resolution: Check your design sources near the definition of the module or any r
 WARNING: [Synth 37-28] Duplicate attribute 'INIT' found for instance 'frame_in_fifo_valid_tog_reg' of module 'FDRE'.
 Resolution: Check your design sources near the definition of the module or any related 'include files, looking for duplicate definitions with different values.
 INFO: [Netlist 29-17] Analyzing 70 Unisim elements for replacement
-INFO: [Netlist 29-28] Unisim Transformation completed in 1 CPU seconds
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
 INFO: [Opt 31-140] Inserted 1 IBUFs to IO ports without IO buffers.
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 809.551 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 806.938 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
   A total of 18 instances were transformed.
   RAM64X1D => RAM64X1D (RAMD64E, RAMD64E): 18 instances
 
 INFO: [Common 17-83] Releasing license: Synthesis
-208 Infos, 158 Warnings, 0 Critical Warnings and 0 Errors encountered.
+206 Infos, 157 Warnings, 0 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:00:34 ; elapsed = 00:00:42 . Memory (MB): peak = 809.551 ; gain = 543.332
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 809.551 ; gain = 0.000
+synth_design: Time (s): cpu = 00:00:31 ; elapsed = 00:00:46 . Memory (MB): peak = 806.938 ; gain = 537.781
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 806.938 ; gain = 0.000
 WARNING: [Constraints 18-5210] No constraints selected for write.
 Resolution: This message can indicate that there are no constraints for the design, or it can indicate that the used_in flags are set such that the constraints are ignored. This later case is used when running synth_design to not write synthesis constraints to the resulting checkpoint. Instead, project constraints are read when the synthesized design is opened.
 INFO: [Common 17-1381] The checkpoint 'C:/Users/liangzhao/thinpad_top-thinrouter.1/thinpad_top.runs/synth_1/thinpad_top.dcp' has been generated.
 INFO: [runtcl-4] Executing : report_utilization -file thinpad_top_utilization_synth.rpt -pb thinpad_top_utilization_synth.pb
-INFO: [Common 17-206] Exiting Vivado at Wed Sep 25 11:37:58 2019...
+INFO: [Common 17-206] Exiting Vivado at Thu Sep 26 21:15:09 2019...

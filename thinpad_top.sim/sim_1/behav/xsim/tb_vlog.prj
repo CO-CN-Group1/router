@@ -16,7 +16,6 @@ verilog xil_defaultlib  --include "../../../../thinpad_top.srcs/sim_1/new/includ
 "../../../../thinpad_top.srcs/sources_1/imports/imports/eth_mac_axi_pipe.v" \
 "../../../../thinpad_top.srcs/sources_1/imports/imports/eth_mac_basic_pat_gen.v" \
 "../../../../thinpad_top.srcs/sources_1/imports/imports/eth_mac_bram_tdp.v" \
-"../../../../thinpad_top.srcs/sources_1/imports/imports/eth_mac_example_design_resets.v" \
 "../../../../thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v" \
 "../../../../thinpad_top.srcs/sources_1/imports/imports/eth_mac_reset_sync.v" \
 "../../../../thinpad_top.srcs/sources_1/imports/imports/eth_mac_rx_client_fifo.v" \
