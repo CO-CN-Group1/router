@@ -1,0 +1,7 @@
+12 0a 00 00 ff ff ff 00 c0 a8 00 67 01 bb
+//ip32 mask32 nexthop32 port16 
+0a 00 01 00 ff ff ff 00 32 12 a6 22 23 11
+//end
+00 00 00 00 00 00 00 00 65 23 a3 12 32 55
+//end
+
