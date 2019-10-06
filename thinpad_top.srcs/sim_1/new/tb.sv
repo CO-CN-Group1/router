@@ -264,7 +264,7 @@ logic[1000*8-1:0]buffer;
 integer fd = 0;
 integer index = 0;
 integer table_count = 0,res = 0;
-logic[111:0] table_item;
+/*logic[111:0] table_item;
 
 initial begin
     
@@ -296,6 +296,58 @@ initial begin
             for(integer k=7;k>=0;k--)
                 table_item[(13-j)*8+k] = data[i][j][k];
         dut.lookup_inst.router_table[i] = table_item;
+    end
+end*/
+
+logic son;
+integer current;
+logic[31:0] addr;
+logic[31:0] mask;
+integer length;
+initial begin
+    fd = $fopen(STATIC_ROUTER_TABLE,"r");
+    while (!$feof(fd))begin
+        res = $fscanf(fd, "%x", data[table_count][index]);
+        if (res != 1) begin
+            // end of a frame
+            // read a line
+            $fgets(buffer, fd);
+            if (index > 0) begin
+                table_count = table_count + 1;
+            end
+            index = 0;
+        end else begin
+            index = index + 1;
+        end
+    end
+    if (index > 0) begin
+        table_count = table_count + 1;
+    end
+    for(integer i=0;i<=table_count*32;i++)begin
+        dut.lookup_inst.trie[i][0] = 0;
+        dut.lookup_inst.trie[i][1] = 0;
+        dut.lookup_inst.trie_is_valid[i] = 1'b0;
+    end
+    dut.lookup_inst.trie_n = 1;
+    $display("table_count = %d",table_count);
+    for(integer i=0;i<table_count;i++)begin
+        addr = {data[i][0],data[i][1],data[i][2],data[i][3]};
+        mask = {data[i][4],data[i][5],data[i][6],data[i][7]};
+        
+        $display("addr = %h%h %h%h %h%h %h%h mask = %h%h %h%h %h%h %h%h",addr[31:28],addr[27:24],addr[23:20],addr[19:16],addr[15:12],addr[11:8],addr[7:4],addr[3:0],mask[31:28],mask[27:24],mask[23:20],mask[19:16],mask[15:12],mask[11:8],mask[7:4],mask[3:0]);
+        current = 1;
+        for(integer j=31;j>=0;j--)begin
+            if(mask[j]==0)
+                break;
+            son = addr[j];
+            if(dut.lookup_inst.trie[current][son]==0)begin
+                dut.lookup_inst.trie[current][son] = ++dut.lookup_inst.trie_n;
+                current = dut.lookup_inst.trie_n;
+            end else
+                current = dut.lookup_inst.trie[current][son];
+        end
+        dut.lookup_inst.ports[current] = {data[i][12],data[i][13]};
+        dut.lookup_inst.trie_is_valid[current] = 1'b1;
     end
 end
 endmodule

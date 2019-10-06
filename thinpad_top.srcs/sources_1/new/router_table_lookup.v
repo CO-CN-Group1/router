@@ -29,6 +29,114 @@ assign tx_axis_tvalid = tx_axis_tvalid_reg;
 assign tx_axis_tlast = tx_axis_last_reg;
 assign tx_axis_tdata = tx_axis_tdata_reg;
 
+integer trie_n = 0;
+integer trie[0:ROUTER_TABLE_N * 32-1][0:1];
+reg trie_is_valid[0:ROUTER_TABLE_N * 32-1];
+reg[15:0] ports[0:ROUTER_TABLE_N*32-1];
+
+reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
+integer data_head = 0,data_tail = 0;
+localparam[1:0] 
+    STATE_IDLE = 2'd0,
+    STATE_INPUT = 2'd1,
+    STATE_BUSY = 2'd2,
+    STATE_OUTPUT = 2'd3;
+reg [1:0] state = STATE_IDLE;
+
+integer current = 1;
+reg bit;
+reg [15:0] port;
+reg [31:0] dest_ip;
+
+always @(state) begin
+    if(state==STATE_BUSY||state==STATE_OUTPUT)begin
+        rx_axis_tready_reg = 1'b0;
+    end else begin
+        rx_axis_tready_reg = 1'b1;
+    end
+end
+integer debug,debug2,debug3;
+
+always @(posedge clk)begin
+    case(state)
+        STATE_IDLE:begin
+            tx_axis_last_reg = 1'b0;
+            tx_axis_tvalid_reg = 1'b0;
+            current = 1;
+            if(rx_axis_tvalid)begin
+                state = STATE_INPUT;
+                data_head = 0;
+                data_tail = 0;
+                data[data_tail] = rx_axis_tdata;
+                data_tail = data_tail + 1;
+            end
+        end
+        STATE_INPUT:begin
+            if(rx_axis_tvalid)begin
+                data[data_tail] = rx_axis_tdata;
+                data_tail= data_tail + 1;
+            end 
+            if(rx_axis_tlast)begin
+                state = STATE_BUSY;
+            end
+        end 
+        STATE_BUSY:begin
+            dest_ip = {data[34],data[35],data[36],data[37]};
+            port = ports[1];
+            current = 1;
+            for(integer i=31;i>=0;i=i-1)begin
+                bit = dest_ip[i];
+                if(trie[current][bit]!=0)begin
+                    current = trie[current][bit];
+                    debug = current;
+                    if(trie_is_valid[current])begin
+                      port = ports[current];
+                      
+                    end
+                        
+                end else
+                    current = 0;
+            end    
+            //  暂时放置在前两位
+            data[0] = port[15:8];
+            data[1] = port[7:0];
+            state = STATE_OUTPUT;
+        end
+        STATE_OUTPUT:begin
+            if(tx_axis_tready)begin
+                tx_axis_tvalid_reg = 1;
+                tx_axis_tdata_reg = data[data_head];
+                data_head =data_head+ 1;
+                if(data_head==data_tail)begin
+                    tx_axis_last_reg = 1'b1;
+                    state = STATE_IDLE;
+                end
+            end
+        end
+    endcase
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+
+
 
 reg [111:0] router_table[0:ROUTER_TABLE_N-1];
 reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
@@ -108,5 +216,5 @@ always @(posedge clk)begin
         end
     endcase
 end
-
+*/
 endmodule
