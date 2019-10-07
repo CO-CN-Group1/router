@@ -150,22 +150,18 @@ always @(posedge clk)begin
         end
         STATE_INPUT_OUTPUT:begin
             if(rx_axis_tvalid)begin
-                data[data_tail] = rx_axis_tdata;
-                data_tail= data_tail + 1;
+                data[data_tail] <= rx_axis_tdata;
+                data_tail<= data_tail + 1;
                 if(rx_axis_tlast)begin
-                    state = STATE_OUTPUT;
+                    state <= STATE_OUTPUT;
                 end else begin
-                    state = STATE_INPUT_OUTPUT;
+                    state <= STATE_INPUT_OUTPUT;
                 end
             end 
-            if((data_head+1<data_tail) && tx_axis_tready)begin
-                tx_axis_tvalid_reg = 1;
-                tx_axis_tdata_reg = data[data_head];
-                data_head =data_head+ 1;
-                if(data_head==data_tail)begin
-                    tx_axis_last_reg = 1'b1;
-                    state = STATE_IDLE;
-                end
+            if((data_head<data_tail) && tx_axis_tready)begin
+                tx_axis_tvalid_reg <= 1;
+                tx_axis_tdata_reg <= data[data_head];
+                data_head <=data_head+ 1;
             end
         end
     endcase
