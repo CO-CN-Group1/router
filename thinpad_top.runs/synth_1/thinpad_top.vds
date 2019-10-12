@@ -2,8 +2,8 @@
 # Vivado v2018.3 (64-bit)
 # SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
 # IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
-# Start of session at: Sat Oct 12 18:17:11 2019
-# Process ID: 1124
+# Start of session at: Sat Oct 12 18:50:24 2019
+# Process ID: 3252
 # Current directory: C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1
 # Command line: vivado.exe -log thinpad_top.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source thinpad_top.tcl
 # Log file: C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/thinpad_top.vds
@@ -15,13 +15,13 @@ Starting synth_design
 Attempting to get a license for feature 'Synthesis' and/or device 'xc7a100t'
 INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a100t'
 INFO: Launching helper process for spawning children vivado processes
-INFO: Helper process launched with PID 4080 
+INFO: Helper process launched with PID 3608 
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:03 . Memory (MB): peak = 368.484 ; gain = 88.965
+Starting RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:02 . Memory (MB): peak = 367.828 ; gain = 99.711
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-6157] synthesizing module 'thinpad_top' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/thinpad_top.v:3]
-INFO: [Synth 8-6157] synthesizing module 'pll_example' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/.Xil/Vivado-1124-LIANGZHAOA230/realtime/pll_example_stub.v:5]
-INFO: [Synth 8-6155] done synthesizing module 'pll_example' (1#1) [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/.Xil/Vivado-1124-LIANGZHAOA230/realtime/pll_example_stub.v:5]
+INFO: [Synth 8-6157] synthesizing module 'pll_example' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/.Xil/Vivado-3252-LIANGZHAOA230/realtime/pll_example_stub.v:5]
+INFO: [Synth 8-6155] done synthesizing module 'pll_example' (1#1) [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/.Xil/Vivado-3252-LIANGZHAOA230/realtime/pll_example_stub.v:5]
 INFO: [Synth 8-6157] synthesizing module 'eth_conf' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/eth_conf.v:1]
 	Parameter N_CONFIG_ENTRY bound to: 14 - type: integer 
 INFO: [Synth 8-155] case statement is not full and has no default [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/eth_conf.v:85]
@@ -71,8 +71,8 @@ INFO: [Synth 8-6157] synthesizing module 'vga' [C:/Users/liangzhao/cod19grp1-xtx
 	Parameter VSPP bound to: 1 - type: integer 
 INFO: [Synth 8-6155] done synthesizing module 'vga' (7#1) [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/vga.v:15]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_fifo_block' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/imports/imports/eth_mac_fifo_block.v:89]
-INFO: [Synth 8-6157] synthesizing module 'eth_mac' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/.Xil/Vivado-1124-LIANGZHAOA230/realtime/eth_mac_stub.v:6]
-INFO: [Synth 8-6155] done synthesizing module 'eth_mac' (8#1) [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/.Xil/Vivado-1124-LIANGZHAOA230/realtime/eth_mac_stub.v:6]
+INFO: [Synth 8-6157] synthesizing module 'eth_mac' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/.Xil/Vivado-3252-LIANGZHAOA230/realtime/eth_mac_stub.v:6]
+INFO: [Synth 8-6155] done synthesizing module 'eth_mac' (8#1) [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/.Xil/Vivado-3252-LIANGZHAOA230/realtime/eth_mac_stub.v:6]
 INFO: [Synth 8-6157] synthesizing module 'eth_mac_reset_sync' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/imports/imports/eth_mac_reset_sync.v:66]
 	Parameter INITIALISE bound to: 1'b1 
 	Parameter DEPTH bound to: 5 - type: integer 
@@ -163,8 +163,9 @@ Warning: Trying to implement RAM in registers. Block RAM or DRAM implementation 
 	1: Unable to determine number of words or word size in RAM. 
 	2: No valid read/write found for RAM. 
 RAM dissolved into registers
-WARNING: [Synth 8-3848] Net trie[0][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
 WARNING: [Synth 8-3848] Net trie[1][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
+WARNING: [Synth 8-3848] Net trie[1][1] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
+WARNING: [Synth 8-3848] Net trie[0][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
 WARNING: [Synth 8-3848] Net trie[2][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
 WARNING: [Synth 8-3848] Net trie[3][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
 WARNING: [Synth 8-3848] Net trie[4][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
@@ -262,7 +263,6 @@ WARNING: [Synth 8-3848] Net trie[95][0] in module/entity router_table_lookup doe
 WARNING: [Synth 8-3848] Net trie[96][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
 WARNING: [Synth 8-3848] Net trie[97][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
 WARNING: [Synth 8-3848] Net trie[98][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
-WARNING: [Synth 8-3848] Net trie[99][0] in module/entity router_table_lookup does not have driver. [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:33]
 INFO: [Common 17-14] Message 'Synth 8-3848' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
 INFO: [Synth 8-6155] done synthesizing module 'router_table_lookup' (19#1) [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:1]
 INFO: [Synth 8-6155] done synthesizing module 'thinpad_top' (20#1) [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/thinpad_top.v:3]
@@ -376,7 +376,7 @@ WARNING: [Synth 8-3331] design thinpad_top has unconnected port base_ram_data[17
 WARNING: [Synth 8-3331] design thinpad_top has unconnected port base_ram_data[16]
 INFO: [Common 17-14] Message 'Synth 8-3331' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 476.625 ; gain = 197.105
+Finished RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 476.008 ; gain = 207.891
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -389,10 +389,10 @@ Report Check Netlist:
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 476.625 ; gain = 197.105
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 476.008 ; gain = 207.891
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 476.625 ; gain = 197.105
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 476.008 ; gain = 207.891
 ---------------------------------------------------------------------------------
 INFO: [Device 21-403] Loading part xc7a100tfgg676-2L
 INFO: [Project 1-570] Preparing netlist for logic optimization
@@ -412,24 +412,24 @@ Finished Parsing XDC File [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/con
 WARNING: [Project 1-498] One or more constraints failed evaluation while reading constraint file [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/constrs_1/new/thinpad_top.xdc] and the design contains unresolved black boxes. These constraints will be read post-synthesis (as long as their source constraint file is marked as used_in_implementation) and should be applied correctly then. You should review the constraints listed in the file [.Xil/thinpad_top_propImpl.xdc] and check the run log file to verify that these constraints were correctly applied.
 INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/constrs_1/new/thinpad_top.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/thinpad_top_propImpl.xdc].
 Resolution: To avoid this warning, move constraints listed in [.Xil/thinpad_top_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 841.855 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 841.086 ; gain = 0.000
 Completed Processing XDC Constraints
 
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.003 . Memory (MB): peak = 841.855 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 841.086 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
 
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 841.855 ; gain = 0.000
-Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.020 . Memory (MB): peak = 841.855 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.002 . Memory (MB): peak = 841.086 ; gain = 0.000
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.023 . Memory (MB): peak = 841.086 ; gain = 0.000
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:17 ; elapsed = 00:00:17 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Constraint Validation : Time (s): cpu = 00:00:17 ; elapsed = 00:00:18 . Memory (MB): peak = 841.086 ; gain = 572.969
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7a100tfgg676-2L
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:17 ; elapsed = 00:00:17 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:17 ; elapsed = 00:00:18 . Memory (MB): peak = 841.086 ; gain = 572.969
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
@@ -463,7 +463,7 @@ Applied set_property CLOCK_BUFFER_TYPE = NONE for eth_rgmii_td[3]. (constraint f
 Applied set_property DONT_TOUCH = true for clock_gen. (constraint file  auto generated constraint, line ).
 Applied set_property DONT_TOUCH = true for trimac_fifo_block/tri_mode_ethernet_mac_i. (constraint file  auto generated constraint, line ).
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:17 ; elapsed = 00:00:17 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:17 ; elapsed = 00:00:18 . Memory (MB): peak = 841.086 ; gain = 572.969
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-5544] ROM "conf_state" won't be mapped to Block RAM because address size (4) smaller than threshold (5)
 INFO: [Synth 8-5544] ROM "wait_counter" won't be mapped to Block RAM because address size (3) smaller than threshold (5)
@@ -709,15 +709,15 @@ INFO: [Synth 8-3354] encoded FSM with state register 'wr_state_reg' using encodi
 ---------------------------------------------------------------------------------------------------
 INFO: [Synth 8-3354] encoded FSM with state register 'rx_state_reg' using encoding 'sequential' in module 'router_table_lookup'
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:29 ; elapsed = 00:00:31 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:31 ; elapsed = 00:00:33 . Memory (MB): peak = 841.086 ; gain = 572.969
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
 +------+-------------------------+------------+----------+
 |      |RTL Partition            |Replication |Instances |
 +------+-------------------------+------------+----------+
-|1     |router_table_lookup__GB0 |           1|     27803|
-|2     |router_table_lookup__GB1 |           1|     27623|
+|1     |router_table_lookup__GB0 |           1|     33949|
+|2     |router_table_lookup__GB1 |           1|     21220|
 |3     |thinpad_top__GC0         |           1|      6408|
 +------+-------------------------+------------+----------+
 ---------------------------------------------------------------------------------
@@ -732,14 +732,14 @@ Detailed RTL Component Info :
 	   2 Input      9 Bit       Adders := 2     
 	   2 Input      8 Bit       Adders := 1     
 	   2 Input      6 Bit       Adders := 1     
-	   2 Input      5 Bit       Adders := 1     
+	   2 Input      5 Bit       Adders := 2     
 	   2 Input      4 Bit       Adders := 3     
 	   2 Input      3 Bit       Adders := 1     
 	   2 Input      2 Bit       Adders := 1     
 +---XORs : 
 	   2 Input      1 Bit         XORs := 5     
 +---Registers : 
-	               32 Bit    Registers := 5     
+	               32 Bit    Registers := 6     
 	               22 Bit    Registers := 2     
 	               16 Bit    Registers := 3     
 	               15 Bit    Registers := 1     
@@ -757,8 +757,8 @@ Detailed RTL Component Info :
 	              36K Bit         RAMs := 2     
 	               40 Bit         RAMs := 1     
 +---Muxes : 
-	   5 Input     32 Bit        Muxes := 2     
-	   2 Input     32 Bit        Muxes := 19    
+	   5 Input     32 Bit        Muxes := 4     
+	   2 Input     32 Bit        Muxes := 11    
 	   5 Input     16 Bit        Muxes := 2     
 	  15 Input     16 Bit        Muxes := 1     
 	   2 Input     12 Bit        Muxes := 2     
@@ -788,9 +788,9 @@ Detailed RTL Component Info :
 	   3 Input      2 Bit        Muxes := 3     
 	   2 Input      1 Bit        Muxes := 1086  
 	   5 Input      1 Bit        Muxes := 12    
+	   6 Input      1 Bit        Muxes := 7     
 	   3 Input      1 Bit        Muxes := 6     
 	   4 Input      1 Bit        Muxes := 4     
-	   6 Input      1 Bit        Muxes := 6     
 	  11 Input      1 Bit        Muxes := 2     
 	   8 Input      1 Bit        Muxes := 1     
 	   7 Input      1 Bit        Muxes := 1     
@@ -813,20 +813,22 @@ Module router_table_lookup
 Detailed RTL Component Info : 
 +---Adders : 
 	   2 Input     32 Bit       Adders := 3     
+	   2 Input      5 Bit       Adders := 1     
 +---Registers : 
-	               32 Bit    Registers := 3     
+	               32 Bit    Registers := 4     
 	               16 Bit    Registers := 2     
 	                8 Bit    Registers := 511   
 	                3 Bit    Registers := 1     
 	                1 Bit    Registers := 3     
 +---Muxes : 
-	   5 Input     32 Bit        Muxes := 2     
-	   2 Input     32 Bit        Muxes := 12    
+	   5 Input     32 Bit        Muxes := 4     
+	   2 Input     32 Bit        Muxes := 4     
 	   5 Input     16 Bit        Muxes := 2     
 	   5 Input      3 Bit        Muxes := 1     
 	   2 Input      3 Bit        Muxes := 1     
 	   2 Input      1 Bit        Muxes := 1037  
 	   5 Input      1 Bit        Muxes := 9     
+	   6 Input      1 Bit        Muxes := 1     
 Module eth_conf 
 Detailed RTL Component Info : 
 +---Adders : 
@@ -1012,195 +1014,165 @@ WARNING: [Synth 8-3917] design thinpad_top has port base_ram_we_n driven by cons
 WARNING: [Synth 8-3917] design thinpad_top has port ext_ram_ce_n driven by constant 1
 WARNING: [Synth 8-3917] design thinpad_top has port ext_ram_oe_n driven by constant 1
 WARNING: [Synth 8-3917] design thinpad_top has port ext_ram_we_n driven by constant 1
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/tx_axis_tvalid_reg)
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[511][0]' (FDE) to 'lookup_insti_1/data_reg[510][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[510][0]' (FDE) to 'lookup_insti_1/data_reg[508][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[509][0]' (FDE) to 'lookup_insti_1/data_reg[508][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[508][0]' (FDE) to 'lookup_insti_1/data_reg[506][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[507][0]' (FDE) to 'lookup_insti_1/data_reg[506][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[506][0]' (FDE) to 'lookup_insti_1/data_reg[504][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[505][0]' (FDE) to 'lookup_insti_1/data_reg[504][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[504][0]' (FDE) to 'lookup_insti_1/data_reg[502][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[503][0]' (FDE) to 'lookup_insti_1/data_reg[502][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[502][0]' (FDE) to 'lookup_insti_1/data_reg[500][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[501][0]' (FDE) to 'lookup_insti_1/data_reg[500][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[500][0]' (FDE) to 'lookup_insti_1/data_reg[498][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[499][0]' (FDE) to 'lookup_insti_1/data_reg[498][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[498][0]' (FDE) to 'lookup_insti_1/data_reg[496][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[497][0]' (FDE) to 'lookup_insti_1/data_reg[496][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[496][0]' (FDE) to 'lookup_insti_1/data_reg[494][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[495][0]' (FDE) to 'lookup_insti_1/data_reg[494][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[494][0]' (FDE) to 'lookup_insti_1/data_reg[492][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[493][0]' (FDE) to 'lookup_insti_1/data_reg[492][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[492][0]' (FDE) to 'lookup_insti_1/data_reg[490][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[491][0]' (FDE) to 'lookup_insti_1/data_reg[490][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[490][0]' (FDE) to 'lookup_insti_1/data_reg[488][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[489][0]' (FDE) to 'lookup_insti_1/data_reg[488][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[488][0]' (FDE) to 'lookup_insti_1/data_reg[486][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[487][0]' (FDE) to 'lookup_insti_1/data_reg[486][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[486][0]' (FDE) to 'lookup_insti_1/data_reg[484][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[485][0]' (FDE) to 'lookup_insti_1/data_reg[484][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[484][0]' (FDE) to 'lookup_insti_1/data_reg[482][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[483][0]' (FDE) to 'lookup_insti_1/data_reg[482][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[482][0]' (FDE) to 'lookup_insti_1/data_reg[480][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[481][0]' (FDE) to 'lookup_insti_1/data_reg[480][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[480][0]' (FDE) to 'lookup_insti_1/data_reg[478][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[479][0]' (FDE) to 'lookup_insti_1/data_reg[478][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[478][0]' (FDE) to 'lookup_insti_1/data_reg[476][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[477][0]' (FDE) to 'lookup_insti_1/data_reg[476][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[476][0]' (FDE) to 'lookup_insti_1/data_reg[474][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[475][0]' (FDE) to 'lookup_insti_1/data_reg[474][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[474][0]' (FDE) to 'lookup_insti_1/data_reg[472][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[473][0]' (FDE) to 'lookup_insti_1/data_reg[472][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[472][0]' (FDE) to 'lookup_insti_1/data_reg[470][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[471][0]' (FDE) to 'lookup_insti_1/data_reg[470][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[470][0]' (FDE) to 'lookup_insti_1/data_reg[468][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[469][0]' (FDE) to 'lookup_insti_1/data_reg[468][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[468][0]' (FDE) to 'lookup_insti_1/data_reg[466][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[467][0]' (FDE) to 'lookup_insti_1/data_reg[466][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[466][0]' (FDE) to 'lookup_insti_1/data_reg[464][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[465][0]' (FDE) to 'lookup_insti_1/data_reg[464][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[464][0]' (FDE) to 'lookup_insti_1/data_reg[462][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[463][0]' (FDE) to 'lookup_insti_1/data_reg[462][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[462][0]' (FDE) to 'lookup_insti_1/data_reg[460][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[461][0]' (FDE) to 'lookup_insti_1/data_reg[460][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[460][0]' (FDE) to 'lookup_insti_1/data_reg[458][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[459][0]' (FDE) to 'lookup_insti_1/data_reg[458][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[458][0]' (FDE) to 'lookup_insti_1/data_reg[456][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[457][0]' (FDE) to 'lookup_insti_1/data_reg[456][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[456][0]' (FDE) to 'lookup_insti_1/data_reg[454][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[455][0]' (FDE) to 'lookup_insti_1/data_reg[454][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[454][0]' (FDE) to 'lookup_insti_1/data_reg[452][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[453][0]' (FDE) to 'lookup_insti_1/data_reg[452][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[452][0]' (FDE) to 'lookup_insti_1/data_reg[450][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[451][0]' (FDE) to 'lookup_insti_1/data_reg[450][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[450][0]' (FDE) to 'lookup_insti_1/data_reg[448][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[449][0]' (FDE) to 'lookup_insti_1/data_reg[448][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[448][0]' (FDE) to 'lookup_insti_1/data_reg[446][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[447][0]' (FDE) to 'lookup_insti_1/data_reg[446][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[446][0]' (FDE) to 'lookup_insti_1/data_reg[444][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[445][0]' (FDE) to 'lookup_insti_1/data_reg[444][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[444][0]' (FDE) to 'lookup_insti_1/data_reg[442][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[443][0]' (FDE) to 'lookup_insti_1/data_reg[442][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[442][0]' (FDE) to 'lookup_insti_1/data_reg[440][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[441][0]' (FDE) to 'lookup_insti_1/data_reg[440][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[440][0]' (FDE) to 'lookup_insti_1/data_reg[438][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[439][0]' (FDE) to 'lookup_insti_1/data_reg[438][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[438][0]' (FDE) to 'lookup_insti_1/data_reg[436][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[437][0]' (FDE) to 'lookup_insti_1/data_reg[436][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[436][0]' (FDE) to 'lookup_insti_1/data_reg[434][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[435][0]' (FDE) to 'lookup_insti_1/data_reg[434][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[434][0]' (FDE) to 'lookup_insti_1/data_reg[432][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[433][0]' (FDE) to 'lookup_insti_1/data_reg[432][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[432][0]' (FDE) to 'lookup_insti_1/data_reg[430][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[431][0]' (FDE) to 'lookup_insti_1/data_reg[430][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[430][0]' (FDE) to 'lookup_insti_1/data_reg[428][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[429][0]' (FDE) to 'lookup_insti_1/data_reg[428][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[428][0]' (FDE) to 'lookup_insti_1/data_reg[426][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[427][0]' (FDE) to 'lookup_insti_1/data_reg[426][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[426][0]' (FDE) to 'lookup_insti_1/data_reg[424][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[425][0]' (FDE) to 'lookup_insti_1/data_reg[424][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[424][0]' (FDE) to 'lookup_insti_1/data_reg[422][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[423][0]' (FDE) to 'lookup_insti_1/data_reg[422][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[422][0]' (FDE) to 'lookup_insti_1/data_reg[420][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[421][0]' (FDE) to 'lookup_insti_1/data_reg[420][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[420][0]' (FDE) to 'lookup_insti_1/data_reg[418][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[419][0]' (FDE) to 'lookup_insti_1/data_reg[418][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[418][0]' (FDE) to 'lookup_insti_1/data_reg[416][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[417][0]' (FDE) to 'lookup_insti_1/data_reg[416][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[416][0]' (FDE) to 'lookup_insti_1/data_reg[414][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[415][0]' (FDE) to 'lookup_insti_1/data_reg[414][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[414][0]' (FDE) to 'lookup_insti_1/data_reg[412][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[413][0]' (FDE) to 'lookup_insti_1/data_reg[412][0]'
+INFO: [Synth 8-3886] merging instance 'lookup_insti_1/data_reg[412][0]' (FDE) to 'lookup_insti_1/data_reg[410][0]'
+INFO: [Common 17-14] Message 'Synth 8-3886' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_reg[2][0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_reg[2][1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_reg[2][2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_reg[2][3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_reg[2][4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_reg[2][5] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_reg[2][6] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_reg[34][7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_tail_reg[31] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\dest_ip_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tx_state_reg[1] )
+INFO: [Synth 8-3333] propagating constant 1 across sequential element (lookup_insti_1/\loop_var_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\loop_var_reg[31] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tx_state_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tx_state_reg[0] )
 CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin tx_axis_tvalid_reg0 with 1st driver pin 'lookup_insti_1/tx_axis_tvalid_reg0_inferred/tx_axis_tvalid_reg0' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:79]
 CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin tx_axis_tvalid_reg0 with 2nd driver pin 'GND' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:79]
 CRITICAL WARNING: [Synth 8-6858] multi-driven net tx_axis_tvalid_reg0 is connected to at least one constant driver which has been preserved, other driver is ignored [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:79]
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[511][0]' (FDE) to 'lookup_insti_2/data_reg[510][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[510][0]' (FDE) to 'lookup_insti_2/data_reg[508][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[509][0]' (FDE) to 'lookup_insti_2/data_reg[508][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[508][0]' (FDE) to 'lookup_insti_2/data_reg[506][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[507][0]' (FDE) to 'lookup_insti_2/data_reg[506][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[506][0]' (FDE) to 'lookup_insti_2/data_reg[504][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[505][0]' (FDE) to 'lookup_insti_2/data_reg[504][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[504][0]' (FDE) to 'lookup_insti_2/data_reg[502][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[503][0]' (FDE) to 'lookup_insti_2/data_reg[502][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[502][0]' (FDE) to 'lookup_insti_2/data_reg[500][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[501][0]' (FDE) to 'lookup_insti_2/data_reg[500][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[500][0]' (FDE) to 'lookup_insti_2/data_reg[498][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[499][0]' (FDE) to 'lookup_insti_2/data_reg[498][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[498][0]' (FDE) to 'lookup_insti_2/data_reg[496][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[497][0]' (FDE) to 'lookup_insti_2/data_reg[496][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[496][0]' (FDE) to 'lookup_insti_2/data_reg[494][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[495][0]' (FDE) to 'lookup_insti_2/data_reg[494][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[494][0]' (FDE) to 'lookup_insti_2/data_reg[492][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[493][0]' (FDE) to 'lookup_insti_2/data_reg[492][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[492][0]' (FDE) to 'lookup_insti_2/data_reg[490][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[491][0]' (FDE) to 'lookup_insti_2/data_reg[490][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[490][0]' (FDE) to 'lookup_insti_2/data_reg[488][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[489][0]' (FDE) to 'lookup_insti_2/data_reg[488][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[488][0]' (FDE) to 'lookup_insti_2/data_reg[486][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[487][0]' (FDE) to 'lookup_insti_2/data_reg[486][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[486][0]' (FDE) to 'lookup_insti_2/data_reg[484][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[485][0]' (FDE) to 'lookup_insti_2/data_reg[484][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[484][0]' (FDE) to 'lookup_insti_2/data_reg[482][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[483][0]' (FDE) to 'lookup_insti_2/data_reg[482][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[482][0]' (FDE) to 'lookup_insti_2/data_reg[480][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[481][0]' (FDE) to 'lookup_insti_2/data_reg[480][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[480][0]' (FDE) to 'lookup_insti_2/data_reg[478][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[479][0]' (FDE) to 'lookup_insti_2/data_reg[478][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[478][0]' (FDE) to 'lookup_insti_2/data_reg[476][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[477][0]' (FDE) to 'lookup_insti_2/data_reg[476][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[476][0]' (FDE) to 'lookup_insti_2/data_reg[474][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[475][0]' (FDE) to 'lookup_insti_2/data_reg[474][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[474][0]' (FDE) to 'lookup_insti_2/data_reg[472][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[473][0]' (FDE) to 'lookup_insti_2/data_reg[472][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[472][0]' (FDE) to 'lookup_insti_2/data_reg[470][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[471][0]' (FDE) to 'lookup_insti_2/data_reg[470][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[470][0]' (FDE) to 'lookup_insti_2/data_reg[468][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[469][0]' (FDE) to 'lookup_insti_2/data_reg[468][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[468][0]' (FDE) to 'lookup_insti_2/data_reg[466][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[467][0]' (FDE) to 'lookup_insti_2/data_reg[466][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[466][0]' (FDE) to 'lookup_insti_2/data_reg[464][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[465][0]' (FDE) to 'lookup_insti_2/data_reg[464][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[464][0]' (FDE) to 'lookup_insti_2/data_reg[462][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[463][0]' (FDE) to 'lookup_insti_2/data_reg[462][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[462][0]' (FDE) to 'lookup_insti_2/data_reg[460][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[461][0]' (FDE) to 'lookup_insti_2/data_reg[460][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[460][0]' (FDE) to 'lookup_insti_2/data_reg[458][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[459][0]' (FDE) to 'lookup_insti_2/data_reg[458][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[458][0]' (FDE) to 'lookup_insti_2/data_reg[456][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[457][0]' (FDE) to 'lookup_insti_2/data_reg[456][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[456][0]' (FDE) to 'lookup_insti_2/data_reg[454][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[455][0]' (FDE) to 'lookup_insti_2/data_reg[454][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[454][0]' (FDE) to 'lookup_insti_2/data_reg[452][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[453][0]' (FDE) to 'lookup_insti_2/data_reg[452][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[452][0]' (FDE) to 'lookup_insti_2/data_reg[450][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[451][0]' (FDE) to 'lookup_insti_2/data_reg[450][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[450][0]' (FDE) to 'lookup_insti_2/data_reg[448][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[449][0]' (FDE) to 'lookup_insti_2/data_reg[448][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[448][0]' (FDE) to 'lookup_insti_2/data_reg[446][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[447][0]' (FDE) to 'lookup_insti_2/data_reg[446][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[446][0]' (FDE) to 'lookup_insti_2/data_reg[444][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[445][0]' (FDE) to 'lookup_insti_2/data_reg[444][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[444][0]' (FDE) to 'lookup_insti_2/data_reg[442][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[443][0]' (FDE) to 'lookup_insti_2/data_reg[442][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[442][0]' (FDE) to 'lookup_insti_2/data_reg[440][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[441][0]' (FDE) to 'lookup_insti_2/data_reg[440][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[440][0]' (FDE) to 'lookup_insti_2/data_reg[438][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[439][0]' (FDE) to 'lookup_insti_2/data_reg[438][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[438][0]' (FDE) to 'lookup_insti_2/data_reg[436][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[437][0]' (FDE) to 'lookup_insti_2/data_reg[436][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[436][0]' (FDE) to 'lookup_insti_2/data_reg[434][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[435][0]' (FDE) to 'lookup_insti_2/data_reg[434][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[434][0]' (FDE) to 'lookup_insti_2/data_reg[432][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[433][0]' (FDE) to 'lookup_insti_2/data_reg[432][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[432][0]' (FDE) to 'lookup_insti_2/data_reg[430][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[431][0]' (FDE) to 'lookup_insti_2/data_reg[430][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[430][0]' (FDE) to 'lookup_insti_2/data_reg[428][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[429][0]' (FDE) to 'lookup_insti_2/data_reg[428][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[428][0]' (FDE) to 'lookup_insti_2/data_reg[426][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[427][0]' (FDE) to 'lookup_insti_2/data_reg[426][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[426][0]' (FDE) to 'lookup_insti_2/data_reg[424][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[425][0]' (FDE) to 'lookup_insti_2/data_reg[424][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[424][0]' (FDE) to 'lookup_insti_2/data_reg[422][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[423][0]' (FDE) to 'lookup_insti_2/data_reg[422][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[422][0]' (FDE) to 'lookup_insti_2/data_reg[420][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[421][0]' (FDE) to 'lookup_insti_2/data_reg[420][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[420][0]' (FDE) to 'lookup_insti_2/data_reg[418][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[419][0]' (FDE) to 'lookup_insti_2/data_reg[418][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[418][0]' (FDE) to 'lookup_insti_2/data_reg[416][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[417][0]' (FDE) to 'lookup_insti_2/data_reg[416][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[416][0]' (FDE) to 'lookup_insti_2/data_reg[414][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[415][0]' (FDE) to 'lookup_insti_2/data_reg[414][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[414][0]' (FDE) to 'lookup_insti_2/data_reg[412][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[413][0]' (FDE) to 'lookup_insti_2/data_reg[412][0]'
-INFO: [Synth 8-3886] merging instance 'lookup_insti_2/data_reg[412][0]' (FDE) to 'lookup_insti_2/data_reg[410][0]'
-INFO: [Common 17-14] Message 'Synth 8-3886' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\data_reg[2][0] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\data_reg[2][1] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\data_reg[2][2] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\data_reg[2][3] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\data_reg[2][4] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\data_reg[2][5] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\data_reg[2][6] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\data_reg[2][7] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\data_tail_reg[31] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\dest_ip_reg[0] )
-CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin out516[1] with 1st driver pin 'lookup_insti_2/FSM_sequential_rx_state_reg/Q' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:54]
+CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin out516[1] with 1st driver pin 'lookup_insti_1/FSM_sequential_rx_state_reg/Q' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:54]
 CRITICAL WARNING: [Synth 8-6859] multi-driven net on pin out516[1] with 2nd driver pin 'GND' [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:54]
 CRITICAL WARNING: [Synth 8-6858] multi-driven net out516[1] is connected to at least one constant driver which has been preserved, other driver is ignored [C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.srcs/sources_1/new/router_table_lookup.v:54]
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/tx_axis_tvalid_reg)
 INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\conf/reg_data_reg[7] )
 INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\conf/conf_state_reg[2] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tx_state_reg[1] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[8] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[9] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[10] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[11] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[12] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[13] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[14] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[15] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[0] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[1] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[2] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[3] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[4] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[5] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[6] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tmp_port_reg[7] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/current_is_valid_reg)
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\loop_var_reg[31] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[8] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[9] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[10] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[11] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[12] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[13] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[14] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[15] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[0] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[1] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[2] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[3] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[4] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[5] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[6] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\port_reg[7] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[30] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[31] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[29] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[28] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[27] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[26] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[25] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[24] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[23] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[22] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[21] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[20] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[19] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[18] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[17] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[16] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[15] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[14] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[13] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[12] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[11] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[10] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[9] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[8] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[7] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[6] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[5] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[4] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[3] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[2] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\current_reg[1] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tx_state_reg[2] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\data_reg[1][7] )
-INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_1/\tx_state_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[30] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[31] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[29] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[28] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[27] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[26] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[25] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[24] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[23] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[22] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[21] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[20] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[19] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[18] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[17] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[16] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[15] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[14] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[13] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[12] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[11] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[10] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[9] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[8] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[6] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[5] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\next_current_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/is_node_have_info_reg)
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (lookup_insti_2/\current_reg[1] )
 INFO: [Synth 8-3333] propagating constant 1 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_eof_reg_reg )
 INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_accept_pipe_reg[0] )
 INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_eof_pipe_reg[0] )
@@ -1219,9 +1191,31 @@ INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/i_6/\
 INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/i_6/\rx_crc_filter/no_crc_tdata_reg_reg[7] )
 INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_data_pipe_reg[1][0] )
 INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_data_pipe_reg[1][1] )
-INFO: [Common 17-14] Message 'Synth 8-3333' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_data_pipe_reg[1][2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_data_pipe_reg[1][3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_data_pipe_reg[1][4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_data_pipe_reg[1][5] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_data_pipe_reg[1][6] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_data_pipe_reg[1][7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[5] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[6] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[8] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[9] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[10] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_start_addr_reg[11] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_eof_state_reg_reg )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\rx_crc_filter/no_crc_tvalid_reg_reg )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_eof_bram_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/wr_data_bram_reg[7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (i_0/\trimac_fifo_block/user_side_FIFO/tx_fifo_i/tx_axis_mac_tuser_reg )
 ---------------------------------------------------------------------------------
-Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:59 ; elapsed = 00:01:03 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:58 ; elapsed = 00:01:03 . Memory (MB): peak = 841.086 ; gain = 572.969
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP and Shift Register Reporting
@@ -1263,13 +1257,13 @@ INFO: [Synth 8-5783] Moving clock source from hierarchical pin 'trimac_fifo_bloc
 WARNING: [Synth 8-565] redefining clock 'clk_50M'
 INFO: [Synth 8-5819] Moved 10 constraints on hierarchical pins to their respective driving/loading pins
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:08 ; elapsed = 00:01:12 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:07 ; elapsed = 00:01:11 . Memory (MB): peak = 841.086 ; gain = 572.969
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Timing Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:01:08 ; elapsed = 00:01:12 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Timing Optimization : Time (s): cpu = 00:01:07 ; elapsed = 00:01:11 . Memory (MB): peak = 841.086 ; gain = 572.969
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP and Shift Register Reporting
@@ -1297,7 +1291,7 @@ Start Technology Mapping
 ---------------------------------------------------------------------------------
 WARNING: [Synth 8-3332] Sequential element (trimac_fifo_block/user_side_FIFO/rx_fifo_i/FSM_onehot_rd_state_reg[5]) is unused and will be removed from module thinpad_top.
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:01:08 ; elapsed = 00:01:12 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Technology Mapping : Time (s): cpu = 00:01:07 ; elapsed = 00:01:12 . Memory (MB): peak = 842.477 ; gain = 574.359
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -1321,7 +1315,7 @@ Start Final Netlist Cleanup
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:01:09 ; elapsed = 00:01:14 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished IO Insertion : Time (s): cpu = 00:01:08 ; elapsed = 00:01:13 . Memory (MB): peak = 842.477 ; gain = 574.359
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -1334,7 +1328,7 @@ Report Check Netlist:
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:01:09 ; elapsed = 00:01:14 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:08 ; elapsed = 00:01:13 . Memory (MB): peak = 842.477 ; gain = 574.359
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -1346,25 +1340,25 @@ Report RTL Partitions:
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:10 ; elapsed = 00:01:14 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:08 ; elapsed = 00:01:13 . Memory (MB): peak = 842.477 ; gain = 574.359
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:01:10 ; elapsed = 00:01:14 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:08 ; elapsed = 00:01:13 . Memory (MB): peak = 842.477 ; gain = 574.359
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:01:10 ; elapsed = 00:01:14 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:08 ; elapsed = 00:01:13 . Memory (MB): peak = 842.477 ; gain = 574.359
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:01:10 ; elapsed = 00:01:14 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:08 ; elapsed = 00:01:13 . Memory (MB): peak = 842.477 ; gain = 574.359
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Writing Synthesis Report
@@ -1429,11 +1423,11 @@ Report Instance Areas:
 |21    |  vga800x600at75                  |vga                         |    62|
 +------+----------------------------------+----------------------------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:01:10 ; elapsed = 00:01:14 . Memory (MB): peak = 841.855 ; gain = 562.336
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:08 ; elapsed = 00:01:13 . Memory (MB): peak = 842.477 ; gain = 574.359
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 6 critical warnings and 214 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:56 ; elapsed = 00:01:06 . Memory (MB): peak = 841.855 ; gain = 197.105
-Synthesis Optimization Complete : Time (s): cpu = 00:01:10 ; elapsed = 00:01:14 . Memory (MB): peak = 841.855 ; gain = 562.336
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:55 ; elapsed = 00:01:05 . Memory (MB): peak = 842.477 ; gain = 209.281
+Synthesis Optimization Complete : Time (s): cpu = 00:01:09 ; elapsed = 00:01:13 . Memory (MB): peak = 842.477 ; gain = 574.359
 INFO: [Project 1-571] Translating synthesized netlist
 WARNING: [Synth 37-28] Duplicate attribute 'INIT' found for instance 'rd_store_frame_delay_reg' of module 'FDRE'.
 Resolution: Check your design sources near the definition of the module or any related 'include files, looking for duplicate definitions with different values.
@@ -1454,17 +1448,17 @@ INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
 INFO: [Opt 31-140] Inserted 1 IBUFs to IO ports without IO buffers.
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 841.855 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 842.477 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
 
 INFO: [Common 17-83] Releasing license: Synthesis
-435 Infos, 233 Warnings, 6 Critical Warnings and 0 Errors encountered.
+427 Infos, 233 Warnings, 6 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:01:12 ; elapsed = 00:01:16 . Memory (MB): peak = 841.855 ; gain = 562.336
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 841.855 ; gain = 0.000
+synth_design: Time (s): cpu = 00:01:11 ; elapsed = 00:01:15 . Memory (MB): peak = 842.477 ; gain = 574.359
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 842.477 ; gain = 0.000
 WARNING: [Constraints 18-5210] No constraints selected for write.
 Resolution: This message can indicate that there are no constraints for the design, or it can indicate that the used_in flags are set such that the constraints are ignored. This later case is used when running synth_design to not write synthesis constraints to the resulting checkpoint. Instead, project constraints are read when the synthesized design is opened.
 INFO: [Common 17-1381] The checkpoint 'C:/Users/liangzhao/cod19grp1-xtx/thinpad_top.runs/synth_1/thinpad_top.dcp' has been generated.
 INFO: [runtcl-4] Executing : report_utilization -file thinpad_top_utilization_synth.rpt -pb thinpad_top_utilization_synth.pb
-INFO: [Common 17-206] Exiting Vivado at Sat Oct 12 18:18:34 2019...
+INFO: [Common 17-206] Exiting Vivado at Sat Oct 12 18:51:46 2019...

@@ -45,9 +45,9 @@ localparam[2:0]
 reg [2:0] rx_state = STATE_IDLE;
 reg [2:0] tx_state = STATE_IDLE;
 
-integer current = 1;
+integer current = 1,next_current;
 integer loop_var = 31;
-reg current_is_valid;
+reg is_node_have_info;
 reg [15:0] port,tmp_port;
 reg [31:0] dest_ip;
 
@@ -91,9 +91,10 @@ always @(posedge clk)begin
                 dest_ip<={data[34],data[35],data[36],data[37]};
                 loop_var<=31;
                 current<=1;
-                current_is_valid<=1'b1;
+                is_node_have_info<=1'b1;
                 tmp_port<=ports[1];
                 port<=ports[1];
+                next_current<=trie[1][data[34][DATA_WIDTH-1]];
             end
             else begin
                 if (rx_state==STATE_IDLE) begin
@@ -108,7 +109,7 @@ always @(posedge clk)begin
                 data[1]<=port[7:0];
             end
             else begin
-                if (current_is_valid) begin
+                if (is_node_have_info) begin
                     port<=tmp_port;
                 end
                 if (loop_var<0) begin
@@ -116,9 +117,13 @@ always @(posedge clk)begin
                 end
                 else begin
                     loop_var<=loop_var-1;
-                    current=trie[current][dest_ip[loop_var]];
-                    current_is_valid<=trie_is_valid[current];
-                    tmp_port<=ports[current];
+                    //current=trie[current][dest_ip[loop_var]];
+                    current<=next_current;
+                    is_node_have_info<=trie_is_valid[next_current];
+                    tmp_port<=ports[next_current];
+                    if (loop_var>0) begin
+                        next_current<=trie[next_current][dest_ip[loop_var-1]];
+                    end
                 end
             end
         end
