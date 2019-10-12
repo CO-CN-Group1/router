@@ -14,19 +14,19 @@ module router_table_lookup #
     output wire                     rx_axis_tready,
     // data to the TX data path
     output wire [DATA_WIDTH-1:0]    tx_axis_tdata,
-    output wire                     tx_axis_tvalid,
+    output reg                     tx_axis_tvalid,
     output wire                     tx_axis_tlast,
     input wire                      tx_axis_tready
 );
 
-reg rx_axis_tready_reg = 0;
+wire rx_axis_tready_reg = 0;
 reg[DATA_WIDTH-1:0] tx_axis_tdata_reg;
-reg tx_axis_tvalid_reg = 0;
-reg tx_axis_last_reg = 0;
+wire tx_axis_tvalid_reg = 0;
+reg tx_axis_tlast_reg = 0;
 
 assign rx_axis_tready = rx_axis_tready_reg;
-assign tx_axis_tvalid = tx_axis_tvalid_reg;
-assign tx_axis_tlast = tx_axis_last_reg;
+//assign tx_axis_tvalid = tx_axis_tvalid_reg;
+assign tx_axis_tlast = tx_axis_tlast_reg;
 assign tx_axis_tdata = tx_axis_tdata_reg;
 
 integer trie_n = 0;
@@ -38,136 +38,109 @@ reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
 integer data_head = 0,data_tail = 0;
 localparam[2:0] 
     STATE_IDLE = 3'd0,
-    STATE_INPUT = 3'd1,
-    STATE_BUSY = 3'd2,
-    STATE_OUTPUT = 3'd3,
-    STATE_INPUT_BUSY=3'd4,
-    STATE_INPUT_OUTPUT=3'd5;
-reg [2:0] state = STATE_IDLE;
+    STATE_WAIT = 3'd1,
+    STATE_INPUT = 3'd2,
+    STATE_BUSY = 3'd3,
+    STATE_OUTPUT = 3'd4;
+reg [2:0] rx_state = STATE_IDLE;
+reg [2:0] tx_state = STATE_IDLE;
 
 integer current = 1;
-reg bit;
-reg [15:0] port;
+integer loop_var = 31;
+reg current_is_valid;
+reg [15:0] port,tmp_port;
 reg [31:0] dest_ip;
 
-always @(state) begin
-    if(state==STATE_BUSY||state==STATE_OUTPUT)begin
-        rx_axis_tready_reg = 1'b0;
-    end else begin
-        rx_axis_tready_reg = 1'b1;
-    end
-end
-integer debug,debug2,debug3;
-
+assign rx_axis_tready_reg = (rx_state==STATE_INPUT);
 always @(posedge clk)begin
-    case(state)
+    case(rx_state)
         STATE_IDLE:begin
-            tx_axis_last_reg = 1'b0;
-            tx_axis_tvalid_reg = 1'b0;
-            current = 1;
-            if(rx_axis_tvalid)begin
-                state = STATE_INPUT;
-                data_head = 0;
-                data_tail = 0;
-                data[data_tail] = rx_axis_tdata;
-                data_tail = data_tail + 1;
+            if (tx_state==STATE_IDLE && rx_axis_tvalid) begin
+                rx_state<=STATE_INPUT;
+                data_head<=0;
+                data_tail<=0;
             end
         end
         STATE_INPUT:begin
-            if(rx_axis_tvalid)begin
-                data[data_tail] = rx_axis_tdata;
-                data_tail= data_tail + 1;
-                if(rx_axis_tlast)begin
-                    state = STATE_BUSY;
-                end
-                else if (data_tail>37) begin
-                    state=STATE_INPUT_BUSY;
-                end
-            end 
-        end 
-        STATE_BUSY:begin
-            dest_ip = {data[34],data[35],data[36],data[37]};
-            port = ports[1];
-            current = 1;
-            for(integer i=31;i>=0;i=i-1)begin
-                bit = dest_ip[i];
-                if(trie[current][bit]!=0)begin
-                    current = trie[current][bit];
-                    debug = current;
-                    if(trie_is_valid[current])begin
-                      port = ports[current];
-                      
-                    end
-                        
-                end else
-                    current = 0;
-            end    
-            //  暂时放置在前两位
-            data[0] = port[15:8];
-            data[1] = port[7:0];
-            state = STATE_OUTPUT;
-        end
-        STATE_INPUT_BUSY:begin
-            if(rx_axis_tvalid)begin
-                data[data_tail] = rx_axis_tdata;
-                data_tail= data_tail + 1;
-                if(rx_axis_tlast)begin
-                    state = STATE_OUTPUT;
-                end else begin
-                    state = STATE_INPUT_OUTPUT;
-                end
-            end 
-            dest_ip = {data[34],data[35],data[36],data[37]};
-            port = ports[1];
-            current = 1;
-            for(integer i=31;i>=0;i=i-1)begin
-                bit = dest_ip[i];
-                if(trie[current][bit]!=0)begin
-                    current = trie[current][bit];
-                    debug = current;
-                    if(trie_is_valid[current])begin
-                      port = ports[current];
-                      
-                    end
-                        
-                end else
-                    current = 0;
-            end    
-            //  暂时放置在前两位
-            data[0] = port[15:8];
-            data[1] = port[7:0];
-        end
-        STATE_OUTPUT:begin
-            if(tx_axis_tready)begin
-                tx_axis_tvalid_reg = 1;
-                tx_axis_tdata_reg = data[data_head];
-                data_head =data_head+ 1;
-                if(data_head==data_tail)begin
-                    tx_axis_last_reg = 1'b1;
-                    state = STATE_IDLE;
+            if (rx_axis_tvalid) begin
+                data[data_tail]<=rx_axis_tdata;
+                data_tail<=data_tail+1;
+                if (rx_axis_tlast) begin
+                    rx_state<=STATE_IDLE;
                 end
             end
         end
-        STATE_INPUT_OUTPUT:begin
-            if(rx_axis_tvalid)begin
-                data[data_tail] <= rx_axis_tdata;
-                data_tail<= data_tail + 1;
-                if(rx_axis_tlast)begin
-                    state <= STATE_OUTPUT;
-                end else begin
-                    state <= STATE_INPUT_OUTPUT;
-                end
-            end 
-            if((data_head<data_tail) && tx_axis_tready)begin
-                tx_axis_tvalid_reg <= 1;
-                tx_axis_tdata_reg <= data[data_head];
-                data_head <=data_head+ 1;
-            end
+        default:begin
+            rx_state<=STATE_IDLE;
         end
     endcase
 end
 
+assign tx_axis_tvalid_reg = (tx_state==STATE_OUTPUT) && (data_head<data_tail);
+always @(posedge clk)begin
+    case(tx_state)
+        STATE_IDLE:begin
+            if (rx_state!=STATE_IDLE) begin
+                tx_state<=STATE_WAIT;
+                data_head<=0;
+            end
+        end
+        STATE_WAIT:begin
+            if (data_tail>37) begin
+                tx_state<=STATE_BUSY;
+                dest_ip<={data[34],data[35],data[36],data[37]};
+                loop_var<=31;
+                current<=1;
+                current_is_valid<=1'b1;
+                tmp_port<=ports[1];
+                port<=ports[1];
+            end
+            else begin
+                if (rx_state==STATE_IDLE) begin
+                    tx_state<=STATE_IDLE;
+                end
+            end
+        end
+        STATE_BUSY:begin
+            if (current==0) begin
+                tx_state<=STATE_OUTPUT;
+                data[0]<=port[15:8];
+                data[1]<=port[7:0];
+            end
+            else begin
+                if (current_is_valid) begin
+                    port<=tmp_port;
+                end
+                if (loop_var<0) begin
+                    current<=0;
+                end
+                else begin
+                    loop_var<=loop_var-1;
+                    current=trie[current][dest_ip[loop_var]];
+                    current_is_valid<=trie_is_valid[current];
+                    tmp_port<=ports[current];
+                end
+            end
+        end
+        STATE_OUTPUT:begin
+            if (tx_axis_tvalid_reg && tx_axis_tready) begin
+                data_head<=data_head+1;
+                if (rx_state==STATE_IDLE && data_head+1==data_tail) begin
+                    tx_state<=STATE_IDLE;
+                end
+            end
+        end
+        default:begin
+            tx_state<=STATE_IDLE;
+        end
+    endcase
+end
 
+always @(posedge clk)begin
+    tx_axis_tvalid<=tx_axis_tvalid_reg;
+    tx_axis_tdata_reg<=data[data_head];
+    tx_axis_tlast_reg<=(rx_state==STATE_IDLE && data_head+1==data_tail);
+end
 
 
 
