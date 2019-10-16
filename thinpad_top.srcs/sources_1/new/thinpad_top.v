@@ -349,6 +349,7 @@ wire eth_rx_axis_no_crc_tready;
 
 rx_axis_tdata_crc_filter rx_crc_filter(
     .clk(clk_125M),
+    .rst(reset_btn),
     .fifo_tdata(eth_rx_axis_fifo_tdata),
     .fifo_tvalid(eth_rx_axis_fifo_tvalid),
     .fifo_tready(eth_rx_axis_fifo_tready),
@@ -359,11 +360,20 @@ rx_axis_tdata_crc_filter rx_crc_filter(
     .no_crc_tlast(eth_rx_axis_no_crc_tlast),
     .no_crc_tready(eth_rx_axis_no_crc_tready)
 );
+/*
+//测试CRC_filter代码
+assign eth_tx_axis_fifo_tdata = eth_rx_axis_no_crc_tdata;
+assign eth_tx_axis_fifo_tvalid = eth_rx_axis_no_crc_tvalid;
+assign eth_tx_axis_fifo_tlast = eth_rx_axis_no_crc_tlast;
+assign eth_rx_axis_no_crc_tready = eth_tx_axis_fifo_tready;
+*/
 
+//路由表查询
+routing_table_lookup lookup_inst(
 
-router_table_lookup lookup_inst(
-    // data from the RX data path
+    .rst                            (reset_btn),
     .clk                            (clk_125M),
+    // data from the RX data path
     .rx_axis_tdata                  (eth_rx_axis_no_crc_tdata),
     .rx_axis_tvalid                 (eth_rx_axis_no_crc_tvalid),
     .rx_axis_tlast                  (eth_rx_axis_no_crc_tlast),
@@ -376,6 +386,7 @@ router_table_lookup lookup_inst(
 );
 
 /*
+//loop back代码
 eth_mac_basic_pat_gen temac_pat_gen(
     .axi_tclk                       (clk_125M),
     .axi_tresetn                    (gtx_resetn),

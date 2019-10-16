@@ -1,10 +1,14 @@
-module rgmii_tx_printer(
+module rgmii_tx_printer #
+(
+    parameter FRAME_SAVE_MAX = 3;
+)
+(
     input [3:0] rgmii_td,
     input rgmii_tx_ctl,
     input rgmii_txc
 );
 
-integer fd=0, frame_count=0, frame_count_max = 3;
+integer fd=0, frame_count=0, frame_count_max = FRAME_SAVE_MAX;
 logic [7:0] data;
 logic [3:0] data_pre;
 logic dv,dv_pre,dv_reg = 0;

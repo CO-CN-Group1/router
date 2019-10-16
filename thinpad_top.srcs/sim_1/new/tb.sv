@@ -58,6 +58,7 @@ parameter BASE_RAM_INIT_FILE = "/tmp/main.bin"; //BaseRAM初始化文件，请�
 parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路径
 parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flash初始化文件，请修改为实际的绝对路径
 parameter STATIC_ROUTER_TABLE = "static_router_table.mem";
+parameter ROUTING_TABLE_RESULT = "routing_result.mem";
 
 assign rxd = 1'b1; //idle state
 
@@ -253,57 +254,31 @@ rgmii_model rgmii(
 
 //RGMII 输出打印到文件
 
-rgmii_tx_printer rgmii_printer(
+localparam integer FRAME_SAVE_MAX = 3;
+
+rgmii_tx_printer #(
+    .FRAME_SAVE_MAX(FRAME_SAVE_MAX)
+)rgmii_printer(
     .rgmii_td(eth_rgmii_td),
     .rgmii_tx_ctl(eth_rgmii_tx_ctl),
     .rgmii_txc(eth_rgmii_txc)
 );
 
+
+//加载trie树
 logic[7:0] data[0:9][0:13];
 logic[1000*8-1:0]buffer;
 integer fd = 0;
 integer index = 0;
 integer table_count = 0,res = 0;
-/*logic[111:0] table_item;
-
-initial begin
-    
-    fd = $fopen(STATIC_ROUTER_TABLE,"r");
-
-    while (!$feof(fd)) begin
-        res = $fscanf(fd, "%x", data[table_count][index]);
-        $display("%d %x",res,data[table_count][index]);
-        if (res != 1) begin
-            // end of a frame
-            // read a line
-            $fgets(buffer, fd);
-            if (index > 0) begin
-                table_count = table_count + 1;
-            end
-            index = 0;
-        end else begin
-            index = index + 1;
-        end
-    end
-    
-    if (index > 0) begin
-        table_count = table_count + 1;
-    end
-    $display("table_count = %d",table_count);
-    dut.lookup_inst.router_table_total = table_count;
-    for(integer i=0;i<table_count;i++)begin
-        for(integer j=0;j<14;j++)
-            for(integer k=7;k>=0;k--)
-                table_item[(13-j)*8+k] = data[i][j][k];
-        dut.lookup_inst.router_table[i] = table_item;
-    end
-end*/
-
 logic son;
 integer current;
 logic[31:0] addr;
 logic[31:0] mask;
+logic[31:0] nexthop;
+logic[8:0] port;
 integer length;
+integer n;
 initial begin
     fd = $fopen(STATIC_ROUTER_TABLE,"r");
     while (!$feof(fd))begin
@@ -324,30 +299,50 @@ initial begin
         table_count = table_count + 1;
     end
     for(integer i=0;i<=table_count*32;i++)begin
-        dut.lookup_inst.trie[i][0] = 0;
-        dut.lookup_inst.trie[i][1] = 0;
-        dut.lookup_inst.trie_is_valid[i] = 1'b0;
+        dut.lookup_inst.routing_table_inst.trie[i][0] = 0;
+        dut.lookup_inst.routing_table_inst.trie[i][1] = 0;
     end
-    dut.lookup_inst.trie_n = 1;
+    n = 1;
     $display("table_count = %d",table_count);
     for(integer i=0;i<table_count;i++)begin
         addr = {data[i][0],data[i][1],data[i][2],data[i][3]};
         mask = {data[i][4],data[i][5],data[i][6],data[i][7]};
-        
-        $display("addr = %h%h %h%h %h%h %h%h mask = %h%h %h%h %h%h %h%h",addr[31:28],addr[27:24],addr[23:20],addr[19:16],addr[15:12],addr[11:8],addr[7:4],addr[3:0],mask[31:28],mask[27:24],mask[23:20],mask[19:16],mask[15:12],mask[11:8],mask[7:4],mask[3:0]);
+        nexthop = {data[i][8],data[i][9],data[i][10],data[i][11]};
+        port = data[i][12];
+        $display("addr = %h%h %h%h %h%h %h%h mask = %h%h %h%h %h%h %h%h nexthop = %h%h %h%h %h%h %h%h port = %h%h",addr[31:28],addr[27:24],addr[23:20],addr[19:16],addr[15:12],addr[11:8],addr[7:4],addr[3:0],mask[31:28],mask[27:24],mask[23:20],mask[19:16],mask[15:12],mask[11:8],mask[7:4],mask[3:0],nexthop[31:28],nexthop[27:24],nexthop[23:20],nexthop[19:16],nexthop[15:12],nexthop[11:8],nexthop[7:4],nexthop[3:0],port[7:4],port[3:0]);
         current = 1;
         for(integer j=31;j>=0;j--)begin
             if(mask[j]==0)
                 break;
             son = addr[j];
-            if(dut.lookup_inst.trie[current][son]==0)begin
-                dut.lookup_inst.trie[current][son] = ++dut.lookup_inst.trie_n;
-                current = dut.lookup_inst.trie_n;
+            if(dut.lookup_inst.routing_table_inst.trie[current][son]==0)begin
+                dut.lookup_inst.routing_table_inst.trie[current][son] = ++n;
+                current = n;
             end else
-                current = dut.lookup_inst.trie[current][son];
+                current = dut.lookup_inst.routing_table_inst.trie[current][son];
         end
-        dut.lookup_inst.ports[current] = {data[i][12],data[i][13]};
-        dut.lookup_inst.trie_is_valid[current] = 1'b1;
+        dut.lookup_inst.routing_table_inst.data_entry[current] = {data[i][8],data[i][9],data[i][10],data[i][11],data[i][12]};
+    end
+
+    fd = $fopen(ROUTING_TABLE_RESULT,"w");
+end
+
+reg[31:0] dest_ip;
+integer cnt = 0;
+always @(posedge dut.lookup_inst.routing_table_inst.nexthop_valid)begin
+    if(cnt<FRAME_SAVE_MAX)begin
+        dest_ip = dut.lookup_inst.routing_table_inst.dest_ip_cache;
+        nexthop = dut.lookup_inst.routing_table_inst.nexthop;
+        port = dut.lookup_inst.routing_table_inst.port;
+        if(dut.lookup_inst.routing_table_inst.nexthop_not_found)
+            $fwrite(fd,"dest_ip = %02h %02h %02h %02h nexthop,port = NOTFOUND",dest_ip[31:24],dest_ip[23:16],dest_ip[15:8],dest_ip[7:0]);
+        else
+            $fwrite(fd,"dest_ip = %02h %02h %02h %02h nexthop,port = %02h %02h %02h %02h : %02h",dest_ip[31:24],dest_ip[23:16],dest_ip[15:8],dest_ip[7:0],nexthop[31:24],nexthop[23:16],nexthop[15:8],nexthop[7:0],port);
+        $fwrite(fd,"\n");
+        cnt = cnt + 1;
+        if(cnt==FRAME_SAVE_MAX)
+            $fclose(fd);
     end
 end
+
 endmodule
