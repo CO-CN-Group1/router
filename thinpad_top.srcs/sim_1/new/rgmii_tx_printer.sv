@@ -1,6 +1,6 @@
 module rgmii_tx_printer #
 (
-    parameter FRAME_SAVE_MAX = 3;
+    parameter FRAME_SAVE_MAX = 3
 )
 (
     input [3:0] rgmii_td,

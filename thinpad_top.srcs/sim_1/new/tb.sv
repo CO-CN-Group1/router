@@ -59,6 +59,8 @@ parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请�
 parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flash初始化文件，请修改为实际的绝对路径
 parameter STATIC_ROUTER_TABLE = "static_router_table.mem";
 parameter ROUTING_TABLE_RESULT = "routing_result.mem";
+parameter STATIC_ARP_TABLE = "static_arp_table.mem";
+parameter ARP_TABLE_RESULT = "arp_result.mem";
 
 assign rxd = 1'b1; //idle state
 
@@ -266,7 +268,7 @@ rgmii_tx_printer #(
 
 
 //加载trie树
-logic[7:0] data[0:9][0:13];
+logic[7:0] data[0:9][0:30];
 logic[1000*8-1:0]buffer;
 integer fd = 0;
 integer index = 0;
@@ -276,7 +278,7 @@ integer current;
 logic[31:0] addr;
 logic[31:0] mask;
 logic[31:0] nexthop;
-logic[8:0] port;
+logic[7:0] port;
 integer length;
 integer n;
 initial begin
@@ -342,6 +344,71 @@ always @(posedge dut.lookup_inst.routing_table_inst.nexthop_valid)begin
         cnt = cnt + 1;
         if(cnt==FRAME_SAVE_MAX)
             $fclose(fd);
+    end
+end
+
+reg[47:0] mac;
+integer index2=0;
+integer fd2;
+initial begin
+    index = 0;
+    table_count = 0;
+    fd = $fopen(STATIC_ARP_TABLE,"r");
+    while (!$feof(fd))begin
+        res = $fscanf(fd, "%x", data[table_count][index]);
+        if (res != 1) begin
+            // end of a frame
+            // read a line
+            $fgets(buffer, fd);
+            if (index > 0) begin
+                table_count = table_count + 1;
+            end
+            index = 0;
+        end else begin
+            index = index + 1;
+        end
+    end
+    if (index > 0) begin
+        table_count = table_count + 1;
+    end
+    for(integer i=0;i<=7;i++)begin
+        dut.lookup_inst.arp_table_inst.bucket_depth[i] = 0;
+        dut.lookup_inst.arp_table_inst.bucket_ins_pos[i] = 0;
+    end
+    n = 1;
+    $display("arp_table_count = %d",table_count);
+    for(integer i=0;i<table_count;i++)begin
+        addr = {data[i][0],data[i][1],data[i][2],data[i][3]};
+        mac = {data[i][4],data[i][5],data[i][6],data[i][7],data[i][8],data[i][9]};
+        port = data[i][10];
+        $display("addr = %h%h %h%h %h%h %h%h mac = %h%h %h%h %h%h %h%h %h%h %h%h port = %h%h",addr[31:28],addr[27:24],addr[23:20],addr[19:16],addr[15:12],addr[11:8],addr[7:4],addr[3:0],mac[47:44],mac[43:40],mac[39:36],mac[35:32],mac[31:28],mac[27:24],mac[23:20],mac[19:16],mac[15:12],mac[11:8],mac[7:4],mac[3:0],port[7:4],port[3:0]);
+        index = addr[31:29];
+        index2 = dut.lookup_inst.arp_table_inst.bucket_ins_pos[index];
+        dut.lookup_inst.arp_table_inst.data_entry[index][index2] = {addr,mac,port};
+        dut.lookup_inst.arp_table_inst.bucket_ins_pos[index] = index2 + 1;
+        dut.lookup_inst.arp_table_inst.bucket_depth[index] = index2 + 1;
+        $display("data_entry: %22h %22h",dut.lookup_inst.arp_table_inst.data_entry[index][index2],{addr,mac,port});
+    end
+    
+    fd2 = $fopen(ARP_TABLE_RESULT,"w");
+end
+
+integer arp_cnt = 0;
+reg[31:0] dip;
+reg[7:0] pt;
+always @(posedge dut.lookup_inst.arp_table_inst.lookup_mac_valid)begin
+    if(arp_cnt<FRAME_SAVE_MAX)begin
+        dip = dut.lookup_inst.arp_table_inst.lookup_ip_cache;
+        mac = dut.lookup_inst.arp_table_inst.lookup_mac;
+        pt = dut.lookup_inst.arp_table_inst.lookup_port;
+        if(dut.lookup_inst.arp_table_inst.lookup_mac_not_found)
+            $fwrite(fd2,"dest_ip = %02h %02h %02h %02h mac,port = NOTFOUND",dip[31:24],dip[23:16],dip[15:8],dip[7:0]);
+        else
+            $fwrite(fd2,"dest_ip = %02h %02h %02h %02h mac,port = %02h %02h %02h %02h %02h %02h: %02h",dip[31:24],dip[23:16],dip[15:8],dip[7:0],mac[47:40],mac[39:32],mac[31:24],mac[23:16],mac[15:8],mac[7:0],pt);
+        $fwrite(fd2,"\n");
+        arp_cnt = arp_cnt + 1;
+        if(arp_cnt==FRAME_SAVE_MAX)
+            $fclose(fd2);
     end
 end
 

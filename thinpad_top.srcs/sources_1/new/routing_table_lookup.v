@@ -3,7 +3,8 @@ module routing_table_lookup #
     parameter DATA_WIDTH = 8,
     parameter FRAME_LENGTH = 4096,
     parameter IP_LENGTH = 32,
-    parameter PORT_LENGTH = 8
+    parameter PORT_LENGTH = 8,
+    parameter MAC_LENGTH = 48
 )(
     input wire                      clk,
     input wire                      rst,
@@ -59,6 +60,29 @@ routing_table #(
     .lookup_ready(lookup_ready),
     .nexthop_valid(nexthop_valid),
     .nexthop_not_found(nexthop_not_found)
+);
+
+wire[MAC_LENGTH-1:0] lookup_mac;
+wire[PORT_LENGTH-1:0] lookup_port;
+wire lookup_mac_valid;
+wire lookup_mac_not_found;
+wire lookup_ready_arp;
+
+arp_table #(
+    .IP_LENGTH(IP_LENGTH),
+    .PORT_LENGTH(PORT_LENGTH),
+    .MAC_LENGTH(MAC_LENGTH)
+) arp_table_inst(
+    .clk(clk),
+    .rst(rst),
+    
+    .lookup_ip(dest_ip),
+    .lookup_valid(dest_ip_valid),
+    .lookup_mac(lookup_mac),
+    .lookup_mac_valid(lookup_mac_valid),
+    .lookup_port(lookup_port),
+    .lookup_ready(lookup_ready_arp),
+    .lookup_mac_not_found(lookup_mac_not_found)
 );
 
 
