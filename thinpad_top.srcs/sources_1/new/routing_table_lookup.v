@@ -14,9 +14,9 @@ module routing_table_lookup #
     input wire                      rx_axis_tlast,
     output wire                     rx_axis_tready,
 
-    output reg [DATA_WIDTH-1:0]     tx_axis_tdata,
+    output wire [DATA_WIDTH-1:0]     tx_axis_tdata,
     output reg                      tx_axis_tvalid,
-    output reg                      tx_axis_tlast,
+    output wire                      tx_axis_tlast,
     input  wire                     tx_axis_tready
 );
 
@@ -40,8 +40,8 @@ wire nexthop_valid;
 wire nexthop_not_found;
 
 initial begin
-    tx_axis_tdata = 0;
-    tx_axis_tlast = 0;
+    //tx_axis_tdata = 0;
+    //tx_axis_tlast = 0;
     dest_ip = 0;
     dest_ip_valid = 0;
 end
@@ -86,37 +86,32 @@ arp_table #(
 );
 
 
+reg rx_axis_tready_int=0;
+//assign rx_axis_tready = (state==STATE_IDLE)||(state == STATE_INPUT);
+assign rx_axis_tready = rx_axis_tready_int;
 
-assign rx_axis_tready = (state==STATE_IDLE)||(state == STATE_INPUT);
-
-always @(data_tail)begin
-    if(data_tail!=0)begin
-        data[data_tail-1] <= rx_axis_tdata;
-    end
-end
-
-always @(data_head)begin
-    if(data_head!=0)begin
-        tx_axis_tdata <= data[data_head-1];
-    end
-end
+assign tx_axis_tdata = data[data_head];
+assign tx_axis_tlast = (data_head+1==data_tail);
 
 always @(posedge clk)begin
     if(rst) begin
         state <= STATE_IDLE;
         data_head <= 0;
         data_tail <= 0;
-        tx_axis_tdata <= 0;
-        tx_axis_tlast <= 0;
+        //tx_axis_tdata <= 0;
+        //tx_axis_tlast <= 0;
         tx_axis_tvalid <=0;
+        //jrx_axis_tready_int <=0;
     end else begin
         case(state)
             STATE_IDLE:begin
-                tx_axis_tlast <=0;
+                //tx_axis_tlast <=0;
                 tx_axis_tvalid <=0;
+                rx_axis_tready_int <=1;
                 data_head <= 0;
-                if(rx_axis_tvalid)begin
+                if(rx_axis_tvalid && rx_axis_tready_int)begin
                     state <= STATE_INPUT;
+                    data[data_tail]<=rx_axis_tdata;
                     data_tail <= data_tail+1;
                 end else begin
                     state <= STATE_IDLE;
@@ -124,15 +119,25 @@ always @(posedge clk)begin
                 end    
             end
             STATE_INPUT:begin
-                if(rx_axis_tvalid)begin
-                    if(rx_axis_tlast)
+                tx_axis_tvalid <=0;
+                if(rx_axis_tvalid && rx_axis_tready_int)begin
+                    if(rx_axis_tlast) begin
                         state <= STATE_COMPUTE;
+                        rx_axis_tready_int <=0;
+                    end else begin
+                        rx_axis_tready_int <=1;
+                    end
+                    data[data_tail]<=rx_axis_tdata;
                     data_tail <= data_tail+1;
+                end else begin
+                    rx_axis_tready_int <=1;
                 end
             end
             STATE_COMPUTE:begin
-                if(nexthop_valid)
+                if(nexthop_valid) begin
                     state <= STATE_OUTPUT;
+                    tx_axis_tvalid<=1;
+                end
                 if(lookup_ready)begin
                     dest_ip <= {data[34],data[35],data[36],data[37]};
                     dest_ip_valid <= 1;
@@ -141,15 +146,16 @@ always @(posedge clk)begin
                 end
             end
             STATE_OUTPUT:begin
-                if(tx_axis_tready)begin
-                    if(data_head == data_tail-1)begin
-                        data_head <= data_head + 1;
-                        tx_axis_tlast <= 1;
+                if(tx_axis_tvalid && tx_axis_tready)begin
+                    data_head<=data_head+1;
+                    if(tx_axis_tlast)begin
+                        //data_head <= data_head + 1;
+                        //tx_axis_tlast <= 1;
                         state <= STATE_IDLE;
+                        tx_axis_tvalid<=0;
                     end else begin
-                        data_head <= data_head + 1;
+                        //data_head <= data_head + 1;
                     end
-                    tx_axis_tvalid<=1;
                 end
             end
         endcase 
