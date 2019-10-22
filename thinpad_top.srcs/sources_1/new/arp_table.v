@@ -1,5 +1,5 @@
 module arp_table #(
-    parameter PORT_LENGTH = 8,
+    parameter PORT_LENGTH = 16,
     parameter IP_LENGTH = 32,
     parameter MAC_LENGTH = 48,
     parameter BUCKET_COUNT = 8,

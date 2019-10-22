@@ -29,15 +29,15 @@ localparam[3:0]
     STATE_INPUT = 1,
     STATE_COMPUTE = 2,
     STATE_OUTPUT = 3,
-    STATE_ARPRESPONSE=4,
-    STATE_CHANGEVLAN=5,
-    STATE_UPDATEARP=6,
-    STATE_ROUTING=7,
-    STATE_ARPQUERY=8,
-    STATE_ARPREQUEST=9;
+    STATE_ARPUPDATE=4,
+    STATE_ARPRESPONSE=5,
+    STATE_ROUTING=6,
+    STATE_ARPQUERY=7,
+    STATE_ARPREQUEST=8;
 reg[3:0] state = STATE_IDLE;
 
 reg [IP_LENGTH-1:0] my_ip;
+reg [MAC_LENGTH-1:0] my_mac;
 reg [IP_LENGTH-1:0] dest_ip;
 reg dest_ip_valid = 0;
 wire lookup_ready;
@@ -77,6 +77,11 @@ wire lookup_mac_valid;
 wire lookup_mac_not_found;
 wire lookup_ready_arp;
 
+reg [IP_LENGTH-1:0]   insert_ip;
+reg [MAC_LENGTH-1:0]  insert_mac;
+reg [PORT_LENGTH-1:0] insert_port;
+reg insert_valid;
+reg insert_ready;
 arp_table #(
     .IP_LENGTH(IP_LENGTH),
     .PORT_LENGTH(PORT_LENGTH),
@@ -91,7 +96,13 @@ arp_table #(
     .lookup_mac_valid(lookup_mac_valid),
     .lookup_port(lookup_port),
     .lookup_ready(lookup_ready_arp),
-    .lookup_mac_not_found(lookup_mac_not_found)
+    .lookup_mac_not_found(lookup_mac_not_found),
+    
+    .insert_ip(insert_ip),
+    .insert_mac(insert_mac),
+    .insert_port(insert_port),
+    .insert_valid(insert_valid),
+    .insert_ready(insert_ready)
 );
 
 
@@ -144,17 +155,7 @@ always @(posedge clk)begin
             end
             STATE_COMPUTE:begin
                 if (data[16]==8'h08 && data[17]==8'h06) begin
-                    if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
-                        if ({data[42],data[43],data[44],data[45]}==my_ip) begin
-                            state<=STATE_ARPRESPONSE;
-                        end
-                        else begin
-                            state<=STATE_CHANGEVLAN;
-                        end
-                    end
-                    else begin
-                        state<=STATE_UPDATEARP;
-                    end
+                    state<=STATE_ARPUPDATE;
                 end
                 else begin
                     if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
@@ -166,18 +167,51 @@ always @(posedge clk)begin
                     end
                 end
             end
+            STATE_ARPUPDATE:begin
+                if (insert_ready) begin
+                    insert_ip<={data[32],data[33],data[34],data[35]};
+                    insert_mac<={data[6],data[7],data[8],data[9],data[10],data[11]};
+                    insert_port<={data[14],data[15],data[16],data[17]};
+                    insert_valid<=1;
+                    if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
+                        if ({data[42],data[43],data[44],data[45]}==my_ip) begin
+                            state<=STATE_ARPRESPONSE;
+                        end
+                        else begin
+                            state<=STATE_IDLE;
+                        end
+                    end
+                    else begin
+                        state<=STATE_OUTPUT;
+                        tx_axis_tvalid<=1;
+                    end
+                end else begin
+                    insert_valid<=0;
+                end
+            end
             STATE_ARPRESPONSE:begin
-                //TODO: ARP Response
-                state<=STATE_UPDATEARP;
-            end
-            STATE_CHANGEVLAN:begin
-                //TODO: change VLAN tag
-                state<=STATE_UPDATEARP;
-            end
-            STATE_UPDATEARP:begin
-                //TODO: use what data to update ARP table???
+                data[0]<=data[6];
+                data[1]<=data[7];
+                data[2]<=data[8];
+                data[3]<=data[9];
+                data[4]<=data[10];
+                data[5]<=data[11];
+                {data[6],data[7],data[8],data[9],data[10],data[11]}<=my_mac;
+                data[12]<=8'h08;
+                data[13]<=8'h06;
+                data[14]<=8'h00;//todo
+                data[15]<=8'h01;//todo
+                data[16]<=8'h08;
+                data[17]<=8'h00;
+                data[18]<=8'h06;//todo
+                data[19]<=8'h04;
+                data[20]<=8'h00;
+                data[21]<=8'h02;
+                {data[22],data[23],data[24],data[25],data[26],data[27]}<=my_mac;
+                {data[28],data[29],data[30],data[31]}<=my_ip;
+                {data[32],data[33],data[34],data[35],data[36],data[37]}<={data[6],data[7],data[8],data[9],data[10],data[11]};
+                {data[38],data[39],data[40],data[41]}<={data[32],data[33],data[34],data[35]};
                 state<=STATE_OUTPUT;
-                tx_axis_tvalid<=1;
             end
             STATE_ROUTING:begin
                 if(nexthop_valid) begin
@@ -213,6 +247,7 @@ always @(posedge clk)begin
                 tx_axis_tvalid<=1;
             end
             STATE_OUTPUT:begin
+                tx_axis_tvalid<=1;
                 if(tx_axis_tvalid && tx_axis_tready)begin
                     data_head<=data_head+1;
                     if(tx_axis_tlast)begin
