@@ -24,19 +24,28 @@ module routing_table_lookup #
 
 reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
 integer data_head = 0, data_tail = 0;
-localparam[1:0]
+localparam[3:0]
     STATE_IDLE = 0,
     STATE_INPUT = 1,
     STATE_COMPUTE = 2,
-    STATE_OUTPUT = 3;
-reg[1:0] state = STATE_IDLE;
+    STATE_OUTPUT = 3,
+    STATE_ARPRESPONSE=4,
+    STATE_CHANGEVLAN=5,
+    STATE_UPDATEARP=6,
+    STATE_ROUTING=7,
+    STATE_ARPQUERY=8,
+    STATE_ARPREQUEST=9;
+reg[3:0] state = STATE_IDLE;
 
+reg [IP_LENGTH-1:0] my_ip;
 reg [IP_LENGTH-1:0] dest_ip;
 reg dest_ip_valid = 0;
 wire lookup_ready;
 wire [IP_LENGTH-1:0] nexthop;
+reg [IP_LENGTH-1:0] nexthop_cache;
 wire [PORT_LENGTH-1:0] port;
 wire nexthop_valid;
+reg lookup_valid;
 wire nexthop_not_found;
 
 initial begin
@@ -76,8 +85,8 @@ arp_table #(
     .clk(clk),
     .rst(rst),
     
-    .lookup_ip(dest_ip),
-    .lookup_valid(dest_ip_valid),
+    .lookup_ip(nexthop_cache),
+    .lookup_valid(nexthop_valid),
     .lookup_mac(lookup_mac),
     .lookup_mac_valid(lookup_mac_valid),
     .lookup_port(lookup_port),
@@ -134,9 +143,46 @@ always @(posedge clk)begin
                 end
             end
             STATE_COMPUTE:begin
+                if (data[16]==8'h08 && data[17]==8'h06) begin
+                    if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
+                        if ({data[42],data[43],data[44],data[45]}==my_ip) begin
+                            state<=STATE_ARPRESPONSE;
+                        end
+                        else begin
+                            state<=STATE_CHANGEVLAN;
+                        end
+                    end
+                    else begin
+                        state<=STATE_UPDATEARP;
+                    end
+                end
+                else begin
+                    if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
+                        //TODO: write to software interface
+                        state<=STATE_IDLE;
+                    end
+                    else begin
+                        state<=STATE_ROUTING;
+                    end
+                end
+            end
+            STATE_ARPRESPONSE:begin
+                //TODO: ARP Response
+                state<=STATE_UPDATEARP;
+            end
+            STATE_CHANGEVLAN:begin
+                //TODO: change VLAN tag
+                state<=STATE_UPDATEARP;
+            end
+            STATE_UPDATEARP:begin
+                //TODO: use what data to update ARP table???
+                state<=STATE_OUTPUT;
+                tx_axis_tvalid<=1;
+            end
+            STATE_ROUTING:begin
                 if(nexthop_valid) begin
-                    state <= STATE_OUTPUT;
-                    tx_axis_tvalid<=1;
+                    nexthop_cache<=nexthop;
+                    state<=STATE_ARPQUERY;
                 end
                 if(lookup_ready)begin
                     dest_ip <= {data[34],data[35],data[36],data[37]};
@@ -144,6 +190,27 @@ always @(posedge clk)begin
                 end else begin 
                     dest_ip_valid <= 0;
                 end
+            end
+            STATE_ARPQUERY:begin
+                if(lookup_mac_valid) begin
+                    //TODO: change
+                    state <= STATE_OUTPUT;
+                    tx_axis_tvalid<=1;
+                end
+                else if (lookup_mac_not_found) begin
+                    state<=STATE_ARPREQUEST;
+                end
+                if(lookup_ready_arp) begin
+                    lookup_valid<=1;
+                end
+                else begin
+                    lookup_valid<=0;
+                end
+            end
+            STATE_ARPREQUEST:begin
+                //TODO
+                state <= STATE_OUTPUT;
+                tx_axis_tvalid<=1;
             end
             STATE_OUTPUT:begin
                 if(tx_axis_tvalid && tx_axis_tready)begin
