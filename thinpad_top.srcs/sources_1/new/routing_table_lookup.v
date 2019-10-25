@@ -158,12 +158,17 @@ always @(posedge clk)begin
                     state<=STATE_ARPUPDATE;
                 end
                 else begin
-                    if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
+                    if ({data[34],data[35],data[36],data[37]}==my_ip) begin
                         //TODO: write to software interface
                         state<=STATE_IDLE;
                     end
                     else begin
-                        state<=STATE_ROUTING;
+                        if (data[26]==0) begin
+                            state<=STATE_IDLE;
+                        end
+                        else begin
+                            state<=STATE_ROUTING;
+                        end
                     end
                 end
             end
@@ -171,7 +176,7 @@ always @(posedge clk)begin
                 if (insert_ready) begin
                     insert_ip<={data[32],data[33],data[34],data[35]};
                     insert_mac<={data[6],data[7],data[8],data[9],data[10],data[11]};
-                    insert_port<={data[14],data[15],data[16],data[17]};
+                    insert_port<={data[14],data[15]};
                     insert_valid<=1;
                     if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
                         if ({data[42],data[43],data[44],data[45]}==my_ip) begin
@@ -197,20 +202,24 @@ always @(posedge clk)begin
                 data[4]<=data[10];
                 data[5]<=data[11];
                 {data[6],data[7],data[8],data[9],data[10],data[11]}<=my_mac;
-                data[12]<=8'h08;
-                data[13]<=8'h06;
-                data[14]<=8'h00;//todo
-                data[15]<=8'h01;//todo
+                //data[12]<=8'h81;
+                //data[13]<=8'h00;
                 data[16]<=8'h08;
-                data[17]<=8'h00;
-                data[18]<=8'h06;//todo
-                data[19]<=8'h04;
-                data[20]<=8'h00;
-                data[21]<=8'h02;
-                {data[22],data[23],data[24],data[25],data[26],data[27]}<=my_mac;
-                {data[28],data[29],data[30],data[31]}<=my_ip;
-                {data[32],data[33],data[34],data[35],data[36],data[37]}<={data[6],data[7],data[8],data[9],data[10],data[11]};
-                {data[38],data[39],data[40],data[41]}<={data[32],data[33],data[34],data[35]};
+                data[17]<=8'h06;
+                data[18]<=8'h00;//todo
+                data[19]<=8'h01;//todo
+                data[20]<=8'h08;
+                data[21]<=8'h00;
+                data[22]<=8'h06;//todo
+                data[23]<=8'h04;
+                data[24]<=8'h00;
+                data[25]<=8'h02;
+                {data[26],data[27],data[28],data[29],data[30],data[31]}<=my_mac;
+                {data[32],data[33],data[34],data[35]}<=my_ip;
+                {data[36],data[37],data[38],data[39],data[40],data[41]}<={data[6],data[7],data[8],data[9],data[10],data[11]};
+                {data[42],data[43],data[44],data[45]}<={data[32],data[33],data[34],data[35]};
+                {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
+                data_tail<=60;
                 state<=STATE_OUTPUT;
             end
             STATE_ROUTING:begin
@@ -227,12 +236,21 @@ always @(posedge clk)begin
             end
             STATE_ARPQUERY:begin
                 if(lookup_mac_valid) begin
-                    //TODO: change
-                    state <= STATE_OUTPUT;
-                    tx_axis_tvalid<=1;
-                end
-                else if (lookup_mac_not_found) begin
-                    state<=STATE_ARPREQUEST;
+                    if (lookup_mac_not_found) begin
+                        state<=STATE_ARPREQUEST;
+                    end
+                    else begin
+                        {data[14],data[15]}<=lookup_port;
+                        data[26]<=data[26]-1;
+                        if (data[29]==8'b11111111) begin
+                            data[28]<=data[28]+1;
+                        end
+                        data[29]<=data[29]+1;
+                        {data[0],data[1],data[2],data[3],data[4],data[5]}<=lookup_mac;
+                        state<=STATE_OUTPUT;
+                    end
+                    //state <= STATE_OUTPUT;
+                    //tx_axis_tvalid<=1;
                 end
                 if(lookup_ready_arp) begin
                     lookup_valid<=1;
@@ -242,9 +260,33 @@ always @(posedge clk)begin
                 end
             end
             STATE_ARPREQUEST:begin
-                //TODO
+                data[0]<=8'hff;
+                data[1]<=8'hff;
+                data[2]<=8'hff;
+                data[3]<=8'hff;
+                data[4]<=8'hff;
+                data[5]<=8'hff;
+                {data[6],data[7],data[8],data[9],data[10],data[11]}<=my_mac;
+                //data[12]<=8'h81;
+                //data[13]<=8'h00;
+                data[16]<=8'h08;
+                data[17]<=8'h06;
+                data[18]<=8'h00;//todo
+                data[19]<=8'h01;//todo
+                data[20]<=8'h08;
+                data[21]<=8'h00;
+                data[22]<=8'h06;//todo
+                data[23]<=8'h04;
+                data[24]<=8'h00;
+                data[25]<=8'h01;
+                {data[26],data[27],data[28],data[29],data[30],data[31]}<=my_mac;
+                {data[32],data[33],data[34],data[35]}<=my_ip;
+                {data[36],data[37],data[38],data[39],data[40],data[41]}<=48'h000000000000;
+                {data[42],data[43],data[44],data[45]}<={data[34],data[35],data[36],data[37]};
+                {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
+                data_tail<=60;
                 state <= STATE_OUTPUT;
-                tx_axis_tvalid<=1;
+                //tx_axis_tvalid<=1;
             end
             STATE_OUTPUT:begin
                 tx_axis_tvalid<=1;
