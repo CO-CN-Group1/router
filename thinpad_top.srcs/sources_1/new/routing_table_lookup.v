@@ -81,7 +81,7 @@ reg [IP_LENGTH-1:0]   insert_ip;
 reg [MAC_LENGTH-1:0]  insert_mac;
 reg [PORT_LENGTH-1:0] insert_port;
 reg insert_valid;
-reg insert_ready;
+wire insert_ready;
 arp_table #(
     .IP_LENGTH(IP_LENGTH),
     .PORT_LENGTH(PORT_LENGTH),
@@ -237,7 +237,33 @@ always @(posedge clk)begin
             STATE_ARPQUERY:begin
                 if(lookup_mac_valid) begin
                     if (lookup_mac_not_found) begin
-                        state<=STATE_ARPREQUEST;
+                        //state<=STATE_ARPREQUEST;
+                        data[0]<=8'hff;
+                        data[1]<=8'hff;
+                        data[2]<=8'hff;
+                        data[3]<=8'hff;
+                        data[4]<=8'hff;
+                        data[5]<=8'hff;
+                        {data[6],data[7],data[8],data[9],data[10],data[11]}<=my_mac;
+                        //data[12]<=8'h81;
+                        //data[13]<=8'h00;
+                        data[16]<=8'h08;
+                        data[17]<=8'h06;
+                        data[18]<=8'h00;//todo
+                        data[19]<=8'h01;//todo
+                        data[20]<=8'h08;
+                        data[21]<=8'h00;
+                        data[22]<=8'h06;//todo
+                        data[23]<=8'h04;
+                        data[24]<=8'h00;
+                        data[25]<=8'h01;
+                        {data[26],data[27],data[28],data[29],data[30],data[31]}<=my_mac;
+                        {data[32],data[33],data[34],data[35]}<=my_ip;
+                        {data[36],data[37],data[38],data[39],data[40],data[41]}<=48'h000000000000;
+                        {data[42],data[43],data[44],data[45]}<={data[34],data[35],data[36],data[37]};
+                        {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
+                        data_tail<=60;
+                        state <= STATE_OUTPUT;
                     end
                     else begin
                         {data[14],data[15]}<=lookup_port;
