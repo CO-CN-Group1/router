@@ -1,8 +1,9 @@
 module routing_table #(
-    parameter PORT_LENGTH = 8,
     parameter IP_LENGTH = 32,
-    parameter TRIE_SIZE = 256,
-    parameter TRIE_INDEX_WIDTH = 8
+    parameter TABLE_COUNT = 64,
+    parameter TRIE_INDEX_COUNT = TABLE_COUNT*IP_LENGTH,
+    parameter TRIE_INDEX_WIDTH = 6+5,
+    parameter BYTE_WIDTH = 8
 )
 (
     input wire                      clk,
@@ -10,103 +11,122 @@ module routing_table #(
     input wire [IP_LENGTH-1:0]      dest_ip,
     input wire                      dest_ip_valid,
     output reg [IP_LENGTH-1:0]      nexthop,
-    output reg [PORT_LENGTH-1:0]    port,
     output reg                      lookup_ready,
     output reg                      nexthop_valid,
-    output reg                      nexthop_not_found
+    output reg                      nexthop_not_found,
 
+    input wire os_clk,
+    input wire[TRIE_INDEX_WIDTH-1:0] os_addr,
+    input wire[IP_LENGTH-1:0] os_din,
+    output wire[IP_LENGTH-1:0] os_dout,
+    input wire[IP_LENGTH/BYTE_WIDTH-1:0] os_wea,
+    input wire os_rst,
+    input wire os_en
+);
+
+reg[TRIE_INDEX_WIDTH-1:0] current = 1;
+wire[IP_LENGTH+2*TRIE_INDEX_WIDTH-1:0] lookup_dout;
+
+xpm_memory_tdpram #(
+    .ADDR_WIDTH_A(TRIE_INDEX_WIDTH),
+    .WRITE_DATA_WIDTH_A(IP_LENGTH+2*TRIE_INDEX_WIDTH),
+    .BYTE_WRITE_WIDTH_A(BYTE_WIDTH),
+    .READ_DATA_WIDTH_A(IP_LENGTH+2*TRIE_INDEX_WIDTH),
+    .ADDR_WIDTH_B(TRIE_INDEX_WIDTH),
+    .READ_LATENCY_A(1),
+    .WRITE_DATA_WIDTH_B(IP_LENGTH+2*TRIE_INDEX_WIDTH),
+    .BYTE_WRITE_WIDTH_B(IP_LENGTH+2*TRIE_INDEX_WIDTH),
+    .READ_DATA_WIDTH_B(IP_LENGTH+2*TRIE_INDEX_WIDTH),
+    .READ_LATENCY_B(1),
+    .MEMORY_SIZE(TRIE_INDEX_COUNT * (IP_LENGTH + 2*TRIE_INDEX_WIDTH)),
+) xpm_memory_tdpram_data (
+    .dina(os_din),
+    .addra(os_addr),
+    .wea(os_wea),
+    .douta(os_dout),
+    .clka(os_clk),
+    .rsta(os_rst),
+    .ena(os_en),
+
+    .dinb(0),
+    .addrb(current),
+    .web(1'b0),
+    .doutb(lookup_dout),
+    .clkb(clk),
+    .rstb(rst),
+    .enb(1'b1)
 );
 
 reg [IP_LENGTH-1:0]                 dest_ip_cache;
 
-reg[IP_LENGTH+PORT_LENGTH-1:0]      data_entry[0:TRIE_SIZE-1];
-reg[TRIE_INDEX_WIDTH-1:0]           trie[0:TRIE_SIZE-1][0:1];
-reg [TRIE_INDEX_WIDTH-1:0]          current;
-reg [4:0]                           pos;
-reg [IP_LENGTH+PORT_LENGTH-1:0]     ans;
+localparam[2:0] 
+    STATE_INIT = 0,
+    STATE_IDLE = 1,
+    STATE_SEARCH = 2;
+reg [2:0] state = STATE_INIT;
 
-initial begin
-    nexthop = 0;
-    port = 0;
-    lookup_ready = 1;
-    nexthop_not_found = 0;
-    nexthop_valid = 0;
-    current = 0;
-    pos = 31;
+always @(posedge clk)begin
+    if(rst)begin
+        nexthop <= 0;
+        lookup_ready = 0;
+        state <= STATE_INIT;
+        nexthop_not_found <= 0;
+        nexthop_valid <= 0;
+        current <= 0;
+        best_ans <= 0;
+    end else if(state==STATE_INIT)begin
+        lookup_ready <= 1;
+        state <= STATE_IDLE;
+        current <= 1;
+        best_ans <= 0;
+    end
 end
 
-
-localparam[1:0] 
-    STATE_IDLE = 0,
-    STATE_BUSY = 1,
-    STATE_OUT  = 2;
-reg [1:0] state = STATE_IDLE;
-
-
-always @(state) begin
-    case (state)
-        STATE_IDLE:lookup_ready <= 1;
-        STATE_BUSY:lookup_ready <= 0;
-        STATE_OUT: lookup_ready <= 0;
-    endcase 
-end
-
-always @(current)begin
-    if(data_entry[current]!=0)
-        ans <= data_entry[current];
-end
+reg [IP_LENGTH-1:0] best_ans;
+reg [IP_LENGTH-1:0] pos;
 
 always @(posedge clk) begin
-    if (rst) begin
-        nexthop <= 0;
-        port<=0;
-        nexthop_valid<=0;
-        nexthop_not_found<=0;
-        dest_ip_cache <=0;
-        current<=0;
-        state<=STATE_IDLE;
-        pos<=31;
-        ans<=0;
-    end else begin
+    if(!rst && state!=STATE_INIT) begin
         case(state)
             STATE_IDLE:begin
                 if(dest_ip_valid)begin
-                    state <= STATE_BUSY;
+                    state <= STATE_SEARCH;
                     dest_ip_cache <= dest_ip;
                     current <= 1;
-                end else begin
-                    current <= 0;
+                    best_ans <= 0;
+                    pos <= 31;
                 end
                 nexthop_valid <= 0;
                 nexthop_not_found <= 0;
-                pos <= 31;
-                ans <= 0; 
             end
-            STATE_BUSY:begin
+            STATE_SEARCH:begin
                 if(current == 0)begin
-                    {nexthop,port} <= ans;
-                    if(ans == 0)
-                        nexthop_not_found <=1;
+                    nexthop <= best_ans;
+                    if(best_ans==0)
+                        nexthop_not_found <= 1;
                     else
-                        nexthop_not_found <=0;
+                        nexthop_not_found <= 0;
                     nexthop_valid <= 1;
-                    state<=STATE_OUT;
+                    state <= STATE_IDLE;
                 end else begin
-                    if(dest_ip_cache[pos]==0)begin
-                        current <= trie[current][0];
-                        pos <= pos-1;
+                    if(lookup_dout[IP_LENGTH-1:0]!=0)
+                        best_ans <= lookup_dout[IP_LENGTH-1:0];
+                    if(dest_ip_cache[pos] == 0)begin
+                        current <= lookup_dout[IP_LENGTH+2*TRIE_INDEX_WIDTH-1:IP_LENGTH+TRIE_INDEX_WIDTH]; 
+                        if(pos==0)begin
+                            current <= 0;
+                        end else 
+                            pos<=pos-1;
                     end else begin
-                        current <= trie[current][1];
-                        pos <= pos-1;
-                    end          
+                        current <= lookup_dout[IP_LENGTH+TRIE_INDEX_WIDTH-1:IP_LENGTH];
+                        if(pos==0)begin
+                            current <= 0;
+                        end else 
+                            pos<=pos-1;
+                    end
                 end
             end
-            STATE_OUT:begin
-                state <= STATE_IDLE;
-                nexthop_valid <= 0;
-                nexthop_not_found <= 0;
-            end
-        endcase 
+        endcase
     end
 end
 endmodule
