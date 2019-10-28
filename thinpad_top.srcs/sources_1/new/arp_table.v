@@ -39,13 +39,13 @@ reg[IP_LENGTH-1:0] lookup_ip_cache;
 wire [BUCKET_INDEX_WIDTH-1:0] lookup_bucket_index;
 assign lookup_bucket_index = {lookup_ip_cache[11],lookup_ip_cache[7],lookup_ip_cache[5],lookup_ip_cache[2]};
 
-reg [BUCKET_DEPTH_WIDTH-1:0] lookup_current_depth;
+reg [BUCKET_DEPTH_WIDTH:0] lookup_current_depth;
 
 reg  [IP_LENGTH+MAC_LENGTH+PORT_LENGTH-1:0] lookup_din;
 wire [IP_LENGTH+MAC_LENGTH+PORT_LENGTH-1:0] lookup_dout;
 wire [BUCKET_INDEX_WIDTH+BUCKET_DEPTH_WIDTH-1:0] lookup_addr;
 
-assign lookup_addr = {lookup_bucket_index,lookup_current_depth};
+assign lookup_addr = {lookup_bucket_index,lookup_current_depth[BUCKET_DEPTH_WIDTH-1:0]};
 
 
 reg [IP_LENGTH+MAC_LENGTH+PORT_LENGTH-1:0] lookup_data_entry;
@@ -163,7 +163,7 @@ always @(posedge clk) begin
                     lookup_ready <= 1;
                     insert_ready <= 1;
                     state <= STATE_IDLE;
-                end else if(lookup_current_depth == BUCKET_DEPTH_COUNT-1)begin
+                end else if(lookup_current_depth == BUCKET_DEPTH_COUNT)begin
                     state <= STATE_IDLE;
                     lookup_mac <= 0;
                     lookup_mac_valid <= 1;

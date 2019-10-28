@@ -119,14 +119,14 @@ always @(posedge clk) begin
                     if(lookup_dout[IP_LENGTH-1:0]!=0)
                         best_ans <= lookup_dout[IP_LENGTH-1:0];
                     if(pos!=-1)begin
-                    if(dest_ip_cache[pos] == 0)begin
-                        debug <= lookup_dout;
-                        current <= lookup_dout[IP_LENGTH+2*TRIE_INDEX_WIDTH-1:IP_LENGTH+TRIE_INDEX_WIDTH];
-                        pos<=pos-1;
-                    end else begin
-                        current <= lookup_dout[IP_LENGTH+TRIE_INDEX_WIDTH-1:IP_LENGTH];
-                        pos<=pos-1;
-                    end
+                        if(dest_ip_cache[pos] == 0)begin
+                            debug <= lookup_dout;
+                            current <= lookup_dout[IP_LENGTH+2*TRIE_INDEX_WIDTH-1:IP_LENGTH+TRIE_INDEX_WIDTH];
+                            pos<=pos-1;
+                        end else begin
+                            current <= lookup_dout[IP_LENGTH+TRIE_INDEX_WIDTH-1:IP_LENGTH];
+                            pos<=pos-1;
+                        end
                     end else begin
                         current <= 0;
                     end
