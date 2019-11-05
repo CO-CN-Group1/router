@@ -75,11 +75,11 @@ wire lookup_mac_valid;
 wire lookup_mac_not_found;
 wire lookup_ready_arp;
 
-reg [IP_LENGTH-1:0]   insert_ip;
-reg [MAC_LENGTH-1:0]  insert_mac;
-reg [PORT_LENGTH-1:0] insert_port;
-reg insert_valid;
-wire insert_ready;
+(*mark_debug = "true"*)reg [IP_LENGTH-1:0]   insert_ip;
+(*mark_debug = "true"*)reg [MAC_LENGTH-1:0]  insert_mac;
+(*mark_debug = "true"*)reg [PORT_LENGTH-1:0] insert_port;
+(*mark_debug = "true"*)reg insert_valid;
+(*mark_debug = "true"*)wire insert_ready;
 arp_table #(
     .IP_LENGTH(IP_LENGTH),
     .PORT_LENGTH(PORT_LENGTH),
@@ -156,6 +156,7 @@ always @(posedge clk)begin
             STATE_COMPUTE:begin
                 if (data[16]==8'h08 && data[17]==8'h06) begin
                     state<=STATE_ARPUPDATE;
+                    // Debug state<=STATE_ARPRESPONSE;
                 end
                 else begin
                     if ({data[34],data[35],data[36],data[37]}==my_ip) begin
