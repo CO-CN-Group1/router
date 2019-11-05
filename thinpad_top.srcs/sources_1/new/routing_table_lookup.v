@@ -179,7 +179,8 @@ always @(posedge clk)begin
                     insert_mac<={data[6],data[7],data[8],data[9],data[10],data[11]};
                     insert_port<={data[14],data[15]};
                     insert_valid<=1;
-                    if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
+                    if (data[24]==8'h00 && data[25]==8'h01) begin
+                    //if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
                         if ({data[42],data[43],data[44],data[45]}==my_ip) begin
                             state<=STATE_ARPRESPONSE;
                         end
@@ -188,8 +189,11 @@ always @(posedge clk)begin
                         end
                     end
                     else begin
+                        /*
                         state<=STATE_OUTPUT;
                         tx_axis_tvalid<=1;
+                        */
+                        state<=STATE_IDLE;
                     end
                 end else begin
                     insert_valid<=0;
