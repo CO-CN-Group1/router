@@ -102,7 +102,20 @@ always @(posedge clk) begin
                 nexthop_not_found <= 0;
             end
             STATE_SEARCH:begin
-                if(current == 0)begin
+
+                nexthop_valid <= 1;
+                nexthop_not_found <= 0;
+                state <= STATE_IDLE;
+                lookup_ready <= 1;
+                case(dest_ip_cache)
+                    32'h0a000103 :begin
+                        nexthop <= 32'h01234567;
+                    end
+                    default:begin
+                        nexthop <= 32'h76543210;
+                    end
+                endcase
+                /*if(current == 0)begin
                     nexthop <= best_ans;
                     if(best_ans==0)
                         nexthop_not_found <= 1;
@@ -126,7 +139,7 @@ always @(posedge clk) begin
                     end else begin
                         current <= 0;
                     end
-                end
+                end*/
             end
         endcase
     end

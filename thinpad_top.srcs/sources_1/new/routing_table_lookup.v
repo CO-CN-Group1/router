@@ -23,7 +23,7 @@ module routing_table_lookup #
 
 
 
-reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
+(*mark_debug = "true"*)reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
 integer data_head = 0, data_tail = 0;
 localparam[3:0]
     STATE_IDLE = 0,
@@ -35,7 +35,7 @@ localparam[3:0]
     STATE_ROUTING=6,
     STATE_ARPQUERY=7,
     STATE_ARPREQUEST=8;
-reg[3:0] state = STATE_IDLE;
+(*mark_debug = "true"*)reg[3:0] state = STATE_IDLE;
 
 reg [IP_LENGTH-1:0] my_ip=32'h0a000001;
 reg [MAC_LENGTH-1:0] my_mac=48'habcdefabcdef;
@@ -138,7 +138,7 @@ always @(posedge clk)begin
                 end    
             end
             STATE_INPUT:begin
-                led_out<=16'h1100;
+                //led_out<=16'h1100;
                 tx_axis_tvalid <=0;
                 if(rx_axis_tvalid && rx_axis_tready_int)begin
                     if(rx_axis_tlast) begin
@@ -179,6 +179,7 @@ always @(posedge clk)begin
                     insert_mac<={data[6],data[7],data[8],data[9],data[10],data[11]};
                     insert_port<={data[14],data[15]};
                     insert_valid<=1;
+                    led_out <= {data[14],data[15]};
                     if (data[0]==8'hff && data[1]==8'hff && data[2]==8'hff && data[3]==8'hff && data[4]==8'hff && data[5]==8'hff) begin
                         if ({data[42],data[43],data[44],data[45]}==my_ip) begin
                             state<=STATE_ARPRESPONSE;

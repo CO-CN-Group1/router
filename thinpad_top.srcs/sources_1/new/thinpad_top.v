@@ -383,8 +383,8 @@ routing_table_lookup lookup_inst(
     .tx_axis_tdata                  (eth_tx_axis_fifo_tdata),
     .tx_axis_tvalid                 (eth_tx_axis_fifo_tvalid),
     .tx_axis_tlast                  (eth_tx_axis_fifo_tlast),
-    .tx_axis_tready                 (eth_tx_axis_fifo_tready)//,
-    //.led_out(led_bits)
+    .tx_axis_tready                 (eth_tx_axis_fifo_tready),
+    .led_out(leds)
 );
 
 

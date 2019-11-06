@@ -7,15 +7,15 @@ module rx_axis_tdata_crc_filter #
     input wire                      clk,
     input wire                      rst,
 
-    input wire [DATA_WIDTH-1:0]     fifo_tdata,
-    input wire                      fifo_tvalid,
-    input wire                      fifo_tlast,
-    output wire                     fifo_tready,
-
-    output reg[DATA_WIDTH-1:0]      no_crc_tdata,
-    output reg                      no_crc_tvalid,
-    output reg                      no_crc_tlast,
-    input wire                      no_crc_tready
+    (*mark_debug = "true"*)input wire [DATA_WIDTH-1:0]     fifo_tdata,
+    (*mark_debug = "true"*)input wire                      fifo_tvalid,
+    (*mark_debug = "true"*)input wire                      fifo_tlast,
+    (*mark_debug = "true"*)output wire                     fifo_tready,
+    //output reg                     fifo_tready,
+    (*mark_debug = "true"*)output reg[DATA_WIDTH-1:0]      no_crc_tdata,
+    (*mark_debug = "true"*)output reg                      no_crc_tvalid,
+    (*mark_debug = "true"*)output reg                      no_crc_tlast,
+    (*mark_debug = "true"*)input wire                      no_crc_tready
 );
 
 reg [DATA_WIDTH-1:0]    buffer[0:CRC_LENGTH];
@@ -32,6 +32,7 @@ always @(posedge clk or posedge rst) begin
         no_crc_tvalid <= 0;
         no_crc_tlast <= 0;
         no_crc_tdata <= 0;
+        //fifo_tready <=0;
         //led_bits <= 16'h0000;
     end else begin
         if(no_crc_tlast)begin
@@ -39,6 +40,7 @@ always @(posedge clk or posedge rst) begin
             buffer_ed <= 0;
             no_crc_tvalid <= 0;
             no_crc_tlast <= 0;
+            //fifo_tready <= for
             //led_bits <= led_bits+1;
         end else if(fifo_tvalid && fifo_tready) begin
             if(buffer_ed+1 == buffer_st||(buffer_ed==CRC_LENGTH&&buffer_st==0))begin
