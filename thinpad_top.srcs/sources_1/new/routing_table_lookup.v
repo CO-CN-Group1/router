@@ -34,7 +34,8 @@ localparam[3:0]
     STATE_ARPRESPONSE=5,
     STATE_ROUTING=6,
     STATE_ARPQUERY=7,
-    STATE_ARPREQUEST=8;
+    STATE_ARPREQUEST=8,
+    STATE_SLEEP=9;
 (*mark_debug="true"*)reg[3:0] state = STATE_IDLE;
 
 reg [IP_LENGTH-1:0] my_ip=32'h0a000001;
@@ -235,10 +236,14 @@ always @(posedge clk or posedge rst)begin
                 else begin
                     if(nexthop_valid) begin
                         nexthop_cache<=nexthop;
-                        state<=STATE_ARPQUERY;
-                        lookup_valid<=1;
+                        state<=STATE_SLEEP;
+                        //lookup_valid<=1;
                     end
                 end
+            end
+            STATE_SLEEP:begin
+                state<=STATE_ARPQUERY;
+                lookup_valid<=1;
             end
             STATE_ARPQUERY:begin
                 if (lookup_valid) begin
