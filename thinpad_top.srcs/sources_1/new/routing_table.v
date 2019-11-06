@@ -108,7 +108,7 @@ always @(posedge clk) begin
                 state <= STATE_IDLE;
                 lookup_ready <= 0;
                 case(dest_ip_cache)
-                    32'h0a000001 :begin
+                    32'h0a000103 :begin
                         nexthop <= 32'h01234567;
                     end
                     default:begin
