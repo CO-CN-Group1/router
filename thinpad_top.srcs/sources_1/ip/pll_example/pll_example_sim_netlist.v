@@ -1,10 +1,10 @@
 // Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-// Date        : Fri Nov  1 00:38:00 2019
-// Host        : Spectre running 64-bit major release  (build 9200)
+// Date        : Tue Nov  5 20:31:01 2019
+// Host        : LIANGZHAOA230 running 64-bit Service Pack 1  (build 7601)
 // Command     : write_verilog -force -mode funcsim
-//               C:/codes/connect/cod19grp1-connect/thinpad_top.srcs/sources_1/ip/pll_example/pll_example_sim_netlist.v
+//               C:/Users/liangzhao/cod19grp1-linked/thinpad_top.srcs/sources_1/ip/pll_example/pll_example_sim_netlist.v
 // Design      : pll_example
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
