@@ -280,7 +280,7 @@ always @(posedge clk or posedge rst)begin
                             {data[26],data[27],data[28],data[29],data[30],data[31]}<=my_mac;
                             {data[32],data[33],data[34],data[35]}<=my_ip;
                             {data[36],data[37],data[38],data[39],data[40],data[41]}<=48'h000000000000;
-                            {data[42],data[43],data[44],data[45]}<={data[34],data[35],data[36],data[37]};
+                            {data[42],data[43],data[44],data[45]}<=nexthop_cache;//{data[34],data[35],data[36],data[37]};
                             {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
                             data_tail<=60;
                             state <= STATE_OUTPUT;

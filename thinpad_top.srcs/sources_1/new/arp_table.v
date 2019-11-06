@@ -203,7 +203,7 @@ always @(posedge clk) begin
                 lookup_port <= 1;
                 state <= STATE_IDLE;
                 case(lookup_ip_cache)
-                    32'h01234567:begin
+                    32'h01234566:begin
                         lookup_mac_not_found <= 0;
                         lookup_mac <= 48'h0123456789ab;
                     end
