@@ -90,7 +90,7 @@ arp_table #(
     .rst(rst),
     
     .lookup_ip(nexthop_cache),
-    .lookup_valid(lookup_valid),
+    .lookup_valid(nexthop_valid),
     .lookup_mac(lookup_mac),
     .lookup_mac_valid(lookup_mac_valid),
     .lookup_port(lookup_port),
