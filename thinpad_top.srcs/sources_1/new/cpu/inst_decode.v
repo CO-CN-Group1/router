@@ -1,4 +1,5 @@
 `timescale 1ns/1ps
+`include "defines.v"
 
 module inst_decode(
     input wire rst,
@@ -15,11 +16,20 @@ module inst_decode(
     output reg[31:0] reg1,
     output reg[31:0] reg2,
     output reg[4:0] wd,
-    output reg wreg
+    output reg wreg,
+    
+    input wire ex_wreg,
+    input wire[31:0] ex_wdata,
+    input wire[4:0] ex_wd,
+
+    input wire mem_wreg,
+    input wire[31:0] mem_wdata,
+    input wire[4:0] mem_wd
 );
 
 reg[31:0] imme;
 wire[5:0] op = inst[31:26];
+wire[5:0] func = inst[5:0];
 
 always @(*) begin
     if(rst) begin
@@ -47,9 +57,160 @@ always @(*) begin
                 regs_addr2 <= inst[20:16];
                 wd <= inst[20:16]; 
             end
+            `EXE_ANDI:begin
+                wreg <= 1;
+                aluop <= `EXE_AND_OP;
+                alusel <= `EXE_RES_LOGIC;
+                regs_re1 <= 1;
+                regs_re2 <= 0;
+                imme <= {16'h0,inst[15:0]};
+                regs_addr1 <= inst[25:21];
+                regs_addr2 <= inst[20:16];
+                wd <= inst[20:16];
+            end
+            `EXE_XORI:begin
+                wreg <= 1;
+                aluop <= `EXE_XOR_OP;
+                alusel <= `EXE_RES_LOGIC;
+                regs_re1 <= 1;
+                regs_re2 <= 0;
+                imme <= {16'h0,inst[15:0]};
+                regs_addr1 <= inst[25:21];
+                regs_addr2 <= inst[20:16];
+                wd <= inst[20:16];
+            end
+            `EXE_LUI:begin
+                wreg <= 1;
+                aluop <= `EXE_OR_OP;
+                alusel <= `EXE_RES_LOGIC;
+                regs_re1 <= 1;
+                regs_re2 <= 0;
+                imme <= {inst[15:0],16'b0};
+                wd <= inst[20:16];
+            end
+            `EXE_PREF:begin
+               wreg <= 0;
+               aluop <= `EXE_NOP_OP;
+               alusel <= `EXE_RES_NOP;
+               regs_re1 <= 0;
+               regs_re2 <= 0;
+               imme <= 0;
+               wd <= 0; 
+            end
+            `EXE_SPECIAL:begin
+                case(func)
+                    `EXE_AND:begin
+                        wreg <= 1;
+                        aluop <= `EXE_AND_OP;
+                        alusel <= `EXE_RES_LOGIC;
+                        regs_re1 <= 1;
+                        regs_re2 <= 1;
+                        imme <= 0;
+                        regs_addr1 <= inst[25:21];
+                        regs_addr2 <= inst[20:16];
+                        wd <= inst[15:11];
+                    end
+                    `EXE_OR:begin
+                        wreg <= 1;
+                        aluop <= `EXE_OR_OP;
+                        alusel <= `EXE_RES_LOGIC;
+                        regs_re1 <= 1;
+                        regs_re2 <= 1;
+                        imme <= 0;
+                        regs_addr1 <= inst[25:21];
+                        regs_addr2 <= inst[20:16];
+                        wd <= inst[15:11];
+                    end
+                    `EXE_XOR:begin
+                        wreg <= 1;
+                        aluop <= `EXE_XOR_OP;
+                        alusel <= `EXE_RES_LOGIC;
+                        regs_re1 <= 1;
+                        regs_re2 <= 1;
+                        imme <= 0;
+                        regs_addr1 <= inst[25:21];
+                        regs_addr2 <= inst[20:16];
+                        wd <= inst[15:11];
+                    end
+                    `EXE_NOR:begin
+                        wreg <= 1;
+                        aluop <= `EXE_NOR_OP;
+                        alusel <= `EXE_RES_LOGIC;
+                        regs_re1 <= 1;
+                        regs_re2 <= 1;
+                        imme <= 0;
+                        regs_addr1 <= inst[25:21];
+                        regs_addr2 <= inst[20:16];
+                        wd <= inst[15:11];
+                    end
+                    `EXE_SLLV:begin
+                        wreg <= 1;
+                        aluop <= `EXE_SLL_OP;
+                        alusel <= `EXE_RES_SHIFT;
+                        regs_re1 <= 1;
+                        regs_re2 <= 1;
+                        imme <= 0;
+                        regs_addr1 <= inst[25:21];
+                        regs_addr2 <= inst[20:16];
+                        wd <= inst[15:11];
+                    end
+                    `EXE_SRLV:begin
+                        wreg <= 1;
+                        aluop <= `EXE_SRL_OP;
+                        alusel <= `EXE_RES_SHIFT;
+                        regs_re1 <= 1;
+                        regs_re2 <= 1;
+                        imme <= 0;
+                        regs_addr1 <= inst[25:21];
+                        regs_addr2 <= inst[20:16];
+                        wd <= inst[15:11];
+                    end
+                    `EXE_SRAV:begin
+                        wreg <= 1;
+                        aluop <= `EXE_SRA_OP;
+                        alusel <= `EXE_RES_SHIFT;
+                        regs_re1 <= 1;
+                        regs_re2 <= 1;
+                        imme <= 0;
+                        regs_addr1 <= inst[25:21];
+                        regs_addr2 <= inst[20:16];
+                        wd <= inst[15:11];
+                    end
+                    `EXE_SLL:begin
+                        wreg <= 1;
+                        aluop <= `EXE_SLL_OP;
+                        alusel <= `EXE_RES_SHIFT;
+                        regs_re1 <= 1;
+                        regs_re2 <= 0;
+                        regs_addr1 <= inst[20:16];
+                        imme[4:0] <= inst[10:6];
+                        wd <= inst[15:11];
+                    end
+                    `EXE_SRL:begin
+                        wreg <= 1;
+                        aluop <= `EXE_SRL_OP;
+                        alusel <= `EXE_RES_SHIFT;
+                        regs_re1 <= 1;
+                        regs_re2 <= 0;
+                        regs_addr1 <= inst[20:16];
+                        imme[4:0] <= inst[10:6];
+                        wd <= inst[15:11];
+                    end
+                    `EXE_SRA:begin
+                        wreg <= 1;
+                        aluop <= `EXE_SRA_OP;
+                        alusel <= `EXE_RES_SHIFT;
+                        regs_re1 <= 1;
+                        regs_re2 <= 0;
+                        regs_addr1 <= inst[20:16];
+                        imme[4:0] <= inst[10:6];
+                        wd <= inst[15:11];
+                    end
+                endcase
+            end
             default:begin
-                aluop <= 0;
-                alusel <= 0;
+                aluop <= `EXE_NOP_OP;
+                alusel <= `EXE_RES_NOP;
                 regs_addr1 <= 0;
                 regs_addr2 <= 0;
                 regs_re1 <= 0;
@@ -64,6 +225,10 @@ end
 always @(*) begin
     if(rst) begin
         reg1 <= 0;
+    end else if(ex_wreg && ex_wd == regs_addr1 && regs_re1)begin
+        reg1 <= ex_wdata;    
+    end else if(mem_wreg && mem_wd == regs_addr1 && regs_re1)begin
+        reg1 <= mem_wdata;
     end else if(regs_re1)begin
         reg1 <= regs_data1;
     end else begin
@@ -73,6 +238,10 @@ end
 always @(*) begin
     if(rst) begin
         reg2 <= 0;
+    end else if(ex_wreg && ex_wd == regs_addr2 && regs_re2)begin
+        reg2 <= ex_wdata;    
+    end else if(mem_wreg && mem_wd == regs_addr2 && regs_re2)begin
+        reg2 <= mem_wdata;
     end else if(regs_re2)begin
         reg2 <= regs_data2;
     end else begin

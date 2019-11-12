@@ -47,24 +47,9 @@ assign ext_ram_be_n = 15;
 assign ext_ram_oe_n = 1;
 assign ext_ram_we_n = 1;
 
-inst_fetch inst_fetch_inst(
-    .clk(clk),
-    .rst(rst),
-    .pc(base_ram_addr),
-    .ce(base_ram_ce_n)
-);
 
 wire[19:0] id_pc;
 wire[31:0] id_inst;
-
-if_id if_id_inst(
-    .clk(clk),
-    .rst(rst),
-    .if_pc(base_ram_addr),
-    .if_inst(base_ram_data),
-    .id_pc(id_pc),
-    .id_inst(id_inst)
-);
 
 wire[31:0] regs_data1,regs_data2;
 wire[4:0] regs_addr1,regs_addr2;
@@ -74,6 +59,44 @@ wire[2:0] id_alusel;
 wire[31:0] id_reg1,id_reg2;
 wire[4:0] id_wd;
 wire id_wreg;
+
+wire wb_we;
+wire[4:0] wb_addr;
+wire[31:0] wb_wdata;
+
+wire[7:0] ex_aluop;
+wire[2:0] ex_alusel;
+wire[31:0] ex_reg1,ex_reg2;
+wire[4:0] ex_wd_i;
+wire ex_wreg_i; 
+
+wire[31:0] ex_wdata;
+wire[4:0] ex_wd_o;
+wire ex_wreg_o;
+
+wire[31:0] mem_wdata_i;
+wire[4:0] mem_wd_i;
+wire mem_wreg_i;
+
+wire[31:0] mem_wdata_o;
+wire[4:0] mem_wd_o;
+wire mem_wreg_o;
+
+inst_fetch inst_fetch_inst(
+    .clk(clk),
+    .rst(rst),
+    .pc(base_ram_addr),
+    .ce(base_ram_ce_n)
+);
+
+if_id if_id_inst(
+    .clk(clk),
+    .rst(rst),
+    .if_pc(base_ram_addr),
+    .if_inst(base_ram_data),
+    .id_pc(id_pc),
+    .id_inst(id_inst)
+);
 
 inst_decode inst_decode_inst(
     .rst(rst),
@@ -90,12 +113,14 @@ inst_decode inst_decode_inst(
     .reg1(id_reg1),
     .reg2(id_reg2),
     .wd(id_wd),
-    .wreg(id_wreg)
+    .wreg(id_wreg),
+    .ex_wreg(ex_wreg_o),
+    .ex_wdata(ex_wdata),
+    .ex_wd(ex_wd_o),
+    .mem_wreg(mem_wreg_o),
+    .mem_wdata(mem_wdata_o),
+    .mem_wd(mem_wd_o)
 );
-
-wire wb_we;
-wire[4:0] wb_addr;
-wire[31:0] wb_wdata;
 
 regs regs_inst(
     .rst(rst),
@@ -110,12 +135,6 @@ regs regs_inst(
     .rdata1(regs_data1),
     .rdata2(regs_data2)
 );
-
-wire[7:0] ex_aluop;
-wire[2:0] ex_alusel;
-wire[31:0] ex_reg1,ex_reg2;
-wire[4:0] ex_wd_i;
-wire ex_wreg_i; 
 
 id_ex id_ex_inst(
     .clk(clk),
@@ -135,10 +154,6 @@ id_ex id_ex_inst(
     .ex_wreg(ex_wreg_i)      
 );
 
-wire[31:0] ex_wdata;
-wire[4:0] ex_wd_o;
-wire ex_wreg_o;
-
 exe exe_inst(
     .rst(rst),
     .aluop(ex_aluop),
@@ -152,9 +167,6 @@ exe exe_inst(
     .wd_o(ex_wd_o)
 );
 
-wire[31:0] mem_wdata_i;
-wire[4:0] mem_wd_i;
-wire mem_wreg_i;
 
 ex_mem ex_mem_inst(
     .rst(rst),
@@ -167,9 +179,6 @@ ex_mem ex_mem_inst(
     .mem_wreg(mem_wreg_i),
     .mem_wdata(mem_wdata_i)
 );
-wire[31:0] mem_wdata_o;
-wire[4:0] mem_wd_o;
-wire mem_wreg_o;
 
 memory memory_inst(
     .rst(rst),

@@ -128,7 +128,7 @@ initial begin
         base1.mem_array1[i] = tmp_array[i][15:8];
         base2.mem_array0[i] = tmp_array[i][23:16];
         base2.mem_array1[i] = tmp_array[i][31:24];
-        $display("%4h",{base2.mem_array1[i],base2.mem_array0[i],base1.mem_array1[i],base1.mem_array0[i]});
+        $display("%32b",{base2.mem_array1[i],base2.mem_array0[i],base1.mem_array1[i],base1.mem_array0[i]});
     end
 end
 
