@@ -7,3 +7,4 @@ thinpad_top.runs
 thinpad_top.sim
 *.jou
 *.log
+*.str
