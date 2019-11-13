@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="289733334fs"></ZoomStartTime>
-      <ZoomEndTime time="531333335fs"></ZoomEndTime>
-      <Cursor1Time time="330000000fs"></Cursor1Time>
+      <ZoomStartTime time="329400000fs"></ZoomStartTime>
+      <ZoomEndTime time="573000001fs"></ZoomEndTime>
+      <Cursor1Time time="416400000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="175"></NameColumnWidth>
-      <ValueColumnWidth column_width="140"></ValueColumnWidth>
+      <ValueColumnWidth column_width="130"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="38" />
+   <WVObjectSize size="36" />
    <wvobject fp_name="/mips_tb/clk_50M" type="logic">
       <obj_property name="ElementShortName">clk_50M</obj_property>
       <obj_property name="ObjectShortName">clk_50M</obj_property>
@@ -37,97 +37,29 @@
       <obj_property name="ObjectShortName">reg_arr[0:31][31:0]</obj_property>
       <obj_property name="isExpanded"></obj_property>
    </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/rst" type="logic">
-      <obj_property name="ElementShortName">rst</obj_property>
-      <obj_property name="ObjectShortName">rst</obj_property>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/regs_hilo_inst/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/pc" type="array">
-      <obj_property name="ElementShortName">pc[19:0]</obj_property>
-      <obj_property name="ObjectShortName">pc[19:0]</obj_property>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/regs_hilo_inst/we" type="logic">
+      <obj_property name="ElementShortName">we</obj_property>
+      <obj_property name="ObjectShortName">we</obj_property>
    </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/inst" type="array">
-      <obj_property name="ElementShortName">inst[31:0]</obj_property>
-      <obj_property name="ObjectShortName">inst[31:0]</obj_property>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/regs_hilo_inst/hi_i" type="array">
+      <obj_property name="ElementShortName">hi_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">hi_i[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/regs_data1" type="array">
-      <obj_property name="ElementShortName">regs_data1[31:0]</obj_property>
-      <obj_property name="ObjectShortName">regs_data1[31:0]</obj_property>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/regs_hilo_inst/lo_i" type="array">
+      <obj_property name="ElementShortName">lo_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">lo_i[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/regs_addr1" type="array">
-      <obj_property name="ElementShortName">regs_addr1[4:0]</obj_property>
-      <obj_property name="ObjectShortName">regs_addr1[4:0]</obj_property>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/regs_hilo_inst/hi_o" type="array">
+      <obj_property name="ElementShortName">hi_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">hi_o[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/regs_re1" type="logic">
-      <obj_property name="ElementShortName">regs_re1</obj_property>
-      <obj_property name="ObjectShortName">regs_re1</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/regs_data2" type="array">
-      <obj_property name="ElementShortName">regs_data2[31:0]</obj_property>
-      <obj_property name="ObjectShortName">regs_data2[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/regs_addr2" type="array">
-      <obj_property name="ElementShortName">regs_addr2[4:0]</obj_property>
-      <obj_property name="ObjectShortName">regs_addr2[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/regs_re2" type="logic">
-      <obj_property name="ElementShortName">regs_re2</obj_property>
-      <obj_property name="ObjectShortName">regs_re2</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/aluop" type="array">
-      <obj_property name="ElementShortName">aluop[7:0]</obj_property>
-      <obj_property name="ObjectShortName">aluop[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/alusel" type="array">
-      <obj_property name="ElementShortName">alusel[2:0]</obj_property>
-      <obj_property name="ObjectShortName">alusel[2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/reg1" type="array">
-      <obj_property name="ElementShortName">reg1[31:0]</obj_property>
-      <obj_property name="ObjectShortName">reg1[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/reg2" type="array">
-      <obj_property name="ElementShortName">reg2[31:0]</obj_property>
-      <obj_property name="ObjectShortName">reg2[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/wd" type="array">
-      <obj_property name="ElementShortName">wd[4:0]</obj_property>
-      <obj_property name="ObjectShortName">wd[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/wreg" type="logic">
-      <obj_property name="ElementShortName">wreg</obj_property>
-      <obj_property name="ObjectShortName">wreg</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/ex_wreg" type="logic">
-      <obj_property name="ElementShortName">ex_wreg</obj_property>
-      <obj_property name="ObjectShortName">ex_wreg</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/ex_wdata" type="array">
-      <obj_property name="ElementShortName">ex_wdata[31:0]</obj_property>
-      <obj_property name="ObjectShortName">ex_wdata[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/ex_wd" type="array">
-      <obj_property name="ElementShortName">ex_wd[4:0]</obj_property>
-      <obj_property name="ObjectShortName">ex_wd[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/mem_wreg" type="logic">
-      <obj_property name="ElementShortName">mem_wreg</obj_property>
-      <obj_property name="ObjectShortName">mem_wreg</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/mem_wdata" type="array">
-      <obj_property name="ElementShortName">mem_wdata[31:0]</obj_property>
-      <obj_property name="ObjectShortName">mem_wdata[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/mem_wd" type="array">
-      <obj_property name="ElementShortName">mem_wd[4:0]</obj_property>
-      <obj_property name="ObjectShortName">mem_wd[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/imme" type="array">
-      <obj_property name="ElementShortName">imme[31:0]</obj_property>
-      <obj_property name="ObjectShortName">imme[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/inst_decode_inst/op" type="array">
-      <obj_property name="ElementShortName">op[5:0]</obj_property>
-      <obj_property name="ObjectShortName">op[5:0]</obj_property>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/regs_hilo_inst/lo_o" type="array">
+      <obj_property name="ElementShortName">lo_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">lo_o[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/rst" type="logic">
       <obj_property name="ElementShortName">rst</obj_property>
@@ -136,6 +68,7 @@
    <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/aluop" type="array">
       <obj_property name="ElementShortName">aluop[7:0]</obj_property>
       <obj_property name="ObjectShortName">aluop[7:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/alusel" type="array">
       <obj_property name="ElementShortName">alusel[2:0]</obj_property>
@@ -169,8 +102,68 @@
       <obj_property name="ElementShortName">wd_o[4:0]</obj_property>
       <obj_property name="ObjectShortName">wd_o[4:0]</obj_property>
    </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/hi_i" type="array">
+      <obj_property name="ElementShortName">hi_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">hi_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/lo_i" type="array">
+      <obj_property name="ElementShortName">lo_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">lo_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/mem_hi" type="array">
+      <obj_property name="ElementShortName">mem_hi[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_hi[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/mem_lo" type="array">
+      <obj_property name="ElementShortName">mem_lo[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_lo[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/wb_hi" type="array">
+      <obj_property name="ElementShortName">wb_hi[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_hi[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/wb_lo" type="array">
+      <obj_property name="ElementShortName">wb_lo[31:0]</obj_property>
+      <obj_property name="ObjectShortName">wb_lo[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/mem_hilo_we" type="logic">
+      <obj_property name="ElementShortName">mem_hilo_we</obj_property>
+      <obj_property name="ObjectShortName">mem_hilo_we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/wb_hilo_we" type="logic">
+      <obj_property name="ElementShortName">wb_hilo_we</obj_property>
+      <obj_property name="ObjectShortName">wb_hilo_we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/hilo_we" type="logic">
+      <obj_property name="ElementShortName">hilo_we</obj_property>
+      <obj_property name="ObjectShortName">hilo_we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/hi_o" type="array">
+      <obj_property name="ElementShortName">hi_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">hi_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/lo_o" type="array">
+      <obj_property name="ElementShortName">lo_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">lo_o[31:0]</obj_property>
+   </wvobject>
    <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/logic_ans" type="array">
       <obj_property name="ElementShortName">logic_ans[31:0]</obj_property>
       <obj_property name="ObjectShortName">logic_ans[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/shift_ans" type="array">
+      <obj_property name="ElementShortName">shift_ans[31:0]</obj_property>
+      <obj_property name="ObjectShortName">shift_ans[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/move_ans" type="array">
+      <obj_property name="ElementShortName">move_ans[31:0]</obj_property>
+      <obj_property name="ObjectShortName">move_ans[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/hi" type="array">
+      <obj_property name="ElementShortName">hi[31:0]</obj_property>
+      <obj_property name="ObjectShortName">hi[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/mips_tb/mips_sopc/mips_cpu_inst/exe_inst/lo" type="array">
+      <obj_property name="ElementShortName">lo[31:0]</obj_property>
+      <obj_property name="ObjectShortName">lo[31:0]</obj_property>
    </wvobject>
 </wave_config>

@@ -74,13 +74,31 @@ wire[31:0] ex_wdata;
 wire[4:0] ex_wd_o;
 wire ex_wreg_o;
 
+wire[31:0] ex_hi_o;
+wire[31:0] ex_lo_o;
+wire ex_hilo_we_o;
+
+
 wire[31:0] mem_wdata_i;
 wire[4:0] mem_wd_i;
 wire mem_wreg_i;
+wire[31:0] mem_hi_i;
+wire[31:0] mem_lo_i;
+wire mem_hilo_we_i;
 
 wire[31:0] mem_wdata_o;
 wire[4:0] mem_wd_o;
 wire mem_wreg_o;
+wire[31:0] mem_hi_o;
+wire[31:0] mem_lo_o;
+wire mem_hilo_we_o;
+
+wire[31:0] hi_i;
+wire[31:0] hi_o;
+wire[31:0] lo_i;
+wire[31:0] lo_o;
+wire hilo_we;
+
 
 inst_fetch inst_fetch_inst(
     .clk(clk),
@@ -164,7 +182,31 @@ exe exe_inst(
     .wreg_i(ex_wreg_i),
     .wdata(ex_wdata),
     .wreg_o(ex_wreg_o),
-    .wd_o(ex_wd_o)
+    .wd_o(ex_wd_o),
+
+    .mem_hi(mem_hi_o),
+    .mem_lo(mem_lo_o),
+    .mem_hilo_we(mem_hilo_we_o),
+    .wb_hi(hi_i),
+    .wb_lo(lo_i),
+    .wb_hilo_we(hilo_we),
+
+    .hi_i(hi_o),
+    .lo_i(lo_o),
+
+    .hilo_we(ex_hilo_we_o),
+    .hi_o(ex_hi_o),
+    .lo_o(ex_lo_o)
+);
+
+regs_hilo regs_hilo_inst(
+    .clk(clk),
+    .rst(rst),
+    .we(hilo_we),
+    .hi_i(hi_i),
+    .hi_o(hi_o),
+    .lo_i(lo_i),
+    .lo_o(lo_o)
 );
 
 
@@ -174,10 +216,17 @@ ex_mem ex_mem_inst(
     .ex_wreg(ex_wreg_o),
     .ex_wdata(ex_wdata),
     .ex_wd(ex_wd_o),
-    
+    .ex_hi(ex_hi_o),
+    .ex_lo(ex_lo_o),
+    .ex_hilo_we(ex_hilo_we_o),
+
+
     .mem_wd(mem_wd_i),
     .mem_wreg(mem_wreg_i),
-    .mem_wdata(mem_wdata_i)
+    .mem_wdata(mem_wdata_i),
+    .mem_hi(mem_hi_i),
+    .mem_lo(mem_lo_i),
+    .mem_hilo_we(mem_hilo_we_i)
 );
 
 memory memory_inst(
@@ -185,10 +234,18 @@ memory memory_inst(
     .wdata_i(mem_wdata_i),
     .wreg_i(mem_wreg_i),
     .wd_i(mem_wd_i),
+    .hi_i(mem_hi_i),
+    .lo_i(mem_lo_i),
+    .hilo_we_i(mem_hilo_we_i),
+
 
     .wdata_o(mem_wdata_o),
     .wreg_o(mem_wreg_o),
-    .wd_o(mem_wd_o)
+    .wd_o(mem_wd_o),
+    .hi_o(mem_hi_o),
+    .lo_o(mem_lo_o),
+    .hilo_we_o(mem_hilo_we_o)
+
 );
 
 mem_wb mem_wb_inst(
@@ -197,10 +254,15 @@ mem_wb mem_wb_inst(
     .mem_wd(mem_wd_o),
     .mem_wdata(mem_wdata_o),
     .mem_wreg(mem_wreg_o),
-
+    .mem_hi(mem_hi_o),
+    .mem_lo(mem_lo_o),
+    .mem_hilo_we(mem_hilo_we_o),
     .wb_wd(wb_addr),
     .wb_wreg(wb_we),
-    .wb_wdata(wb_wdata)
+    .wb_wdata(wb_wdata),
+    .wb_hi(hi_i),
+    .wb_lo(lo_i),
+    .wb_hilo_we(hilo_we)
 );
 
 endmodule

@@ -150,8 +150,8 @@ always @(*) begin
                         regs_re1 <= 1;
                         regs_re2 <= 1;
                         imme <= 0;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
+                        regs_addr1 <= inst[20:16];
+                        regs_addr2 <= inst[25:21];
                         wd <= inst[15:11];
                     end
                     `EXE_SRLV:begin
@@ -161,8 +161,8 @@ always @(*) begin
                         regs_re1 <= 1;
                         regs_re2 <= 1;
                         imme <= 0;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
+                        regs_addr1 <= inst[20:16];
+                        regs_addr2 <= inst[25:21];
                         wd <= inst[15:11];
                     end
                     `EXE_SRAV:begin
@@ -172,8 +172,8 @@ always @(*) begin
                         regs_re1 <= 1;
                         regs_re2 <= 1;
                         imme <= 0;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
+                        regs_addr1 <= inst[20:16];
+                        regs_addr2 <= inst[25:21];
                         wd <= inst[15:11];
                     end
                     `EXE_SLL:begin
@@ -205,6 +205,64 @@ always @(*) begin
                         regs_addr1 <= inst[20:16];
                         imme[4:0] <= inst[10:6];
                         wd <= inst[15:11];
+                    end
+                    `EXE_MOVN:begin
+                        aluop <= `EXE_MOVN_OP;
+                        alusel <= `EXE_RES_MOVE;
+                        regs_re1 <= 1;
+                        regs_re2 <= 1;
+                        regs_addr1 <= inst[25:21];
+                        regs_addr2 <= inst[20:16];
+                        wd <= inst[15:11];
+                        if(reg2!=0)
+                            wreg <= 1;
+                        else
+                            wreg <= 0;
+                    end
+                    `EXE_MOVZ:begin
+                        aluop <= `EXE_MOVN_OP;
+                        alusel <= `EXE_RES_MOVE;
+                        regs_re1 <= 1;
+                        regs_re2 <= 1;
+                        regs_addr1 <= inst[25:21];
+                        regs_addr2 <= inst[20:16];
+                        wd <= inst[15:11];
+                        if(reg2!=0)
+                            wreg <= 0;
+                        else
+                            wreg <= 1;
+                    end
+                    `EXE_MFHI:begin
+                        aluop <= `EXE_MFHI_OP;
+                        alusel <= `EXE_RES_MOVE;
+                        wreg <= 1;
+                        regs_re1 <= 0;
+                        regs_re2 <= 0;
+                        wd <= inst[15:11];
+                    end
+                    `EXE_MTHI:begin
+                        aluop <= `EXE_MTHI_OP;
+                        alusel <= `EXE_RES_MOVE;
+                        wreg <= 0;
+                        regs_re1 <= 1;
+                        regs_addr1 <= inst[25:21];
+                        regs_re2 <= 0;
+                    end
+                    `EXE_MFLO:begin
+                        aluop <= `EXE_MFLO_OP;
+                        alusel <= `EXE_RES_MOVE;
+                        wreg <= 1;
+                        regs_re1 <= 0;
+                        regs_re2 <= 0;
+                        wd <= inst[15:11];
+                    end
+                    `EXE_MTLO:begin
+                        aluop <= `EXE_MTLO_OP;
+                        alusel <= `EXE_RES_MOVE;
+                        wreg <= 0;
+                        regs_re1 <= 1;
+                        regs_addr1 <= inst[25:21];
+                        regs_re2 <= 0;
                     end
                 endcase
             end
