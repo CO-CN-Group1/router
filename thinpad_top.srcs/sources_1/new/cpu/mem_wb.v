@@ -8,7 +8,7 @@ module mem_wb(
     input wire[31:0] mem_hi,
     input wire[31:0] mem_lo,
     input wire mem_hilo_we,
-
+    input wire[0:1] stop,
 
     output reg[4:0] wb_wd,
     output reg wb_wreg,
@@ -26,7 +26,14 @@ always @(posedge clk)begin
         wb_hi <= 0;
         wb_lo <= 0;
         wb_hilo_we <=0;
-    end else begin
+    end else if(stop[0]&&!stop[1]) begin
+        wb_wd <= 0;
+        wb_wreg <= 0;
+        wb_wdata <= 0;
+        wb_hi <= 0;
+        wb_lo <= 0;
+        wb_hilo_we <=0;
+    end else if(!stop[0])begin
         wb_wd <= mem_wd;
         wb_wdata <= mem_wdata;
         wb_wreg <= mem_wreg;

@@ -99,12 +99,37 @@ wire[31:0] lo_i;
 wire[31:0] lo_o;
 wire hilo_we;
 
+wire[0:5] stop;
+wire stop_from_id,stop_from_ex;
+
+wire[63:0] ex_hilo_tmp_i;
+wire[1:0] ex_hilo_cnt_i;
+wire[63:0] ex_hilo_tmp_o;
+wire[1:0] ex_hilo_cnt_o;
+
+wire ex_signed_div;
+wire[31:0] ex_div_reg1;
+wire[31:0] ex_div_reg2;
+wire ex_div_start;
+wire[63:0] ex_div_ans;
+wire ex_div_finish;
+
+
+ctrl ctrl_inst(
+    .rst(rst),
+    .stop_from_id(stop_from_id),
+    .stop_from_ex(stop_from_ex),
+    .stop(stop)
+);
+
+
 
 inst_fetch inst_fetch_inst(
     .clk(clk),
     .rst(rst),
     .pc(base_ram_addr),
-    .ce(base_ram_ce_n)
+    .ce(base_ram_ce_n),
+    .stop(stop[0])
 );
 
 if_id if_id_inst(
@@ -113,7 +138,8 @@ if_id if_id_inst(
     .if_pc(base_ram_addr),
     .if_inst(base_ram_data),
     .id_pc(id_pc),
-    .id_inst(id_inst)
+    .id_inst(id_inst),
+    .stop(stop[1:2])
 );
 
 inst_decode inst_decode_inst(
@@ -137,7 +163,8 @@ inst_decode inst_decode_inst(
     .ex_wd(ex_wd_o),
     .mem_wreg(mem_wreg_o),
     .mem_wdata(mem_wdata_o),
-    .mem_wd(mem_wd_o)
+    .mem_wd(mem_wd_o),
+    .stop(stop_from_id)
 );
 
 regs regs_inst(
@@ -169,8 +196,12 @@ id_ex id_ex_inst(
     .ex_reg1(ex_reg1),
     .ex_reg2(ex_reg2),
     .ex_wd(ex_wd_i),
-    .ex_wreg(ex_wreg_i)      
+    .ex_wreg(ex_wreg_i),
+    .stop(stop[2:3])  
 );
+
+
+
 
 exe exe_inst(
     .rst(rst),
@@ -196,8 +227,33 @@ exe exe_inst(
 
     .hilo_we(ex_hilo_we_o),
     .hi_o(ex_hi_o),
-    .lo_o(ex_lo_o)
+    .lo_o(ex_lo_o),
+    .stop(stop_from_ex),
+    .hilo_tmp_i(ex_hilo_tmp_i),
+    .hilo_tmp_o(ex_hilo_tmp_o),
+    .hilo_cnt_i(ex_hilo_cnt_i),
+    .hilo_cnt_o(ex_hilo_cnt_o),
+    .signed_div(ex_signed_div),
+    .div_reg1(ex_div_reg1),
+    .div_reg2(ex_div_reg2),
+    .div_start(ex_div_start),
+    .div_ans(ex_div_ans),
+    .div_finish(ex_div_finish)
 );
+
+divide divie_inst(
+    .clk(clk),
+    .rst(rst),
+    .signed_div(ex_signed_div),
+    .reg1(ex_div_reg1),
+    .reg2(ex_div_reg2),
+    .start(ex_div_start),
+    .stop(0),
+    .ans(ex_div_ans),
+    .finish(ex_div_finish)
+);
+
+
 
 regs_hilo regs_hilo_inst(
     .clk(clk),
@@ -226,7 +282,12 @@ ex_mem ex_mem_inst(
     .mem_wdata(mem_wdata_i),
     .mem_hi(mem_hi_i),
     .mem_lo(mem_lo_i),
-    .mem_hilo_we(mem_hilo_we_i)
+    .mem_hilo_we(mem_hilo_we_i),
+    .stop(stop[3:4]),
+    .hilo_cnt_i(ex_hilo_cnt_o),
+    .hilo_cnt_o(ex_hilo_cnt_i),
+    .hilo_tmp_i(ex_hilo_tmp_o),
+    .hilo_tmp_o(ex_hilo_tmp_i)
 );
 
 memory memory_inst(
@@ -262,7 +323,8 @@ mem_wb mem_wb_inst(
     .wb_wdata(wb_wdata),
     .wb_hi(hi_i),
     .wb_lo(lo_i),
-    .wb_hilo_we(hilo_we)
+    .wb_hilo_we(hilo_we),
+    .stop(stop[4:5])
 );
 
 endmodule

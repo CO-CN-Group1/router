@@ -158,8 +158,8 @@ initial begin
     rst = 1;
     print = 0;
     #200 rst = 0;
-    #1000 print = 1;
-    $stop;
+    //#10000 print = 1;
+    //$stop;
 end 
 
 localparam BUFFER_SIZE = 32;

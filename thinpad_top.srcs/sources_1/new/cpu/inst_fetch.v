@@ -3,6 +3,7 @@
 module inst_fetch(
     input wire clk,
     input wire rst,
+    input wire stop,
     output reg[19:0] pc,
     output reg ce 
 );
@@ -18,7 +19,7 @@ end
 always @(posedge clk)begin
     if (ce == 1)begin
         pc <= 0;
-    end else begin
+    end else if(!stop) begin
         pc <= pc + 1;
     end
 end
