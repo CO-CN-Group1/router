@@ -37,7 +37,10 @@ module exe(
     output reg[31:0] div_reg2,
     output reg div_start,
     input wire[63:0] div_ans,
-    input wire div_finish
+    input wire div_finish,
+
+    input wire[31:0] link_addr,
+    input wire in_delayslot
 );
 
 reg[31:0] logic_ans;
@@ -347,9 +350,9 @@ always@(*) begin
     wd_o <= wd_i;
     if((aluop == `EXE_ADD_OP || aluop == `EXE_ADDI_OP || aluop == `EXE_SUB_OP) && overflow == 1) begin
 	 	wreg_o <= 0;
-	 end else begin
-	  wreg_o <= wreg_i;
-	 end
+	end else begin
+	    wreg_o <= wreg_i;
+	end
     case(alusel)
         `EXE_RES_LOGIC: begin
             wdata <= logic_ans;
@@ -365,6 +368,9 @@ always@(*) begin
         end
         `EXE_RES_ARITHMETIC:begin
             wdata <= arithmetic_ans;
+        end
+        `EXE_RES_JB:begin
+            wdata <= link_addr;
         end
         default:begin
             wdata <= 0;

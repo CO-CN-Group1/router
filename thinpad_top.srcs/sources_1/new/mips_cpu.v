@@ -47,6 +47,8 @@ assign ext_ram_be_n = 15;
 assign ext_ram_oe_n = 1;
 assign ext_ram_we_n = 1;
 
+wire[19:0] pc;
+
 
 wire[19:0] id_pc;
 wire[31:0] id_inst;
@@ -114,6 +116,16 @@ wire ex_div_start;
 wire[63:0] ex_div_ans;
 wire ex_div_finish;
 
+wire id_in_delayslot_o;
+wire id_in_delayslot_i;
+wire[31:0] id_link_addr;
+wire id_next_in_delayslot;
+wire[31:0] id_branch_addr;
+wire id_branch_we;
+
+wire ex_in_delayslot;
+wire[31:0] ex_link_addr;
+
 
 ctrl ctrl_inst(
     .rst(rst),
@@ -127,15 +139,25 @@ ctrl ctrl_inst(
 inst_fetch inst_fetch_inst(
     .clk(clk),
     .rst(rst),
-    .pc(base_ram_addr),
+    .pc(pc),
     .ce(base_ram_ce_n),
-    .stop(stop[0])
+    .stop(stop[0]),
+    .branch_addr(id_branch_addr),
+    .branch_we(id_branch_we)
 );
+
+
+
+pc2addr_debug pc2addr_debug_inst(
+    .pc(pc),
+    .addr(base_ram_addr)
+);
+
 
 if_id if_id_inst(
     .clk(clk),
     .rst(rst),
-    .if_pc(base_ram_addr),
+    .if_pc(pc),
     .if_inst(base_ram_data),
     .id_pc(id_pc),
     .id_inst(id_inst),
@@ -164,7 +186,13 @@ inst_decode inst_decode_inst(
     .mem_wreg(mem_wreg_o),
     .mem_wdata(mem_wdata_o),
     .mem_wd(mem_wd_o),
-    .stop(stop_from_id)
+    .stop(stop_from_id),
+    .in_delayslot_i(id_in_delayslot_i),
+    .in_delayslot_o(id_in_delayslot_o),
+    .branch_addr(id_branch_addr),
+    .branch_we(id_branch_we),
+    .link_addr(id_link_addr),
+    .next_in_delayslot(id_next_in_delayslot)
 );
 
 regs regs_inst(
@@ -197,7 +225,13 @@ id_ex id_ex_inst(
     .ex_reg2(ex_reg2),
     .ex_wd(ex_wd_i),
     .ex_wreg(ex_wreg_i),
-    .stop(stop[2:3])  
+    .stop(stop[2:3]),
+    .id_in_delayslot(id_in_delayslot_o),
+    .id_link_addr(id_link_addr),
+    .id_next_in_delayslot(id_next_in_delayslot),
+    .ex_link_addr(ex_link_addr),
+    .ex_in_delayslot(ex_in_delayslot),
+    .in_delayslot(id_in_delayslot_i)
 );
 
 
@@ -238,7 +272,9 @@ exe exe_inst(
     .div_reg2(ex_div_reg2),
     .div_start(ex_div_start),
     .div_ans(ex_div_ans),
-    .div_finish(ex_div_finish)
+    .div_finish(ex_div_finish),
+    .link_addr(ex_link_addr),
+    .in_delayslot(ex_in_delayslot)
 );
 
 divide divie_inst(
@@ -248,7 +284,7 @@ divide divie_inst(
     .reg1(ex_div_reg1),
     .reg2(ex_div_reg2),
     .start(ex_div_start),
-    .stop(0),
+    .stop(1'b0),
     .ans(ex_div_ans),
     .finish(ex_div_finish)
 );

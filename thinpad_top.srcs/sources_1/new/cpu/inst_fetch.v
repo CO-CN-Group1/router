@@ -4,9 +4,12 @@ module inst_fetch(
     input wire clk,
     input wire rst,
     input wire stop,
+    input wire branch_we,
+    input wire[31:0] branch_addr,
     output reg[19:0] pc,
     output reg ce 
 );
+
 
 always @(posedge clk)begin
     if(rst)begin
@@ -20,7 +23,11 @@ always @(posedge clk)begin
     if (ce == 1)begin
         pc <= 0;
     end else if(!stop) begin
-        pc <= pc + 1;
+        if(branch_we)begin
+            pc <= branch_addr; 
+        end else begin
+            pc <= pc + 4;
+        end
     end
 end
 endmodule

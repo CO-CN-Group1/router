@@ -26,12 +26,31 @@ module inst_decode(
     input wire[31:0] mem_wdata,
     input wire[4:0] mem_wd,
     
-    output reg stop
+    output reg stop,
+
+    input wire in_delayslot_i,
+    output reg in_delayslot_o,
+    output reg[31:0] branch_addr,
+    output reg branch_we,
+    output reg[31:0] link_addr,
+    output reg next_in_delayslot
 );
 
 reg[31:0] imme;
 wire[5:0] op = inst[31:26];
 wire[5:0] func = inst[5:0];
+wire[4:0] func2 = inst[20:16];
+wire[31:0] pc_next;
+assign pc_next = pc + 4;
+wire[31:0] pc_next2;
+assign pc_next2 = pc + 8;
+always @(*)begin
+    if(rst)
+        in_delayslot_o <= 0;
+    else
+        in_delayslot_o <= in_delayslot_i; 
+end
+
 
 always @(*) begin
     if(rst) begin
@@ -46,6 +65,11 @@ always @(*) begin
         wd <= 0;
         wreg <= 0;
         imme <= 0;
+        branch_addr <= 0;
+        branch_we <= 0;
+        next_in_delayslot <= 0;
+        link_addr <= 0;
+
     end else begin
         case (op)
             `EXE_ORI:begin
@@ -58,6 +82,10 @@ always @(*) begin
                 regs_addr1 <= inst[25:21];
                 regs_addr2 <= inst[20:16];
                 wd <= inst[20:16]; 
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
             end
             `EXE_ANDI:begin
                 wreg <= 1;
@@ -69,6 +97,10 @@ always @(*) begin
                 regs_addr1 <= inst[25:21];
                 regs_addr2 <= inst[20:16];
                 wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
             end
             `EXE_XORI:begin
                 wreg <= 1;
@@ -80,6 +112,10 @@ always @(*) begin
                 regs_addr1 <= inst[25:21];
                 regs_addr2 <= inst[20:16];
                 wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
             end
             `EXE_LUI:begin
                 wreg <= 1;
@@ -89,15 +125,23 @@ always @(*) begin
                 regs_re2 <= 0;
                 imme <= {inst[15:0],16'b0};
                 wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
             end
             `EXE_PREF:begin
-               wreg <= 0;
-               aluop <= `EXE_NOP_OP;
-               alusel <= `EXE_RES_NOP;
-               regs_re1 <= 0;
-               regs_re2 <= 0;
-               imme <= 0;
-               wd <= 0; 
+                wreg <= 0;
+                aluop <= `EXE_NOP_OP;
+                alusel <= `EXE_RES_NOP;
+                regs_re1 <= 0;
+                regs_re2 <= 0;
+                imme <= 0;
+                wd <= 0; 
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
             end
             `EXE_SPECIAL:begin
                 case(func)
@@ -111,6 +155,10 @@ always @(*) begin
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_OR:begin
                         wreg <= 1;
@@ -122,6 +170,10 @@ always @(*) begin
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_XOR:begin
                         wreg <= 1;
@@ -133,6 +185,10 @@ always @(*) begin
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_NOR:begin
                         wreg <= 1;
@@ -144,6 +200,10 @@ always @(*) begin
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SLLV:begin
                         wreg <= 1;
@@ -155,6 +215,10 @@ always @(*) begin
                         regs_addr1 <= inst[20:16];
                         regs_addr2 <= inst[25:21];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SRLV:begin
                         wreg <= 1;
@@ -166,6 +230,10 @@ always @(*) begin
                         regs_addr1 <= inst[20:16];
                         regs_addr2 <= inst[25:21];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SRAV:begin
                         wreg <= 1;
@@ -177,6 +245,10 @@ always @(*) begin
                         regs_addr1 <= inst[20:16];
                         regs_addr2 <= inst[25:21];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SLL:begin
                         wreg <= 1;
@@ -187,6 +259,10 @@ always @(*) begin
                         regs_addr1 <= inst[20:16];
                         imme[4:0] <= inst[10:6];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SRL:begin
                         wreg <= 1;
@@ -197,6 +273,10 @@ always @(*) begin
                         regs_addr1 <= inst[20:16];
                         imme[4:0] <= inst[10:6];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SRA:begin
                         wreg <= 1;
@@ -207,6 +287,10 @@ always @(*) begin
                         regs_addr1 <= inst[20:16];
                         imme[4:0] <= inst[10:6];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MOVN:begin
                         aluop <= `EXE_MOVN_OP;
@@ -216,6 +300,10 @@ always @(*) begin
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                         if(reg2!=0)
                             wreg <= 1;
                         else
@@ -229,6 +317,10 @@ always @(*) begin
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                         if(reg2!=0)
                             wreg <= 0;
                         else
@@ -241,6 +333,10 @@ always @(*) begin
                         regs_re1 <= 0;
                         regs_re2 <= 0;
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MTHI:begin
                         aluop <= `EXE_MTHI_OP;
@@ -249,6 +345,10 @@ always @(*) begin
                         regs_re1 <= 1;
                         regs_addr1 <= inst[25:21];
                         regs_re2 <= 0;
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MFLO:begin
                         aluop <= `EXE_MFLO_OP;
@@ -257,6 +357,10 @@ always @(*) begin
                         regs_re1 <= 0;
                         regs_re2 <= 0;
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MTLO:begin
                         aluop <= `EXE_MTLO_OP;
@@ -265,6 +369,10 @@ always @(*) begin
                         regs_re1 <= 1;
                         regs_addr1 <= inst[25:21];
                         regs_re2 <= 0;
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SLT:begin
                         aluop <= `EXE_SLT_OP;
@@ -275,6 +383,10 @@ always @(*) begin
                         regs_addr2 <= inst[20:16];
                         wreg <= 1;
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SLTU:begin
                         aluop <= `EXE_SLTU_OP;
@@ -285,6 +397,10 @@ always @(*) begin
                         regs_addr2 <= inst[20:16];
                         wreg <= 1;
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_ADD:begin
                         aluop <= `EXE_ADD_OP;
@@ -295,6 +411,10 @@ always @(*) begin
                         regs_addr2 <= inst[20:16];
                         wreg <= 1;
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_ADDU:begin
                         aluop <= `EXE_ADDU_OP;
@@ -305,6 +425,10 @@ always @(*) begin
                         regs_addr2 <= inst[20:16];
                         wreg <= 1;
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SUB:begin
                         aluop <= `EXE_SUB_OP;
@@ -315,6 +439,10 @@ always @(*) begin
                         regs_addr2 <= inst[20:16];
                         wreg <= 1;
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_SUBU:begin
                         aluop <= `EXE_SUBU_OP;
@@ -325,6 +453,10 @@ always @(*) begin
                         regs_addr2 <= inst[20:16];
                         wreg <= 1;
                         wd <= inst[15:11];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MULT:begin
                         aluop <= `EXE_MULT_OP;
@@ -334,6 +466,10 @@ always @(*) begin
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
                         wreg <= 0;
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MULTU:begin
                         aluop <= `EXE_MULTU_OP;
@@ -343,6 +479,10 @@ always @(*) begin
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
                         wreg <= 0;
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_DIV:begin
                         wreg <= 0;
@@ -352,6 +492,10 @@ always @(*) begin
                         regs_re2 <= 1;
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_DIVU:begin
                         wreg <= 0;
@@ -361,8 +505,134 @@ always @(*) begin
                         regs_re2 <= 1;
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
+                    end
+                    `EXE_JR:begin
+                        wreg <= 0;
+                        aluop <= `EXE_JR_OP;
+                        alusel <= `EXE_RES_JB;
+                        regs_re1 <= 1;
+                        regs_addr1 <= inst[25:21];
+                        regs_re2 <= 0;
+                        link_addr <= 0;
+                        branch_addr <= reg1;
+                        branch_we <= 1;
+                        next_in_delayslot <= 1;
+                    end
+                    `EXE_JALR:begin
+                        wreg <=1;
+                        aluop <= `EXE_JALR_OP;
+                        alusel <= `EXE_RES_JB;
+                        regs_re1 <= 1;
+                        regs_addr1 <= inst[25:21];
+                        regs_re2 <= 0;
+                        wd <= inst[15:11];
+                        link_addr <= pc_next2;
+                        branch_addr <= reg1;
+                        branch_we <= 1;
+                        next_in_delayslot <= 1; 
                     end
                 endcase
+            end
+            `EXE_J:begin
+                aluop <= `EXE_J_OP;
+                alusel <= `EXE_RES_JB;
+                regs_re1 <= 0;
+                regs_re2 <= 0;
+                wreg <= 0;
+                link_addr <= 0;
+                branch_we <= 1;
+                next_in_delayslot <= 1;
+                branch_addr <= {pc_next[31:28],inst[25:0],2'b00};
+            end
+            `EXE_JAL:begin
+                aluop <= `EXE_JAL_OP;
+                alusel <= `EXE_RES_JB;
+                regs_re1 <= 0;
+                regs_re2 <= 0;
+                wd <= 5'b11111;
+                wreg <= 1;
+                link_addr <= pc+8;
+                branch_we <= 1;
+                next_in_delayslot <= 1;
+                branch_addr <= {pc_next[31:28],inst[25:0],2'b00};
+            end
+            `EXE_BEQ:begin
+                wreg <= 0;
+                aluop <= `EXE_BEQ_OP;
+                alusel <= `EXE_RES_JB;
+                regs_re1 <= 1;
+                regs_re2 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_addr2 <= inst[20:16];
+                link_addr <= 0;
+                if(reg1==reg2)begin
+                    branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
+                    branch_we <= 1;
+                    next_in_delayslot <= 1;
+                end else begin
+                    branch_addr <= 0;
+                    branch_we <= 0;
+                    next_in_delayslot <= 0;
+                end
+            end
+            `EXE_BGTZ:begin
+                wreg <= 0;
+                aluop <= `EXE_BGTZ_OP;
+                alusel <= `EXE_RES_JB;
+                regs_re1 <= 1;
+                regs_re2 <= 0;
+                regs_addr1 <= inst[25:21];
+                link_addr <=0;
+                if(!reg1[31]&&reg1)begin
+                    branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
+                    branch_we <= 1;
+                    next_in_delayslot <= 1;
+                end else begin
+                    branch_addr <= 0;
+                    branch_we <= 0;
+                    next_in_delayslot <= 0;
+                end
+            end
+            `EXE_BLEZ:begin
+                wreg <= 0;
+                aluop <= `EXE_BLEZ_OP;
+                alusel <= `EXE_RES_JB;
+                regs_re1 <= 1;
+                regs_re2 <= 0;
+                regs_addr1 <= inst[25:21];
+                link_addr <= 0;
+                if(reg1[31]||reg1==0)begin
+                    branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
+                    branch_we <= 1;
+                    next_in_delayslot <= 1;
+                end else begin
+                    branch_addr <= 0;
+                    branch_we <= 0;
+                    next_in_delayslot <= 0;
+                end
+            end
+            `EXE_BNE:begin
+                wreg <= 0;
+                aluop <= `EXE_BNE_OP;
+                alusel <= `EXE_RES_JB;
+                regs_re1 <= 1;
+                regs_re2 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_addr2 <= inst[20:16];
+                link_addr <= 0;
+                if(reg1!=reg2)begin
+                    branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
+                    branch_we <= 1;
+                    next_in_delayslot <= 1;
+                end else begin
+                    branch_addr <= 0;
+                    branch_we <= 0;
+                    next_in_delayslot <= 0;
+                end
             end
             `EXE_SLTI:begin
                 aluop <= `EXE_SLT_OP;
@@ -373,6 +643,10 @@ always @(*) begin
                 wreg <= 1;
                 wd <= inst[20:16];
                 imme <= {{16{inst[15]}},inst[15:0]};
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
             end
             `EXE_SLTIU:begin
                 aluop <= `EXE_SLTU_OP;
@@ -383,6 +657,10 @@ always @(*) begin
                 wreg <= 1;
                 wd <= inst[20:16];
                 imme <= {{16{inst[15]}},inst[15:0]};
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
             end
             `EXE_ADDI:begin
                 aluop <= `EXE_ADD_OP;
@@ -393,6 +671,10 @@ always @(*) begin
                 wreg <= 1;
                 wd <= inst[20:16];
                 imme <= {{16{inst[15]}},inst[15:0]};
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
             end
             `EXE_ADDIU:begin
                 aluop <= `EXE_ADDU_OP;
@@ -403,6 +685,88 @@ always @(*) begin
                 wreg <= 1;
                 wd <= inst[20:16];
                 imme <= {{16{inst[15]}},inst[15:0]};
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_REGIMM:begin
+                case(func2)
+                    `EXE_BGEZ:begin
+                        wreg <= 0;
+                        aluop <= `EXE_BGEZ_OP;
+                        alusel <= `EXE_RES_JB;
+                        regs_re1 <= 1;
+                        regs_re2 <= 0;
+                        regs_addr1 <= inst[25:21];
+                        link_addr <= 0;
+                        if(!reg1[31])begin
+                            branch_we <= 1;
+                            next_in_delayslot <= 1;
+                            branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
+                        end else begin
+                            branch_addr <= 0;
+                            branch_we <= 0;
+                            next_in_delayslot <= 0;
+                        end
+                    end
+                    `EXE_BGEZAL:begin
+                        wreg <= 1;
+                        wd <= 5'b11111;
+                        link_addr <= pc_next2;
+                        aluop <= `EXE_BGEZAL_OP;
+                        alusel <= `EXE_RES_JB;
+                        regs_re1 <= 1;
+                        regs_re2 <= 0;
+                        regs_addr1 <= inst[25:21];
+                        if(!reg1[31])begin
+                            branch_we <= 1;
+                            next_in_delayslot <= 1;
+                            branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
+                        end else begin
+                            branch_addr <= 0;
+                            branch_we <= 0;
+                            next_in_delayslot <= 0;
+                        end
+                    end
+                    `EXE_BLTZ:begin
+                        wreg <= 0;
+                        aluop <= `EXE_BLTZ_OP;
+                        alusel <= `EXE_RES_JB;
+                        regs_re1 <= 1;
+                        regs_re2 <= 0;
+                        regs_addr1 <= inst[25:21];
+                        link_addr <= 0;
+                        if(reg1[31])begin
+                            branch_we <= 1;
+                            next_in_delayslot <= 1;
+                            branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
+                        end else begin
+                            branch_addr <= 0;
+                            branch_we <= 0;
+                            next_in_delayslot <= 0;
+                        end
+                    end
+                    `EXE_BLTZAL:begin
+                        wreg <= 1;
+                        wd <= 5'b11111;
+                        link_addr <= pc_next2;
+                        aluop <= `EXE_BGEZAL_OP;
+                        alusel <= `EXE_RES_JB;
+                        regs_re1 <= 1;
+                        regs_re2 <= 0;
+                        regs_addr1 <= inst[25:21];
+                        if(reg1[31])begin
+                            branch_we <= 1;
+                            next_in_delayslot <= 1;
+                            branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
+                        end else begin
+                            branch_addr <= 0;
+                            branch_we <= 0;
+                            next_in_delayslot <= 0;
+                        end
+                    end
+                endcase
             end
             `EXE_SPECIAL2:begin
                 case(func)
@@ -414,6 +778,10 @@ always @(*) begin
                         regs_re1 <= 1;
                         regs_re2 <= 0;
                         regs_addr1 <=  inst[25:21];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_CLO:begin
                         wreg <= 1;
@@ -423,6 +791,10 @@ always @(*) begin
                         regs_re1 <= 1;
                         regs_re2 <= 0;
                         regs_addr1 <=  inst[25:21];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MUL:begin
                         wreg <= 1;
@@ -433,6 +805,10 @@ always @(*) begin
                         regs_re2 <= 1;
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MADD:begin
                         wreg <= 0;
@@ -442,6 +818,10 @@ always @(*) begin
                         regs_re2 <= 1;
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MADDU:begin
                         wreg <= 0;
@@ -451,6 +831,10 @@ always @(*) begin
                         regs_re2 <= 1;
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MSUB:begin
                         wreg <= 0;
@@ -460,6 +844,10 @@ always @(*) begin
                         regs_re2 <= 1;
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                     `EXE_MSUBU:begin
                         wreg <= 0;
@@ -469,6 +857,10 @@ always @(*) begin
                         regs_re2 <= 1;
                         regs_addr1 <= inst[25:21];
                         regs_addr2 <= inst[20:16];
+                        branch_addr <= 0;
+                        branch_we <= 0;
+                        next_in_delayslot <= 0;
+                        link_addr <= 0;
                     end
                 endcase
             end
@@ -481,6 +873,10 @@ always @(*) begin
                 regs_re2 <= 0;
                 wd <= 0;
                 wreg <= 0;
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
             end
         endcase
     end
