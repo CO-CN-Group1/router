@@ -201,7 +201,8 @@ inst_decode inst_decode_inst(
     .branch_we(id_branch_we),
     .link_addr(id_link_addr),
     .next_in_delayslot(id_next_in_delayslot),
-    .inst_o(id_inst_o)
+    .inst_o(id_inst_o),
+    .ex_aluop(ex_aluop_o)
 );
 
 regs regs_inst(

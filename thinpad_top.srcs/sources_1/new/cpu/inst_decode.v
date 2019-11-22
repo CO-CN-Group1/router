@@ -26,7 +26,7 @@ module inst_decode(
     input wire[31:0] mem_wdata,
     input wire[4:0] mem_wd,
     
-    output reg stop,
+    output wire stop,
 
     input wire in_delayslot_i,
     output reg in_delayslot_o,
@@ -35,7 +35,8 @@ module inst_decode(
     output reg[31:0] link_addr,
     output reg next_in_delayslot,
     
-    output wire[31:0] inst_o
+    output wire[31:0] inst_o,
+    input wire[7:0] ex_aluop
 );
 
 reg[31:0] imme;
@@ -55,6 +56,15 @@ end
 
 assign inst_o = inst;
 
+reg stop_load_reg1;
+reg stop_load_reg2;
+
+wire pre_inst_is_load;
+
+assign stop = stop_load_reg1 | stop_load_reg2;
+
+assign pre_inst_is_load = (ex_aluop == `EXE_LB_OP) || (ex_aluop == `EXE_LBU_OP) || (ex_aluop == `EXE_LH_OP) || (ex_aluop == `EXE_LHU_OP) || (ex_aluop == `EXE_LW_OP) || (ex_aluop == `EXE_LL_OP) || (ex_aluop == `EXE_LWL_OP) || (ex_aluop == `EXE_LWR_OP) || (ex_aluop == `EXE_SC_OP);
+
 always @(*) begin
     if(rst) begin
         aluop <= 0;
@@ -72,7 +82,6 @@ always @(*) begin
         branch_we <= 0;
         next_in_delayslot <= 0;
         link_addr <= 0;
-
     end else begin
         case (op)
             `EXE_LB:begin
@@ -1046,27 +1055,41 @@ end
 always @(*) begin
     if(rst) begin
         reg1 <= 0;
+        stop_load_reg1 <= 0;
+    end else if(pre_inst_is_load && ex_wd == regs_addr1 && regs_re1)begin
+        stop_load_reg1 <= 1;
     end else if(ex_wreg && ex_wd == regs_addr1 && regs_re1)begin
-        reg1 <= ex_wdata;    
+        reg1 <= ex_wdata;
+        stop_load_reg1 <= 0; 
     end else if(mem_wreg && mem_wd == regs_addr1 && regs_re1)begin
         reg1 <= mem_wdata;
+        stop_load_reg1 <= 0;
     end else if(regs_re1)begin
         reg1 <= regs_data1;
+        stop_load_reg1 <= 0;
     end else begin
         reg1 <= imme; 
+        stop_load_reg1 <= 0;
     end
 end 
 always @(*) begin
     if(rst) begin
         reg2 <= 0;
+        stop_load_reg2 <= 0;
+    end else if(pre_inst_is_load && ex_wd == regs_addr2 && regs_re2)begin
+        stop_load_reg2 <= 1;
     end else if(ex_wreg && ex_wd == regs_addr2 && regs_re2)begin
-        reg2 <= ex_wdata;    
+        reg2 <= ex_wdata;   
+        stop_load_reg2 <= 0; 
     end else if(mem_wreg && mem_wd == regs_addr2 && regs_re2)begin
         reg2 <= mem_wdata;
+        stop_load_reg2 <= 0;
     end else if(regs_re2)begin
         reg2 <= regs_data2;
+        stop_load_reg2 <= 0;
     end else begin
         reg2 <= imme; 
+        stop_load_reg2 <= 0;
     end
 end 
 endmodule
