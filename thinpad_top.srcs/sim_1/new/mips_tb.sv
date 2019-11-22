@@ -110,7 +110,7 @@ sram_model ext2(
 
 //Windows�?要注意路径分隔符的转义，例如"D:\\foo\\bar.bin"
 parameter BASE_RAM_INIT_FILE = "base_ram_init.mem"; //BaseRAM初始化文件，请修改为实际的绝对路�?
-parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路�?
+parameter EXT_RAM_INIT_FILE = "ext_ram_init.mem";    //ExtRAM初始化文件，请修改为实际的绝对路�?
 integer count;
 // 从文件加�? BaseRAM
 initial begin 
@@ -133,33 +133,29 @@ initial begin
 end
 
 // 从文件加�? ExtRAM
-initial begin 
+/*initial begin 
     reg [31:0] tmp_array[0:1048575];
-    integer n_File_ID, n_Init_Size;
-    n_File_ID = $fopen(EXT_RAM_INIT_FILE, "rb");
-    if(!n_File_ID)begin 
-        n_Init_Size = 0;
-        $display("Failed to open ExtRAM init file");
-    end else begin
-        n_Init_Size = $fread(tmp_array, n_File_ID);
-        n_Init_Size /= 4;
-        $fclose(n_File_ID);
+    integer n_File_ID;
+    n_File_ID = $fopen(EXT_RAM_INIT_FILE, "r");
+    count = 0;
+    while(!$feof(n_File_ID))begin
+        $fscanf(n_File_ID,"%8h",tmp_array[count]);       
+        count +=1;
     end
-    $display("ExtRAM Init Size(words): %d",n_Init_Size);
-    for (integer i = 0; i < n_Init_Size; i++) begin
-        ext1.mem_array0[i] = tmp_array[i][24+:8];
-        ext1.mem_array1[i] = tmp_array[i][16+:8];
-        ext2.mem_array0[i] = tmp_array[i][8+:8];
-        ext2.mem_array1[i] = tmp_array[i][0+:8];
+    $fclose(n_File_ID);
+    for (integer i = 0; i < count; i++) begin
+        ext1.mem_array0[i] = tmp_array[i][7:0];
+        ext1.mem_array1[i] = tmp_array[i][15:8];
+        ext2.mem_array0[i] = tmp_array[i][23:16];
+        ext2.mem_array1[i] = tmp_array[i][31:24];
     end
-end
+end*/
 
 initial begin
     rst = 1;
     print = 0;
     #200 rst = 0;
-    //#10000 print = 1;
-    //$stop;
+    #1000 print = 1;
 end 
 
 localparam BUFFER_SIZE = 32;
@@ -167,7 +163,7 @@ integer cpu_data_fd;
 always @(posedge print)begin
     cpu_data_fd = $fopen("cpu_data.mem","w");
     for(integer i=0;i<BUFFER_SIZE;i++)begin
-        $fwrite(cpu_data_fd,"%04h\n",base1.mem_array0[i],base1.mem_array1[i],base2.mem_array0[i],base2.mem_array1[i]);
+        $fwrite(cpu_data_fd,"%32b\n",{ext1.mem_array0[i],ext1.mem_array1[i],ext2.mem_array0[i],ext2.mem_array1[i]});
     end
     $fclose(cpu_data_fd);
 end

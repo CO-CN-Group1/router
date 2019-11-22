@@ -40,7 +40,11 @@ module exe(
     input wire div_finish,
 
     input wire[31:0] link_addr,
-    input wire in_delayslot
+    input wire in_delayslot,
+    input wire[31:0] inst,
+    output wire[7:0] aluop_o,
+    output wire[31:0] load_store_addr,
+    output wire[31:0] load_store_data
 );
 
 reg[31:0] logic_ans;
@@ -60,6 +64,10 @@ wire overflow;
 
 reg stop_div;
 reg stop_madd_and_msub;
+
+assign aluop_o = aluop;
+assign load_store_data = reg2;
+assign load_store_addr = reg1 + {{16{inst[15]}},inst[15:0]};
 
 always @(*)begin
     stop <= stop_madd_and_msub || stop_div;

@@ -33,7 +33,9 @@ module inst_decode(
     output reg[31:0] branch_addr,
     output reg branch_we,
     output reg[31:0] link_addr,
-    output reg next_in_delayslot
+    output reg next_in_delayslot,
+    
+    output wire[31:0] inst_o
 );
 
 reg[31:0] imme;
@@ -51,6 +53,7 @@ always @(*)begin
         in_delayslot_o <= in_delayslot_i; 
 end
 
+assign inst_o = inst;
 
 always @(*) begin
     if(rst) begin
@@ -72,6 +75,164 @@ always @(*) begin
 
     end else begin
         case (op)
+            `EXE_LB:begin
+                wreg <= 1;
+                aluop <= `EXE_LB_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 0;
+                wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_LBU:begin
+                wreg <= 1;
+                aluop <= `EXE_LBU_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 0;
+                wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_LH:begin
+                wreg <= 1;
+                aluop <= `EXE_LH_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 0;
+                wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_LHU:begin
+                wreg <= 1;
+                aluop <= `EXE_LHU_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 0;
+                wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_LW:begin
+                wreg <= 1;
+                aluop <= `EXE_LW_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 0;
+                wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_LWL:begin
+                wreg <= 1;
+                aluop <= `EXE_LWL_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_addr2 <= inst[20:16];
+                regs_re2 <= 1;
+                wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_LWR:begin
+                wreg <= 1;
+                aluop <= `EXE_LWR_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_addr2 <= inst[20:16];
+                regs_re2 <= 1;
+                wd <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_SB:begin
+                wreg <= 0;
+                aluop <= `EXE_SB_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 1;
+                regs_addr2 <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_SH:begin
+                wreg <= 0;
+                aluop <= `EXE_SH_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 1;
+                regs_addr2 <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_SW:begin
+                wreg <= 0;
+                aluop <= `EXE_SW_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 1;
+                regs_addr2 <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_SWL:begin
+                wreg <= 0;
+                aluop <= `EXE_SWL_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 1;
+                regs_addr2 <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
+            `EXE_SWR:begin
+                wreg <= 0;
+                aluop <= `EXE_SWR_OP;
+                alusel <= `EXE_RES_LOAD_STORE;
+                regs_re1 <= 1;
+                regs_addr1 <= inst[25:21];
+                regs_re2 <= 1;
+                regs_addr2 <= inst[20:16];
+                branch_addr <= 0;
+                branch_we <= 0;
+                next_in_delayslot <= 0;
+                link_addr <= 0;
+            end
             `EXE_ORI:begin
                 wreg <= 1;
                 aluop <= `EXE_OR_OP;

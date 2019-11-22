@@ -18,7 +18,13 @@ module ex_mem(
     output reg[31:0] mem_lo,
     output reg mem_hilo_we,
     output reg[63:0] hilo_tmp_o,
-    output reg[1:0] hilo_cnt_o
+    output reg[1:0] hilo_cnt_o,
+    input wire[7:0] ex_aluop,
+    input wire[31:0] ex_load_store_data,
+    input wire[31:0] ex_load_store_addr,
+    output reg[7:0] mem_aluop,
+    output reg[31:0] mem_load_store_data,
+    output reg[31:0] mem_load_store_addr
 );
 
 always @(posedge clk)begin
@@ -31,6 +37,9 @@ always @(posedge clk)begin
         mem_hilo_we <= 0;
         hilo_tmp_o <= 0;
         hilo_cnt_o <= 0;
+        mem_aluop <= 0;
+        mem_load_store_addr <= 0;
+        mem_load_store_data <= 0;
     end else if(stop[0]&&!stop[1])begin
         mem_wdata <= 0;
         mem_wreg <= 0;
@@ -40,6 +49,9 @@ always @(posedge clk)begin
         mem_hilo_we <= 0;
         hilo_cnt_o <= hilo_cnt_i;
         hilo_tmp_o <= hilo_tmp_i;
+        mem_aluop <= 0;
+        mem_load_store_addr <= 0;
+        mem_load_store_data <= 0;
     end else if(!stop[0]) begin
         mem_wd <= ex_wd;
         mem_wreg <= ex_wreg;
@@ -49,6 +61,9 @@ always @(posedge clk)begin
         mem_hilo_we <= ex_hilo_we;
         hilo_tmp_o <= 0;
         hilo_cnt_o <= 0;
+        mem_aluop <= ex_aluop;
+        mem_load_store_addr <= ex_load_store_addr;
+        mem_load_store_data <= ex_load_store_data;
     end else begin
         hilo_tmp_o <= hilo_tmp_i;
         hilo_cnt_o <= hilo_cnt_i;

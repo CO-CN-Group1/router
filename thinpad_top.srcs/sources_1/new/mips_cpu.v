@@ -41,11 +41,8 @@ module mips_cpu(
 assign base_ram_oe_n = 0;
 assign base_ram_we_n = 1;
 assign base_ram_be_n = 0;
-assign ext_ram_ce_n = 1;
-assign ext_ram_addr =0;
-assign ext_ram_be_n = 15;
-assign ext_ram_oe_n = 1;
-assign ext_ram_we_n = 1;
+
+
 
 wire[19:0] pc;
 
@@ -126,6 +123,17 @@ wire id_branch_we;
 wire ex_in_delayslot;
 wire[31:0] ex_link_addr;
 
+wire[31:0] id_inst_o;
+wire[31:0] ex_inst;
+
+wire[7:0] ex_aluop_o;
+wire[31:0] ex_load_store_addr;
+wire[31:0] ex_load_store_data;
+
+wire[7:0] mem_aluop;
+wire[31:0] mem_load_store_addr;
+wire[31:0] mem_load_store_data;
+
 
 ctrl ctrl_inst(
     .rst(rst),
@@ -192,7 +200,8 @@ inst_decode inst_decode_inst(
     .branch_addr(id_branch_addr),
     .branch_we(id_branch_we),
     .link_addr(id_link_addr),
-    .next_in_delayslot(id_next_in_delayslot)
+    .next_in_delayslot(id_next_in_delayslot),
+    .inst_o(id_inst_o)
 );
 
 regs regs_inst(
@@ -231,7 +240,9 @@ id_ex id_ex_inst(
     .id_next_in_delayslot(id_next_in_delayslot),
     .ex_link_addr(ex_link_addr),
     .ex_in_delayslot(ex_in_delayslot),
-    .in_delayslot(id_in_delayslot_i)
+    .in_delayslot(id_in_delayslot_i),
+    .id_inst(id_inst_o),
+    .ex_inst(ex_inst)
 );
 
 
@@ -274,7 +285,11 @@ exe exe_inst(
     .div_ans(ex_div_ans),
     .div_finish(ex_div_finish),
     .link_addr(ex_link_addr),
-    .in_delayslot(ex_in_delayslot)
+    .in_delayslot(ex_in_delayslot),
+    .inst(ex_inst),
+    .aluop_o(ex_aluop_o),
+    .load_store_addr(ex_load_store_addr),
+    .load_store_data(ex_load_store_data)
 );
 
 divide divie_inst(
@@ -323,8 +338,25 @@ ex_mem ex_mem_inst(
     .hilo_cnt_i(ex_hilo_cnt_o),
     .hilo_cnt_o(ex_hilo_cnt_i),
     .hilo_tmp_i(ex_hilo_tmp_o),
-    .hilo_tmp_o(ex_hilo_tmp_i)
+    .hilo_tmp_o(ex_hilo_tmp_i),
+    .ex_aluop(ex_aluop_o),
+    .ex_load_store_addr(ex_load_store_addr),
+    .ex_load_store_data(ex_load_store_data),
+    .mem_aluop(mem_aluop),
+    .mem_load_store_data(mem_load_store_data),
+    .mem_load_store_addr(mem_load_store_addr)
 );
+
+wire[31:0] ram_addr;
+wire ram_we;
+assign ext_ram_addr = ram_addr[21:2];
+assign ext_ram_oe_n = ram_we;
+assign ext_ram_we_n = ~ram_we;
+wire[31:0] ext_ram_data_in;
+wire[31:0] ext_ram_data_out;
+
+assign ext_ram_data_in = ext_ram_data;
+assign ext_ram_data = ram_we ? ext_ram_data_out : 32'bz;
 
 memory memory_inst(
     .rst(rst),
@@ -341,8 +373,16 @@ memory memory_inst(
     .wd_o(mem_wd_o),
     .hi_o(mem_hi_o),
     .lo_o(mem_lo_o),
-    .hilo_we_o(mem_hilo_we_o)
-
+    .hilo_we_o(mem_hilo_we_o),
+    .aluop(mem_aluop),
+    .load_store_addr(mem_load_store_addr),
+    .load_store_data(mem_load_store_data),
+    .ram_addr(ram_addr),
+    .ram_be(ext_ram_be_n),
+    .ram_ce(ext_ram_ce_n),
+    .ram_we(ram_we),
+    .ram_data_i(ext_ram_data_in),
+    .ram_data_o(ext_ram_data_out)
 );
 
 mem_wb mem_wb_inst(
