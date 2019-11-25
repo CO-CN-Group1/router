@@ -73,8 +73,8 @@ always @(*) begin
         regs_addr2 <= 0;
         regs_re1 <= 0;
         regs_re2 <= 0;
-        reg1 <= 0;
-        reg2 <= 0;
+        //reg1 <= 0;
+        //reg2 <= 0;
         wd <= 0;
         wreg <= 0;
         imme <= 0;

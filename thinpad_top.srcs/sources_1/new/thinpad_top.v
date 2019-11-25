@@ -342,7 +342,14 @@ eth_mac_fifo_block trimac_fifo_block (
     .tx_configuration_vector        (80'b10000000000110)
 );
 
-(*mark_debug = "true"*)wire[7:0] eth_rx_axis_no_crc_tdata;
+mips_cpu_main mips_cpu(
+    .clk        (clk),
+    .rst        (rst),
+    
+);
+
+/*
+wire[7:0] eth_rx_axis_no_crc_tdata;
 wire eth_rx_axis_no_crc_tvalid;
 wire eth_rx_axis_no_crc_tlast;
 wire eth_rx_axis_no_crc_tready;
@@ -360,6 +367,7 @@ rx_axis_tdata_crc_filter rx_crc_filter(
     .no_crc_tlast(eth_rx_axis_no_crc_tlast),
     .no_crc_tready(eth_rx_axis_no_crc_tready)
 );
+*/
 
 //测试CRC_filter代码
 /*assign eth_tx_axis_fifo_tdata = eth_rx_axis_no_crc_tdata;
@@ -370,6 +378,7 @@ assign eth_rx_axis_no_crc_tready = eth_tx_axis_fifo_tready;
 
 //路由表查�?
 
+/*
 routing_table_lookup lookup_inst(
 
     .rst                            (reset_btn),
@@ -386,6 +395,7 @@ routing_table_lookup lookup_inst(
     .tx_axis_tready                 (eth_tx_axis_fifo_tready)//,
     //.led_out(led_bits)
 );
+*/
 
 
 //loop back代码
