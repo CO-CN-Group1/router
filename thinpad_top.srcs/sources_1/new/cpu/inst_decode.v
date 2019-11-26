@@ -40,9 +40,9 @@ module inst_decode(
 );
 
 reg[31:0] imme;
-wire[5:0] op = inst[31:26];
-wire[5:0] func = inst[5:0];
-wire[4:0] func2 = inst[20:16];
+(*mark_debug = "true"*)wire[5:0] op = inst[31:26];
+(*mark_debug = "true"*)wire[5:0] func = inst[5:0];
+(*mark_debug = "true"*)wire[4:0] func2 = inst[20:16];
 wire[31:0] pc_next;
 assign pc_next = pc + 4;
 wire[31:0] pc_next2;
@@ -73,8 +73,6 @@ always @(*) begin
         regs_addr2 <= 0;
         regs_re1 <= 0;
         regs_re2 <= 0;
-        reg1 <= 0;
-        reg2 <= 0;
         wd <= 0;
         wreg <= 0;
         imme <= 0;

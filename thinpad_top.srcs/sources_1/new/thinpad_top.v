@@ -285,6 +285,26 @@ eth_mac eth_mac_inst (
 
 //---------------------loop back + fifo----------------------------
 
+mips_sopc mips_sopc_inst(
+    .clk(clk_10M),
+    .rst(locked),
+
+    .base_ram_data(base_ram_data),
+    .base_ram_addr(base_ram_addr),
+    .base_ram_be_n(base_ram_be_n),
+    .base_ram_ce_n(base_ram_ce_n),
+    .base_ram_oe_n(base_ram_oe_n),
+    .base_ram_we_n(base_ram_we_n),
+
+    .ext_ram_data(ext_ram_data),
+    .ext_ram_addr(ext_ram_addr),
+    .ext_ram_be_n(ext_ram_be_n),
+    .ext_ram_ce_n(ext_ram_ce_n),
+    .ext_ram_oe_n(ext_ram_oe_n),
+    .ext_ram_we_n(ext_ram_we_n)
+);
+
+
 
 reg gtx_pre_resetn = 0, gtx_resetn = 0;
 
