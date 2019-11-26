@@ -39,13 +39,13 @@ module inst_decode(
     input wire[7:0] ex_aluop
 );
 
-reg[31:0] imme;
-wire[5:0] op = inst[31:26];
-wire[5:0] func = inst[5:0];
-wire[4:0] func2 = inst[20:16];
-wire[31:0] pc_next;
-assign pc_next = pc + 4;
-wire[31:0] pc_next2;
+(*mark_debug="true"*)reg[31:0] imme;
+(*mark_debug="true"*)wire[5:0] op = inst[31:26];
+(*mark_debug="true"*)wire[5:0] func = inst[5:0];
+(*mark_debug="true"*)wire[4:0] func2 = inst[20:16];
+(*mark_debug="true"*)wire[31:0] pc_next;
+(*mark_debug="true"*)assign pc_next = pc + 4;
+(*mark_debug="true"*)wire[31:0] pc_next2;
 assign pc_next2 = pc + 8;
 always @(*)begin
     if(rst)
