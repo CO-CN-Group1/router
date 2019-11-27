@@ -84,6 +84,23 @@ always @(*) begin
         link_addr <= 0;
     end else begin
         case (op)
+            `EXE_C0:begin
+                if(inst[31:21] == 11'b01000000000 && inst[10:0] == 11'b00000000000) begin
+                    aluop <= `EXE_MFC0_OP;
+                    alusel <= `EXE_RES_MOVE;
+                    wd <= inst[20:16];
+                    wreg <= 1;
+                    regs_re1 <= 1'b0;
+                    regs_re2 <= 1'b0;        
+                end else if(inst[31:21] == 11'b01000000100 && inst[10:0] == 11'b00000000000) begin
+                    aluop <= `EXE_MTC0_OP;
+                    alusel <= `EXE_RES_NOP;
+                    wreg <= 1'b0;       
+                    regs_re1 <= 1'b1;
+                    regs_addr1 <= inst[20:16];
+                    regs_re2 <= 1'b0;                    
+                end
+            end
             `EXE_LB:begin
                 wreg <= 1;
                 aluop <= `EXE_LB_OP;

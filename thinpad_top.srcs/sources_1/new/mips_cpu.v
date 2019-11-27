@@ -34,7 +34,10 @@ module mips_cpu(
     output wire[3:0] ext_ram_be_n,  
     output wire ext_ram_ce_n,
     output wire ext_ram_oe_n,
-    output wire ext_ram_we_n
+    output wire ext_ram_we_n,
+
+    input wire[5:0] int_i,
+    output wire timer_int_o
 );
 
 
@@ -134,6 +137,26 @@ wire[7:0] mem_aluop;
 wire[31:0] mem_load_store_addr;
 wire[31:0] mem_load_store_data;
 
+wire mem_cp0_reg_we_i;
+wire[4:0] mem_cp0_reg_write_addr_i;
+wire[31:0] mem_cp0_reg_data_i;
+
+
+wire mem_cp0_reg_we_o;
+wire[4:0] mem_cp0_reg_write_addr_o;
+wire[31:0] mem_cp0_reg_data_o;
+
+wire wb_cp0_reg_we_i;
+wire[4:0] wb_cp0_reg_write_addr_i;
+wire[31:0] wb_cp0_reg_data_i;
+
+wire[31:0] cp0_data_o;
+wire[4:0] cp0_raddr_i;
+
+wire ex_cp0_reg_we_o;
+wire[4:0] ex_cp0_reg_write_addr_o;
+wire[31:0] ex_cp0_reg_data_o;
+
 
 ctrl ctrl_inst(
     .rst(rst),
@@ -183,7 +206,7 @@ inst_decode inst_decode_inst(
     .regs_re1(regs_re1),
     .regs_re2(regs_re2),
     .aluop(id_aluop),
-	.alusel(id_alusel),
+        .alusel(id_alusel),
     .reg1(id_reg1),
     .reg2(id_reg2),
     .wd(id_wd),
@@ -290,7 +313,23 @@ exe exe_inst(
     .inst(ex_inst),
     .aluop_o(ex_aluop_o),
     .load_store_addr(ex_load_store_addr),
-    .load_store_data(ex_load_store_data)
+    .load_store_data(ex_load_store_data),
+    
+    .mem_cp0_reg_we(mem_cp0_reg_we_o),
+    .mem_cp0_reg_write_addr(mem_cp0_reg_write_addr_o),
+    .mem_cp0_reg_data(mem_cp0_reg_data_o),
+    
+    .wb_cp0_reg_we(wb_cp0_reg_we_i),
+    .wb_cp0_reg_write_addr(wb_cp0_reg_write_addr_i),
+    .wb_cp0_reg_data(wb_cp0_reg_data_i),
+
+    .cp0_reg_data_i(cp0_data_o),
+    .cp0_reg_read_addr_o(cp0_raddr_i),
+    
+    .cp0_reg_we_o(ex_cp0_reg_we_o),
+    .cp0_reg_write_addr_o(ex_cp0_reg_write_addr_o),
+    .cp0_reg_data_o(ex_cp0_reg_data_o)          
+
 );
 
 divide divie_inst(
@@ -345,7 +384,15 @@ ex_mem ex_mem_inst(
     .ex_load_store_data(ex_load_store_data),
     .mem_aluop(mem_aluop),
     .mem_load_store_data(mem_load_store_data),
-    .mem_load_store_addr(mem_load_store_addr)
+    .mem_load_store_addr(mem_load_store_addr),
+    
+    .ex_cp0_reg_we(ex_cp0_reg_we_o),
+    .ex_cp0_reg_write_addr(ex_cp0_reg_write_addr_o),
+    .ex_cp0_reg_data(ex_cp0_reg_data_o),
+    
+    .mem_cp0_reg_we(mem_cp0_reg_we_i),
+    .mem_cp0_reg_write_addr(mem_cp0_reg_write_addr_i),
+    .mem_cp0_reg_data(mem_cp0_reg_data_i)
 );
 
 wire[31:0] ram_addr;
@@ -383,7 +430,14 @@ memory memory_inst(
     .ram_ce(ext_ram_ce_n),
     .ram_we(ram_we),
     .ram_data_i(ext_ram_data_in),
-    .ram_data_o(ext_ram_data_out)
+    .ram_data_o(ext_ram_data_out),
+
+    .cp0_reg_we_i(mem_cp0_reg_we_i),
+    .cp0_reg_write_addr_i(mem_cp0_reg_write_addr_i),
+    .cp0_reg_data_i(mem_cp0_reg_data_i),
+    .cp0_reg_we_o(mem_cp0_reg_we_o),
+    .cp0_reg_write_addr_o(mem_cp0_reg_write_addr_o),
+    .cp0_reg_data_o(mem_cp0_reg_data_o)      
 );
 
 mem_wb mem_wb_inst(
@@ -401,7 +455,33 @@ mem_wb mem_wb_inst(
     .wb_hi(hi_i),
     .wb_lo(lo_i),
     .wb_hilo_we(hilo_we),
-    .stop(stop[4:5])
+    .stop(stop[4:5]),
+
+    .mem_cp0_reg_we(mem_cp0_reg_we_o),
+    .mem_cp0_reg_write_addr(mem_cp0_reg_write_addr_o),
+    .mem_cp0_reg_data(mem_cp0_reg_data_o),
+    .wb_cp0_reg_we(wb_cp0_reg_we_i),
+    .wb_cp0_reg_write_addr(wb_cp0_reg_write_addr_i),
+    .wb_cp0_reg_data(wb_cp0_reg_data_i)                
+);
+cp0_regs cp0_regs_inst(
+    .clk(clk),
+    .rst(rst),
+    
+    .we_i(wb_cp0_reg_we_i),
+    .waddr_i(wb_cp0_reg_write_addr_i),
+    .raddr_i(cp0_raddr_i),
+    .data_i(wb_cp0_reg_data_i),
+    
+    //.excepttype_i(mem_excepttype_o),
+    .int_i(int_i),
+    //.current_inst_addr_i(mem_current_inst_address_o),
+    //.is_in_delayslot_i(mem_is_in_delayslot_o),
+    
+    .data_o(cp0_data_o),
+    
+    
+    .timer_int_o(timer_int_o)
 );
 
 endmodule

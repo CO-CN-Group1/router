@@ -19,6 +19,13 @@ module memory(
     input wire[31:0] load_store_addr,
     input wire[31:0] load_store_data,
 
+    input wire cp0_reg_we_i,
+    input wire[4:0] cp0_reg_write_addr_i,
+    input wire[31:0] cp0_reg_data_i,
+    output reg cp0_reg_we_o,
+    output reg[4:0] cp0_reg_write_addr_o,
+    output reg[31:0] cp0_reg_data_o,
+
     input wire[31:0] ram_data_i, //读数�?
     output reg[31:0] ram_data_o, //写数�?
     output reg[31:0] ram_addr, //地址
@@ -40,12 +47,18 @@ always @(*)begin
         ram_be <= 0;
         ram_ce <= 1;
         ram_we <= 0;
+        cp0_reg_we_o <= 1'b0;
+        cp0_reg_write_addr_o <= 5'b00000;
+        cp0_reg_data_o <= 0;    
     end else begin
         wd_o <= wd_i;
         hi_o <= hi_i;
         lo_o <= lo_i;
         wreg_o <= wreg_i;
         hilo_we_o <= hilo_we_i;
+        cp0_reg_we_o <= cp0_reg_we_i;
+        cp0_reg_write_addr_o <= cp0_reg_write_addr_i;
+        cp0_reg_data_o <= cp0_reg_data_i;         
         case(aluop)
             `EXE_LB_OP: begin
                 ram_we <= 0;

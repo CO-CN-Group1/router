@@ -37,6 +37,10 @@ module mips_sopc(
     output wire ext_ram_we_n
 );
 
+wire[5:0] int;
+wire timer_int;
+assign int = {5'b00000, timer_int};
+
 mips_cpu mips_cpu_inst(
     .clk(clk),
     .rst(rst),
@@ -53,7 +57,9 @@ mips_cpu mips_cpu_inst(
     .ext_ram_be_n(ext_ram_be_n),
     .ext_ram_ce_n(ext_ram_ce_n),
     .ext_ram_oe_n(ext_ram_oe_n),
-    .ext_ram_we_n(ext_ram_we_n)
+    .ext_ram_we_n(ext_ram_we_n),
+    .int_i(int),
+    .timer_int_o(timer_int)
 );
 
 

@@ -44,7 +44,22 @@ module exe(
     input wire[31:0] inst,
     output wire[7:0] aluop_o,
     output wire[31:0] load_store_addr,
-    output wire[31:0] load_store_data
+    output wire[31:0] load_store_data,
+
+    input wire mem_cp0_reg_we,
+    input wire[4:0] mem_cp0_reg_write_addr,
+    input wire[31:0] mem_cp0_reg_data,
+    
+    input wire wb_cp0_reg_we,
+    input wire[4:0] wb_cp0_reg_write_addr,
+    input wire[31:0] wb_cp0_reg_data,
+
+    input wire[31:0] cp0_reg_data_i,
+    output reg[4:0] cp0_reg_read_addr_o,
+
+    output reg cp0_reg_we_o,
+    output reg[4:0] cp0_reg_write_addr_o,
+    output reg[31:0] cp0_reg_data_o
 );
 
 reg[31:0] logic_ans;
@@ -195,6 +210,18 @@ always @(*)begin
                 hilo_we <= 1;
                 hi_o <= hilo_m_ans[63:32];
                 lo_o <= hilo_m_ans[31:0];
+            end
+            `EXE_MFC0_OP:begin
+                cp0_reg_read_addr_o <= inst[15:11];
+                move_ans <= cp0_reg_data_i;
+                if(mem_cp0_reg_we&&mem_cp0_reg_write_addr == inst[15:11] ) begin
+                    move_ans <= mem_cp0_reg_data;
+                end else if(wb_cp0_reg_we&&wb_cp0_reg_write_addr == inst[15:11] ) begin
+                    move_ans <= wb_cp0_reg_data;
+                end
+                hilo_we <= 0;
+                hi_o <= 0;
+                lo_o <= 0;
             end
             default:begin
                 move_ans <= 0;
@@ -357,10 +384,10 @@ end
 always@(*) begin
     wd_o <= wd_i;
     if((aluop == `EXE_ADD_OP || aluop == `EXE_ADDI_OP || aluop == `EXE_SUB_OP) && overflow == 1) begin
-	 	wreg_o <= 0;
-	end else begin
-	    wreg_o <= wreg_i;
-	end
+         wreg_o <= 0;
+    end else begin
+        wreg_o <= wreg_i;
+    end
     case(alusel)
         `EXE_RES_LOGIC: begin
             wdata <= logic_ans;
@@ -385,4 +412,22 @@ always@(*) begin
         end
     endcase
 end
+
+always @ (*) begin
+    if(rst) begin
+        cp0_reg_write_addr_o <= 5'b00000;
+        cp0_reg_we_o <= 1'b0;
+        cp0_reg_data_o <= 0;
+    end else if(aluop == `EXE_MTC0_OP) begin
+        cp0_reg_write_addr_o <= inst[15:11];
+        cp0_reg_we_o <= 1'b1;
+        cp0_reg_data_o <= reg1;
+    end else begin
+        cp0_reg_write_addr_o <= 5'b00000;
+        cp0_reg_we_o <= 1'b0;
+        cp0_reg_data_o <= 0;
+    end
+end
+
+
 endmodule
