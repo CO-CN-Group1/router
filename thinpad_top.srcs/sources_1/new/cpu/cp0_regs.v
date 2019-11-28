@@ -21,7 +21,7 @@ module cp0_regs(
     output reg[31:0] cause_o,
     output reg[31:0] epc_o,
     output reg[31:0] config_o,
-    output reg[31:0] prid_o,
+    output reg[31:0] ebase_o,
     output reg timer_int_o    
     
 );
@@ -34,8 +34,8 @@ always @ (posedge clk) begin
         cause_o <= 0;
         epc_o <= 0;
         config_o <= 32'b00000000000000001000000000000000;
-        prid_o <= 32'b00000000010011000000000100000010;
         timer_int_o <= 1'b0;
+        ebase_o <= 32'b10000000000000000000000000000000;
     end else begin
         count_o <= count_o + 1 ;
         cause_o[15:10] <= int_i;
@@ -63,7 +63,10 @@ always @ (posedge clk) begin
                     cause_o[9:8] <= data_i[9:8];
                     cause_o[23] <= data_i[23];
                     cause_o[22] <= data_i[22];
-                end                    
+                end
+                `CP0_REG_EBASE: begin
+                    ebase_o[29:12] <= data_i[29:12];
+                end          
             endcase
         end
         case (excepttype_i)
@@ -160,12 +163,15 @@ always @ (*) begin
             `CP0_REG_EPC:    begin
                 data_o <= epc_o ;
             end
-            `CP0_REG_PrId:    begin
-                data_o <= prid_o ;
-            end
             `CP0_REG_CONFIG:    begin
                 data_o <= config_o ;
             end    
+            `CP0_REG_EBASE: begin
+                data_o[31:30] <= 2'b00;
+                data_o[29:12] <= ebase_o[29:12];
+                data_o[11:10] <= 2'b00;
+                data_o[9:0] <= ebase_o[9:0];
+            end
             default:     begin
             end            
         endcase   

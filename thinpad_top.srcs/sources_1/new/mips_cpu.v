@@ -192,7 +192,7 @@ wire[31:0]cp0_status;
 wire[31:0]cp0_cause;
 wire[31:0]cp0_epc;
 wire[31:0]cp0_config;
-wire[31:0]cp0_prid; 
+wire[31:0]cp0_base; 
 
 
 ctrl ctrl_inst(
@@ -570,7 +570,7 @@ cp0_regs cp0_regs_inst(
     .cause_o(cp0_cause),
     .epc_o(cp0_epc),
     .config_o(cp0_config),
-    .prid_o(cp0_prid),
+    .ebase_o(cp0_ebase),
 
     .timer_int_o(timer_int_o)
 );
