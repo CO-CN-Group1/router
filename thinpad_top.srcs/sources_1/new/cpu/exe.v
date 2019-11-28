@@ -40,7 +40,7 @@ module exe(
     input wire div_finish,
 
     input wire[31:0] link_addr,
-    input wire in_delayslot,
+    input wire in_delayslot_i,
     input wire[31:0] inst,
     output wire[7:0] aluop_o,
     output wire[31:0] load_store_addr,
@@ -59,7 +59,15 @@ module exe(
 
     output reg cp0_reg_we_o,
     output reg[4:0] cp0_reg_write_addr_o,
-    output reg[31:0] cp0_reg_data_o
+    output reg[31:0] cp0_reg_data_o,
+    
+    input wire[31:0] excepttype_i,
+    input wire[31:0] current_inst_address_i,
+
+    output wire[31:0] excepttype_o,
+    output wire in_delayslot_o,
+    output wire[31:0] current_inst_address_o
+
 );
 
 reg[31:0] logic_ans;
@@ -79,6 +87,66 @@ wire overflow;
 
 reg stop_div;
 reg stop_madd_and_msub;
+
+reg trapassert;
+reg ovassert;
+wire reg1_eq_reg2;
+wire reg1_lt_reg2;
+    
+
+assign excepttype_o = {excepttype_i[31:12],ovassert,trapassert,excepttype_i[9:8],8'h00};
+assign in_delayslot_o = in_delayslot_i;
+assign current_inst_address_o = current_inst_address_i;
+
+assign reg2_mux = ((aluop == `EXE_SUB_OP) || (aluop == `EXE_SUBU_OP) ||(aluop == `EXE_SLT_OP)|| (aluop == `EXE_TLT_OP) ||(aluop == `EXE_TLTI_OP) || (aluop == `EXE_TGE_OP) ||(aluop == `EXE_TGEI_OP)) ? (~reg2)+1 : reg2;
+  
+
+assign reg1addreg2 = reg1 + reg2_mux;
+
+assign overflow = (!reg1[31]&&!reg2_mux[31] && reg1addreg2[31])||(reg1[31]&&reg2_mux[31] && !reg1addreg2[31]);
+
+
+                                    
+assign reg1_lt_reg2 = ((aluop == `EXE_SLT_OP) || (aluop == `EXE_TLT_OP) || (aluop == `EXE_TLTI_OP) || (aluop == `EXE_TGE_OP) || (aluop == `EXE_TGEI_OP)) ?((reg1[31] && !reg2[31]) || (!reg1[31] && !reg2[31] && reg1addreg2[31])||(reg1[31] && reg2[31] && reg1addreg2[31])) :(reg1 < reg2);
+  
+
+always @ (*) begin
+    if(rst) begin
+        trapassert <= 0;
+    end else begin
+        case (aluop)
+            `EXE_TEQ_OP, `EXE_TEQI_OP: begin
+                if( reg1 == reg2 )
+                    trapassert <= 1;
+                else
+                    trapassert <= 0;
+            end
+            `EXE_TGE_OP, `EXE_TGEI_OP, `EXE_TGEIU_OP,`EXE_TGEU_OP: begin
+                if( ~reg1_lt_reg2 )
+                    trapassert <= 1;
+                else 
+                    trapassert <= 0;
+            end
+            `EXE_TLT_OP, `EXE_TLTI_OP, `EXE_TLTIU_OP, `EXE_TLTU_OP: begin
+                if( reg1_lt_reg2 )
+                    trapassert <= 1;
+                else
+                    trapassert <= 0;
+            end
+            `EXE_TNE_OP, `EXE_TNEI_OP: begin
+                if( reg1 != reg2 )
+                    trapassert <= 1;
+                else
+                    trapassert <= 0;
+            end
+            default:                begin
+                trapassert <= 0;
+            end
+        endcase
+    end
+end
+
+
 
 assign aluop_o = aluop;
 assign load_store_data = reg2;
@@ -278,12 +346,6 @@ always @(*)begin
     end
 end
 
-assign reg2_mux = ((aluop==`EXE_SUB_OP) || (aluop==`EXE_SUBU_OP) || (aluop==`EXE_SLT_OP))?(~reg2)+1:reg2;
-assign reg1addreg2 = reg1 + reg2_mux;
-
-assign overflow = (!reg1[31]&&!reg2_mux[31] && reg1addreg2[31])||(reg1[31]&&reg2_mux[31] && !reg1addreg2[31]);
-
-
 always @(*)begin
     if(rst)begin
         arithmetic_ans <= 0;
@@ -383,10 +445,12 @@ end
 
 always@(*) begin
     wd_o <= wd_i;
-    if((aluop == `EXE_ADD_OP || aluop == `EXE_ADDI_OP || aluop == `EXE_SUB_OP) && overflow == 1) begin
+    if((aluop == `EXE_ADD_OP || aluop == `EXE_ADDI_OP || aluop == `EXE_SUB_OP) && overflow) begin
          wreg_o <= 0;
+         ovassert <= 1'b1;
     end else begin
         wreg_o <= wreg_i;
+        ovassert <= 1'b0;
     end
     case(alusel)
         `EXE_RES_LOGIC: begin

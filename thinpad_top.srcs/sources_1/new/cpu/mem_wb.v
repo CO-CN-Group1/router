@@ -22,7 +22,8 @@ module mem_wb(
     input wire[31:0] mem_cp0_reg_data,
     output reg wb_cp0_reg_we,
     output reg[4:0] wb_cp0_reg_write_addr,
-    output reg[31:0] wb_cp0_reg_data
+    output reg[31:0] wb_cp0_reg_data,
+    input wire flush
 );
 
 always @(posedge clk)begin
@@ -36,6 +37,16 @@ always @(posedge clk)begin
         wb_cp0_reg_we <= 1'b0;
         wb_cp0_reg_write_addr <= 5'b00000;
         wb_cp0_reg_data <= 0;    
+    end else if(flush)begin
+        wb_wd <= 0;
+        wb_wreg <= 0;
+        wb_wdata <= 0;
+        wb_hi <= 0;
+        wb_lo <= 0;
+        wb_hilo_we <=0;
+        wb_cp0_reg_we <= 1'b0;
+        wb_cp0_reg_write_addr <= 5'b00000;
+        wb_cp0_reg_data <= 0;     
     end else if(stop[0]&&!stop[1]) begin
         wb_wd <= 0;
         wb_wreg <= 0;

@@ -123,8 +123,14 @@ wire id_next_in_delayslot;
 wire[31:0] id_branch_addr;
 wire id_branch_we;
 
-wire ex_in_delayslot;
+wire ex_in_delayslot_i;
+wire ex_in_delayslot_o;
 wire[31:0] ex_link_addr;
+
+wire mem_in_delayslot_i;
+wire mem_in_delayslot_o;
+
+
 
 wire[31:0] id_inst_o;
 wire[31:0] ex_inst;
@@ -157,12 +163,47 @@ wire ex_cp0_reg_we_o;
 wire[4:0] ex_cp0_reg_write_addr_o;
 wire[31:0] ex_cp0_reg_data_o;
 
+wire flush;
+wire[31:0] new_pc; 
+
+wire[31:0] id_excepttype_o;
+wire[31:0] id_current_inst_address_o;
+
+wire[31:0] ex_excepttype_i;
+wire[31:0] ex_current_inst_address_i;
+
+wire[31:0] ex_excepttype_o;
+wire[31:0] ex_current_inst_address_o;
+
+
+wire[31:0] mem_excepttype_i;    
+wire[31:0] mem_excepttype_o;
+wire[31:0] mem_current_inst_address_i;
+wire[31:0] mem_current_inst_address_o;
+wire[31:0] wb_excepttype_i;
+wire wb_in_delayslot_i;
+wire[31:0] wb_current_inst_address_i;
+
+
+wire[31:0] latest_epc;
+wire[31:0] cp0_count;
+wire[31:0]cp0_compare;
+wire[31:0]cp0_status;
+wire[31:0]cp0_cause;
+wire[31:0]cp0_epc;
+wire[31:0]cp0_config;
+wire[31:0]cp0_prid; 
+
 
 ctrl ctrl_inst(
     .rst(rst),
     .stop_from_id(stop_from_id),
     .stop_from_ex(stop_from_ex),
-    .stop(stop)
+    .stop(stop),
+    .excepttype_i(mem_excepttype_o),
+    .cp0_epc_i(latest_epc),
+    .flush(flush),
+    .new_pc(new_pc)
 );
 
 
@@ -174,7 +215,9 @@ inst_fetch inst_fetch_inst(
     .ce(base_ram_ce_n),
     .stop(stop[0]),
     .branch_addr(id_branch_addr),
-    .branch_we(id_branch_we)
+    .branch_we(id_branch_we),
+    .flush(flush),
+    .new_pc(new_pc)
 );
 
 
@@ -192,7 +235,8 @@ if_id if_id_inst(
     .if_inst(base_ram_data),
     .id_pc(id_pc),
     .id_inst(id_inst),
-    .stop(stop[1:2])
+    .stop(stop[1:2]),
+    .flush(flush)
 );
 
 inst_decode inst_decode_inst(
@@ -206,7 +250,7 @@ inst_decode inst_decode_inst(
     .regs_re1(regs_re1),
     .regs_re2(regs_re2),
     .aluop(id_aluop),
-        .alusel(id_alusel),
+    .alusel(id_alusel),
     .reg1(id_reg1),
     .reg2(id_reg2),
     .wd(id_wd),
@@ -225,7 +269,9 @@ inst_decode inst_decode_inst(
     .link_addr(id_link_addr),
     .next_in_delayslot(id_next_in_delayslot),
     .inst_o(id_inst_o),
-    .ex_aluop(ex_aluop_o)
+    .ex_aluop(ex_aluop_o),
+    .current_inst_address_o(id_current_inst_address_o),
+    .excepttype_o(id_excepttype_o)
 );
 
 regs regs_inst(
@@ -263,10 +309,15 @@ id_ex id_ex_inst(
     .id_link_addr(id_link_addr),
     .id_next_in_delayslot(id_next_in_delayslot),
     .ex_link_addr(ex_link_addr),
-    .ex_in_delayslot(ex_in_delayslot),
+    .ex_in_delayslot(ex_in_delayslot_i),
     .in_delayslot(id_in_delayslot_i),
     .id_inst(id_inst_o),
-    .ex_inst(ex_inst)
+    .ex_inst(ex_inst),
+    .flush(flush),
+    .id_excepttype(id_excepttype_o),
+    .id_current_inst_address(id_current_inst_address_o),
+    .ex_excepttype(ex_excepttype_i),
+    .ex_current_inst_address(ex_current_inst_address_i)    
 );
 
 
@@ -309,7 +360,7 @@ exe exe_inst(
     .div_ans(ex_div_ans),
     .div_finish(ex_div_finish),
     .link_addr(ex_link_addr),
-    .in_delayslot(ex_in_delayslot),
+    .in_delayslot_i(ex_in_delayslot_i),
     .inst(ex_inst),
     .aluop_o(ex_aluop_o),
     .load_store_addr(ex_load_store_addr),
@@ -328,8 +379,13 @@ exe exe_inst(
     
     .cp0_reg_we_o(ex_cp0_reg_we_o),
     .cp0_reg_write_addr_o(ex_cp0_reg_write_addr_o),
-    .cp0_reg_data_o(ex_cp0_reg_data_o)          
+    .cp0_reg_data_o(ex_cp0_reg_data_o),
+    .in_delayslot_o(ex_in_delayslot_o),       
 
+    .excepttype_i(ex_excepttype_i),
+    .current_inst_address_i(ex_current_inst_address_i),
+    .excepttype_o(ex_excepttype_o),
+    .current_inst_address_o(ex_current_inst_address_o)
 );
 
 divide divie_inst(
@@ -339,7 +395,7 @@ divide divie_inst(
     .reg1(ex_div_reg1),
     .reg2(ex_div_reg2),
     .start(ex_div_start),
-    .stop(1'b0),
+    .stop(flush),
     .ans(ex_div_ans),
     .finish(ex_div_finish)
 );
@@ -386,13 +442,24 @@ ex_mem ex_mem_inst(
     .mem_load_store_data(mem_load_store_data),
     .mem_load_store_addr(mem_load_store_addr),
     
+    .ex_in_delayslot(ex_in_delayslot_o),
+    .mem_in_delayslot(mem_in_delayslot_i),
+
     .ex_cp0_reg_we(ex_cp0_reg_we_o),
     .ex_cp0_reg_write_addr(ex_cp0_reg_write_addr_o),
     .ex_cp0_reg_data(ex_cp0_reg_data_o),
     
     .mem_cp0_reg_we(mem_cp0_reg_we_i),
     .mem_cp0_reg_write_addr(mem_cp0_reg_write_addr_i),
-    .mem_cp0_reg_data(mem_cp0_reg_data_i)
+    .mem_cp0_reg_data(mem_cp0_reg_data_i),
+
+    .flush(flush),
+
+    .ex_excepttype(ex_excepttype_o),
+    .ex_current_inst_address(ex_current_inst_address_o),    
+
+    .mem_excepttype(mem_excepttype_i),
+    .mem_current_inst_address(mem_current_inst_address_i)
 );
 
 wire[31:0] ram_addr;
@@ -437,7 +504,24 @@ memory memory_inst(
     .cp0_reg_data_i(mem_cp0_reg_data_i),
     .cp0_reg_we_o(mem_cp0_reg_we_o),
     .cp0_reg_write_addr_o(mem_cp0_reg_write_addr_o),
-    .cp0_reg_data_o(mem_cp0_reg_data_o)      
+    .cp0_reg_data_o(mem_cp0_reg_data_o),
+    .in_delayslot_i(mem_in_delayslot_i),
+    .in_delayslot_o(mem_in_delayslot_o),
+
+
+    .excepttype_i(mem_excepttype_i),
+    .current_inst_address_i(mem_current_inst_address_i),    
+        
+    .cp0_status_i(cp0_status),
+    .cp0_cause_i(cp0_cause),
+    .cp0_epc_i(cp0_epc),
+
+    .wb_cp0_reg_we(wb_cp0_reg_we_i),
+    .wb_cp0_reg_write_addr(wb_cp0_reg_write_addr_i),
+    .wb_cp0_reg_data(wb_cp0_reg_data_i),
+    .excepttype_o(mem_excepttype_o),
+    .cp0_epc_o(latest_epc),
+    .current_inst_address_o(mem_current_inst_address_o)            
 );
 
 mem_wb mem_wb_inst(
@@ -462,7 +546,8 @@ mem_wb mem_wb_inst(
     .mem_cp0_reg_data(mem_cp0_reg_data_o),
     .wb_cp0_reg_we(wb_cp0_reg_we_i),
     .wb_cp0_reg_write_addr(wb_cp0_reg_write_addr_i),
-    .wb_cp0_reg_data(wb_cp0_reg_data_i)                
+    .wb_cp0_reg_data(wb_cp0_reg_data_i),
+    .flush(flush)                
 );
 cp0_regs cp0_regs_inst(
     .clk(clk),
@@ -473,14 +558,20 @@ cp0_regs cp0_regs_inst(
     .raddr_i(cp0_raddr_i),
     .data_i(wb_cp0_reg_data_i),
     
-    //.excepttype_i(mem_excepttype_o),
+    .excepttype_i(mem_excepttype_o),
     .int_i(int_i),
-    //.current_inst_addr_i(mem_current_inst_address_o),
-    //.is_in_delayslot_i(mem_is_in_delayslot_o),
+    .current_inst_addr_i(mem_current_inst_address_o),
+    .in_delayslot(mem_in_delayslot_o),
     
     .data_o(cp0_data_o),
-    
-    
+    .count_o(cp0_count),
+    .compare_o(cp0_compare),
+    .status_o(cp0_status),
+    .cause_o(cp0_cause),
+    .epc_o(cp0_epc),
+    .config_o(cp0_config),
+    .prid_o(cp0_prid),
+
     .timer_int_o(timer_int_o)
 );
 

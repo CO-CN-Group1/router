@@ -9,20 +9,19 @@ module cp0_regs(
     input wire[4:0] raddr_i,
     input wire[31:0] data_i,
     
-//    input wire[31:0]              excepttype_i,
+    input wire[31:0] excepttype_i,
     input wire[5:0] int_i,
-//    input wire[`RegBus]           current_inst_addr_i,
-//    input wire                    is_in_delayslot_i,
+    input wire[31:0] current_inst_addr_i,
+    input wire in_delayslot,
     
     output reg[31:0] data_o,
     output reg[31:0] count_o,
-    output reg[31:0] compare_o,
+    output reg[31:0] compare_o, 
     output reg[31:0] status_o,
     output reg[31:0] cause_o,
     output reg[31:0] epc_o,
     output reg[31:0] config_o,
     output reg[31:0] prid_o,
-    
     output reg timer_int_o    
     
 );
@@ -67,7 +66,76 @@ always @ (posedge clk) begin
                 end                    
             endcase
         end
-        
+        case (excepttype_i)
+            32'h00000001: begin
+                if(in_delayslot) begin
+                    epc_o <= current_inst_addr_i - 4 ;
+                    cause_o[31] <= 1'b1;
+                end else begin
+                    epc_o <= current_inst_addr_i;
+                    cause_o[31] <= 1'b0;
+                end
+                status_o[1] <= 1'b1;
+                cause_o[6:2] <= 5'b00000;
+            end
+            32'h00000008:begin
+                if(!status_o[1]) begin
+                    if(in_delayslot) begin
+                        epc_o <= current_inst_addr_i - 4 ;
+                        cause_o[31] <= 1'b1;
+                    end else begin
+                        epc_o <= current_inst_addr_i;
+                        cause_o[31] <= 1'b0;
+                    end
+                end
+                status_o[1] <= 1'b1;
+                cause_o[6:2] <= 5'b01000;            
+            end
+            32'h0000000a: begin
+                if(!status_o[1]) begin
+                    if(in_delayslot) begin
+                        epc_o <= current_inst_addr_i - 4 ;
+                        cause_o[31] <= 1'b1;
+                    end else begin
+                        epc_o <= current_inst_addr_i;
+                        cause_o[31] <= 1'b0;
+                    end
+                end
+                status_o[1] <= 1'b1;
+                cause_o[6:2] <= 5'b01010;                    
+            end
+            32'h0000000d: begin
+                if(!status_o[1]) begin
+                    if(in_delayslot) begin
+                        epc_o <= current_inst_addr_i - 4 ;
+                        cause_o[31] <= 1'b1;
+                    end else begin
+                        epc_o <= current_inst_addr_i;
+                        cause_o[31] <= 1'b0;
+                    end
+                end
+                status_o[1] <= 1'b1;
+                cause_o[6:2] <= 5'b01101;                    
+            end
+            32'h0000000c: begin
+                if(!status_o[1]) begin
+                    if(in_delayslot) begin
+                        epc_o <= current_inst_addr_i - 4 ;
+                        cause_o[31] <= 1'b1;
+                    end else begin
+                        epc_o <= current_inst_addr_i;
+                        cause_o[31] <= 1'b0;
+                    end
+                end
+                status_o[1] <= 1'b1;
+                cause_o[6:2] <= 5'b01100;                    
+            end                
+            32'h0000000e:   begin
+                status_o[1] <= 1'b0;
+            end
+            default:                begin
+            end
+        endcase            
         
     end
 end
