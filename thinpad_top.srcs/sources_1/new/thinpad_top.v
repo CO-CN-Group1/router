@@ -165,7 +165,7 @@ reg[15:0] led_bits=16'h0000;
 always@(posedge clock_btn or posedge reset_btn) begin
     if(reset_btn)begin //复位按下，设置LED和数码管为初始�??
         number<=0;
-        //led_bits <= 16'h1;
+        led_bits <= 16'h1010;
     end
     else begin //每次按下时钟按钮，数码管显示值加1，LED循环左移
         number <= number+1;
@@ -285,6 +285,7 @@ eth_mac eth_mac_inst (
 
 //---------------------loop back + fifo----------------------------
 
+/*
 mips_sopc mips_sopc_inst(
     .clk(clk_10M),
     .rst(locked),
@@ -303,7 +304,7 @@ mips_sopc mips_sopc_inst(
     .ext_ram_oe_n(ext_ram_oe_n),
     .ext_ram_we_n(ext_ram_we_n)
 );
-
+*/
 
 
 reg gtx_pre_resetn = 0, gtx_resetn = 0;
@@ -315,14 +316,14 @@ begin
 end
 
 
-wire [7:0] eth_rx_axis_fifo_tdata;
-wire eth_rx_axis_fifo_tvalid;
-wire eth_rx_axis_fifo_tlast;
-wire eth_rx_axis_fifo_tready;
-wire [7:0] eth_tx_axis_fifo_tdata;
-wire eth_tx_axis_fifo_tvalid;
-wire eth_tx_axis_fifo_tlast;
-wire eth_tx_axis_fifo_tready;
+(*mark_debug = "true"*)wire [7:0] eth_rx_axis_fifo_tdata;
+(*mark_debug = "true"*)wire eth_rx_axis_fifo_tvalid;
+(*mark_debug = "true"*)wire eth_rx_axis_fifo_tlast;
+(*mark_debug = "true"*)wire eth_rx_axis_fifo_tready;
+(*mark_debug = "true"*)wire [7:0] eth_tx_axis_fifo_tdata;
+(*mark_debug = "true"*)wire eth_tx_axis_fifo_tvalid;
+(*mark_debug = "true"*)wire eth_tx_axis_fifo_tlast;
+(*mark_debug = "true"*)wire eth_tx_axis_fifo_tready;
 
 
 eth_mac_fifo_block trimac_fifo_block (
@@ -363,9 +364,9 @@ eth_mac_fifo_block trimac_fifo_block (
 );
 
 (*mark_debug = "true"*)wire[7:0] eth_rx_axis_no_crc_tdata;
-wire eth_rx_axis_no_crc_tvalid;
-wire eth_rx_axis_no_crc_tlast;
-wire eth_rx_axis_no_crc_tready;
+(*mark_debug = "true"*)wire eth_rx_axis_no_crc_tvalid;
+(*mark_debug = "true"*)wire eth_rx_axis_no_crc_tlast;
+(*mark_debug = "true"*)wire eth_rx_axis_no_crc_tready;
 
 rx_axis_tdata_crc_filter rx_crc_filter(
     .clk(clk_125M),
@@ -389,6 +390,7 @@ assign eth_rx_axis_no_crc_tready = eth_tx_axis_fifo_tready;
 */
 
 //路由表查�?
+
 
 routing_table_lookup lookup_inst(
 

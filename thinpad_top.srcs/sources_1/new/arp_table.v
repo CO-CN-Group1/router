@@ -200,18 +200,24 @@ always @(posedge clk) begin
                 end*/
                 state <= STATE_IDLE;
                 lookup_mac_valid <= 1;
-                lookup_port <= 1;
+                
                 state <= STATE_IDLE;
                 case(lookup_ip_cache)
-                    32'h01234567:begin
+                    32'h0a000202:begin
                         lookup_mac_not_found <= 0;
-                        lookup_mac <= 48'h0123456789ab;
+                        lookup_mac <= 48'h080027a57ea4;
+                        lookup_port <= 2;
+                    end
+                    32'h0a000102:begin
+                        lookup_mac_not_found <= 0;
+                        lookup_mac <= 48'h0800273f739f;
+                        lookup_port <= 1;
                     end
                     default:begin
                         
                         lookup_mac_not_found <= 1;
                         lookup_mac <= 0;
-                        
+                        lookup_port <= 0;
                     end
                 endcase
 

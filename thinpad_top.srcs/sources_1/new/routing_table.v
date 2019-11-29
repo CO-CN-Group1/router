@@ -107,9 +107,12 @@ always @(posedge clk) begin
                 nexthop_not_found <= 0;
                 state <= STATE_IDLE;
                 lookup_ready <= 0;
-                case(dest_ip_cache)
-                    32'h0a000001 :begin
-                        nexthop <= 32'h01234567;
+                case(dest_ip_cache&32'hffffff00)
+                    32'h0a000200 :begin
+                        nexthop <= 32'h0a000202;
+                    end
+                    32'h0a000100 :begin
+                        nexthop <= 32'h0a000102;
                     end
                     default:begin
                         nexthop <= 32'h76543210;

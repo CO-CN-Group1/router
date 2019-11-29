@@ -36,9 +36,10 @@ localparam[3:0]
     STATE_ARPQUERY=7,
     STATE_ARPREQUEST=8,
     STATE_SLEEP=9;
-(*mark_debug="true"*)reg[3:0] state = STATE_IDLE;
+//(*mark_debug="true"*)reg[3:0] state = STATE_IDLE;
+reg[3:0] state = STATE_IDLE;
 
-reg [IP_LENGTH-1:0] my_ip=32'h0a000001;
+reg [IP_LENGTH-1:0] my_ip[0:5];
 reg [MAC_LENGTH-1:0] my_mac=48'h00cdefabcdef;
 reg [IP_LENGTH-1:0] dest_ip;
 reg dest_ip_valid = 0;
@@ -52,8 +53,13 @@ wire nexthop_not_found;
 initial begin
     //tx_axis_tdata = 0;
     //tx_axis_tlast = 0;
-    dest_ip = 0;
+    dest_ip <= 0;
     //dest_ip_valid = 0;
+    my_ip[1] <= 32'h0a000101;
+    my_ip[2] <= 32'h0a000201;
+    my_ip[3] <= 32'h0a000301;
+    my_ip[4] <= 32'h0a000401;
+
 end
 
 routing_table #(
@@ -80,6 +86,7 @@ reg [IP_LENGTH-1:0]   insert_ip;
 reg [MAC_LENGTH-1:0]  insert_mac;
 reg [PORT_LENGTH-1:0] insert_port;
 reg insert_valid=0;
+reg [32:0] checksum;
 wire insert_ready;
 arp_table #(
     .IP_LENGTH(IP_LENGTH),
@@ -90,7 +97,7 @@ arp_table #(
     .rst(rst),
     
     .lookup_ip(nexthop_cache),
-    .lookup_valid(nexthop_valid),
+    .lookup_valid(lookup_valid),
     .lookup_mac(lookup_mac),
     .lookup_mac_valid(lookup_mac_valid),
     .lookup_port(lookup_port),
@@ -162,8 +169,8 @@ always @(posedge clk or posedge rst)begin
                     insert_mac<={data[6],data[7],data[8],data[9],data[10],data[11]};
                     insert_port<={data[14],data[15]};
                 end
-                else begin
-                    if ({data[34],data[35],data[36],data[37]}==my_ip) begin
+                else if (data[16]==8'h08 && data[17]==8'h00) begin
+                    if ({data[34],data[35],data[36],data[37]}==my_ip[data[15]]) begin
                         //TODO: write to software interface
                         state<=STATE_IDLE;
                     end
@@ -178,12 +185,18 @@ always @(posedge clk or posedge rst)begin
                         end
                     end
                 end
+                else begin
+                    state<=STATE_IDLE;
+                end
             end
             STATE_ARPUPDATE:begin
                 if (insert_ready) begin
                     insert_valid<=0;
                     if (data[24]==8'h00 && data[25]==8'h01) begin
-                        if ({data[42],data[43],data[44],data[45]}==my_ip) begin
+                        if ({data[42],data[43],data[44],data[45]}==32'h0a000101) begin
+                            state<=STATE_ARPRESPONSE;
+                        end
+                        else if ({data[42],data[43],data[44],data[45]}==32'h0a000201) begin
                             state<=STATE_ARPRESPONSE;
                         end
                         else begin
@@ -218,7 +231,7 @@ always @(posedge clk or posedge rst)begin
                 data[24]<=8'h00;
                 data[25]<=8'h02;
                 {data[26],data[27],data[28],data[29],data[30],data[31]}<=my_mac;
-                {data[32],data[33],data[34],data[35]}<=my_ip;
+                {data[32],data[33],data[34],data[35]}<={data[42],data[43],data[44],data[45]};
                 {data[36],data[37],data[38],data[39],data[40],data[41]}<={data[6],data[7],data[8],data[9],data[10],data[11]};
                 {data[42],data[43],data[44],data[45]}<={data[32],data[33],data[34],data[35]};
                 {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
@@ -278,9 +291,9 @@ always @(posedge clk or posedge rst)begin
                             data[24]<=8'h00;
                             data[25]<=8'h01;
                             {data[26],data[27],data[28],data[29],data[30],data[31]}<=my_mac;
-                            {data[32],data[33],data[34],data[35]}<=my_ip;
+                            {data[32],data[33],data[34],data[35]}<=my_ip[data[15]];
                             {data[36],data[37],data[38],data[39],data[40],data[41]}<=48'h000000000000;
-                            {data[42],data[43],data[44],data[45]}<={data[34],data[35],data[36],data[37]};
+                            {data[42],data[43],data[44],data[45]}<=nexthop_cache;//{data[34],data[35],data[36],data[37]};
                             {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
                             data_tail<=60;
                             state <= STATE_OUTPUT;
@@ -288,11 +301,13 @@ always @(posedge clk or posedge rst)begin
                         else begin
                             {data[14],data[15]}<=lookup_port;
                             data[26]<=data[26]-1;
-                            if (data[29]==8'b11111111) begin
+                            checksum<=32'h00000000;
+                            if (data[29]==32'hfeff) begin
                                 data[28]<=data[28]+1;
                             end
-                            data[29]<=data[29]+1;
+                            data[28]<=data[28]+1;
                             {data[0],data[1],data[2],data[3],data[4],data[5]}<=lookup_mac;
+                            {data[6],data[7],data[8],data[9],data[10],data[11]}<=my_mac;
                             state<=STATE_OUTPUT;
                         end
                         //state <= STATE_OUTPUT;
@@ -301,6 +316,7 @@ always @(posedge clk or posedge rst)begin
                 end
             end
             STATE_ARPREQUEST:begin
+            
                 data[0]<=8'hff;
                 data[1]<=8'hff;
                 data[2]<=8'hff;
@@ -321,13 +337,15 @@ always @(posedge clk or posedge rst)begin
                 data[24]<=8'h00;
                 data[25]<=8'h01;
                 {data[26],data[27],data[28],data[29],data[30],data[31]}<=my_mac;
-                {data[32],data[33],data[34],data[35]}<=my_ip;
+                {data[32],data[33],data[34],data[35]}<=my_ip[data[15]];
                 {data[36],data[37],data[38],data[39],data[40],data[41]}<=48'h000000000000;
-                {data[42],data[43],data[44],data[45]}<={data[34],data[35],data[36],data[37]};
+                {data[42],data[43],data[44],data[45]}<=nexthop_cache;//{data[34],data[35],data[36],data[37]};
                 {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
                 data_tail<=60;
                 state <= STATE_OUTPUT;
+                
                 //tx_axis_tvalid<=1;
+                state <= STATE_IDLE; // debug
             end
             STATE_OUTPUT:begin
                 tx_axis_tvalid<=1;
