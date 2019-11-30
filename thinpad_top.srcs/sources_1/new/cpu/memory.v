@@ -1,4 +1,3 @@
-
 module memory(
     input wire rst,
     input wire[31:0] wdata_i,
@@ -46,7 +45,10 @@ module memory(
     input wire[31:0] wb_cp0_reg_data,
     output reg[31:0] excepttype_o,
     output wire[31:0] cp0_epc_o,
-    output wire[31:0] current_inst_address_o    
+    output wire[31:0] current_inst_address_o,
+    input wire[7:0] ext_uart_rx,
+    output wire[7:0] ext_uart_tx
+
 
 );
 
@@ -144,16 +146,23 @@ always @(*)begin
         cp0_reg_data_o <= cp0_reg_data_i;         
         case(aluop)
             `EXE_LB_OP: begin
-                ram_we <= 0;
-                ram_ce <= 0;
-                ram_addr <= load_store_addr;
-                ram_be <= 0;
-                case (load_store_addr[1:0])
-                    2'b00:wdata_o <= {{24{ram_data_i[31]}},ram_data_i[31:24]};
-                    2'b01:wdata_o <= {{24{ram_data_i[23]}},ram_data_i[23:16]};
-                    2'b10:wdata_o <= {{24{ram_data_i[15]}},ram_data_i[15:8]};
-                    2'b11:wdata_o <= {{24{ram_data_i[7]}},ram_data_i[7:0]};
-                endcase
+                if (load_store_addr==32'hBFD003F8)
+                begin
+                    wdata_o<={{24{ext_uart_rx[7]}},ext_uart_rx[7:0]};
+                end
+                else
+                begin
+                    ram_we <= 0;
+                    ram_ce <= 0;
+                    ram_addr <= load_store_addr;
+                    ram_be <= 0;
+                    case (load_store_addr[1:0])
+                        2'b00:wdata_o <= {{24{ram_data_i[31]}},ram_data_i[31:24]};
+                        2'b01:wdata_o <= {{24{ram_data_i[23]}},ram_data_i[23:16]};
+                        2'b10:wdata_o <= {{24{ram_data_i[15]}},ram_data_i[15:8]};
+                        2'b11:wdata_o <= {{24{ram_data_i[7]}},ram_data_i[7:0]};
+                    endcase
+                end
             end
             `EXE_LBU_OP:begin
                 ram_we <= 0;
@@ -276,16 +285,23 @@ always @(*)begin
                 endcase
             end
             `EXE_SB_OP:begin
-                ram_addr <= load_store_addr;
-                ram_we <= 1;
-                ram_ce <= 0;
-                ram_data_o <= {load_store_data[7:0],load_store_data[7:0],load_store_data[7:0],load_store_data[7:0]};
-                case(load_store_addr[1:0])
-                    2'b00: ram_be <= 4'b0111;
-                    2'b01: ram_be <= 4'b1011;
-                    2'b10: ram_be <= 4'b1101;
-                    2'b11: ram_be <= 4'b1110;
-                endcase
+                if (load_store_addr==32'hBFD003F8)
+                begin
+                    ext_uart_tx<=load_store_data[7:0];
+                end
+                else
+                begin
+                    ram_addr <= load_store_addr;
+                    ram_we <= 1;
+                    ram_ce <= 0;
+                    ram_data_o <= {load_store_data[7:0],load_store_data[7:0],load_store_data[7:0],load_store_data[7:0]};
+                    case(load_store_addr[1:0])
+                        2'b00: ram_be <= 4'b0111;
+                        2'b01: ram_be <= 4'b1011;
+                        2'b10: ram_be <= 4'b1101;
+                        2'b11: ram_be <= 4'b1110;
+                    endcase
+                end
             end
             `EXE_SH_OP:begin
                 ram_addr <= load_store_addr;
