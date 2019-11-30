@@ -47,7 +47,7 @@ module memory(
     output wire[31:0] cp0_epc_o,
     output wire[31:0] current_inst_address_o,
     input wire[7:0] ext_uart_rx,
-    output wire[7:0] ext_uart_tx
+    output reg[7:0] ext_uart_tx
 
 
 );
