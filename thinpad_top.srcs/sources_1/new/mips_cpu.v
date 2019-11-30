@@ -37,7 +37,9 @@ module mips_cpu(
     output wire ext_ram_we_n,
 
     input wire[5:0] int_i,
-    output wire timer_int_o
+    output wire timer_int_o,
+    input wire[7:0] ext_uart_rx,
+    output wire[7:0] ext_uart_tx
 );
 
 
@@ -521,7 +523,9 @@ memory memory_inst(
     .wb_cp0_reg_data(wb_cp0_reg_data_i),
     .excepttype_o(mem_excepttype_o),
     .cp0_epc_o(latest_epc),
-    .current_inst_address_o(mem_current_inst_address_o)            
+    .current_inst_address_o(mem_current_inst_address_o),
+    .ext_uart_rx(ext_uart_rx),
+    .ext_uart_tx(ext_uart_tx)
 );
 
 mem_wb mem_wb_inst(
