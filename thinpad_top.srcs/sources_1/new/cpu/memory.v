@@ -28,12 +28,12 @@ module memory(
     input wire in_delayslot_i,
     output wire in_delayslot_o,
 
-    input wire[31:0] ram_data_i, //读数�?
-    output reg[31:0] ram_data_o, //写数�?
+    input wire[31:0] ram_data_i, //读数�??
+    output reg[31:0] ram_data_o, //写数�??
     output reg[31:0] ram_addr, //地址
     output reg[3:0] ram_be, //字节使能，低有效
-    output reg ram_ce, //片�?�使能，低有�?
-    output reg ram_we,  //写使能，低为读，高为�?
+    output reg ram_ce, //片�?�使能，低有�??
+    output reg ram_we,  //写使能，低为读，高为�??
 
     input wire[31:0] excepttype_i,
     input wire[31:0] current_inst_address_i,    
@@ -47,7 +47,10 @@ module memory(
     output wire[31:0] cp0_epc_o,
     output wire[31:0] current_inst_address_o,
     input wire[7:0] ext_uart_rx,
-    output reg[7:0] ext_uart_tx
+    output reg[7:0] ext_uart_tx,
+    output reg isbaseram,
+    output reg[31:0] inst_ram_data_o,
+    output reg[31:0] inst_ram_addr
 
 
 );
@@ -132,6 +135,7 @@ always @(*)begin
         ram_be <= 0;
         ram_ce <= 1;
         ram_we <= 0;
+        isbaseram<=0;
         cp0_reg_we_o <= 1'b0;
         cp0_reg_write_addr_o <= 5'b00000;
         cp0_reg_data_o <= 0;    
@@ -153,6 +157,7 @@ always @(*)begin
                 else
                 begin
                     ram_we <= 0;
+                    isbaseram<=0;
                     ram_ce <= 0;
                     ram_addr <= load_store_addr;
                     ram_be <= 0;
@@ -166,6 +171,7 @@ always @(*)begin
             end
             `EXE_LBU_OP:begin
                 ram_we <= 0;
+                isbaseram<=0;
                 ram_ce <= 0;
                 ram_addr <= load_store_addr;
                 ram_be <= 0;
@@ -180,6 +186,7 @@ always @(*)begin
                 case (load_store_addr[1:0])
                     2'b00:begin
                         ram_we <= 0;
+                        isbaseram<=0;
                         ram_ce <= 0;
                         ram_addr <= load_store_addr;
                         ram_be <= 0;
@@ -187,6 +194,7 @@ always @(*)begin
                     end
                     2'b10:begin
                         ram_we <= 0;
+                        isbaseram<=0;
                         ram_ce <= 0;
                         ram_addr <= load_store_addr;
                         ram_be <= 0;
@@ -195,6 +203,7 @@ always @(*)begin
                     default:begin
                         ram_be <= 0;
                         ram_we <= 0;
+                        isbaseram<=0;
                         ram_ce <= 1;
                         ram_addr <= 0;
                         wdata_o <= 0;
@@ -205,6 +214,7 @@ always @(*)begin
                 case (load_store_addr[1:0])
                     2'b00:begin
                         ram_we <= 0;
+                        isbaseram<=0;
                         ram_ce <= 0;
                         ram_addr <= load_store_addr;
                         ram_be <= 0;
@@ -212,6 +222,7 @@ always @(*)begin
                     end
                     2'b10:begin
                         ram_we <= 0;
+                        isbaseram<=0;
                         ram_ce <= 0;
                         ram_addr <= load_store_addr;
                         ram_be <= 0;
@@ -220,6 +231,7 @@ always @(*)begin
                     default:begin
                         ram_be <= 0;
                         ram_we <= 0;
+                        isbaseram<=0;
                         ram_ce <= 1;
                         ram_addr <= 0;
                         wdata_o <= 0;
@@ -230,6 +242,7 @@ always @(*)begin
                 case (load_store_addr[1:0])
                     2'b00:begin
                         ram_we <= 0;
+                        isbaseram<=0;
                         ram_ce <= 0;
                         ram_addr <= load_store_addr;
                         ram_be <= 0;
@@ -238,6 +251,7 @@ always @(*)begin
                     default:begin
                         ram_be <= 0;
                         ram_we <= 0;
+                        isbaseram<=0;
                         ram_ce <= 1;
                         ram_addr <= 0;
                         wdata_o <= 0;
@@ -247,6 +261,7 @@ always @(*)begin
             `EXE_LWL_OP:begin
                 ram_addr <= {load_store_addr[31:2],2'b00};
                 ram_we <= 0;
+                isbaseram<=0;
                 ram_ce <= 0;
                 ram_be <= 0;
                 case(load_store_addr[1:0])
@@ -267,6 +282,7 @@ always @(*)begin
             `EXE_LWR_OP:begin
                 ram_addr <= {load_store_addr[31:2],2'b00};
                 ram_we <= 0;
+                isbaseram<=0;
                 ram_ce <= 0;
                 ram_be <= 0;
                 case(load_store_addr[1:0])
@@ -293,6 +309,7 @@ always @(*)begin
                 begin
                     ram_addr <= load_store_addr;
                     ram_we <= 1;
+                    isbaseram<=0;
                     ram_ce <= 0;
                     ram_data_o <= {load_store_data[7:0],load_store_data[7:0],load_store_data[7:0],load_store_data[7:0]};
                     case(load_store_addr[1:0])
@@ -306,6 +323,7 @@ always @(*)begin
             `EXE_SH_OP:begin
                 ram_addr <= load_store_addr;
                 ram_we <= 1;
+                isbaseram<=0;
                 ram_ce <= 0;
                 ram_data_o <= {load_store_data[15:0],load_store_data[15:0]};
                 case(load_store_addr[1:0])
@@ -315,15 +333,28 @@ always @(*)begin
                 endcase
             end        
             `EXE_SW_OP:begin
-                ram_addr <= load_store_addr;
-                ram_we <= 1;
-                ram_ce <= 0;
-                ram_data_o <= load_store_data;
-                ram_be <= 4'b0000;
+                if (load_store_addr[22]==1'b1)
+                begin
+                    ram_addr <= load_store_addr;
+                    ram_we <= 1;
+                    isbaseram<=0;
+                    ram_ce <= 0;
+                    ram_data_o <= load_store_data;
+                    ram_be <= 4'b0000;
+                end
+                else
+                begin
+                    inst_ram_addr <= load_store_addr;
+                    ram_we <= 0;
+                    isbaseram<=1;
+                    ram_ce <= 1;
+                    inst_ram_data_o <= load_store_data;
+                end
             end
             `EXE_SWL_OP:begin
                 ram_addr <= {load_store_addr[31:2],2'b00};
                 ram_we <= 1;
+                isbaseram<=0;
                 ram_ce <= 0;
                 case(load_store_addr[1:0])
                     2'b00:begin
@@ -347,6 +378,7 @@ always @(*)begin
             `EXE_SWR_OP:begin
                 ram_addr <= {load_store_addr[31:2],2'b00};
                 ram_we <= 1;
+                isbaseram<=0;
                 ram_ce <= 0;
                 case(load_store_addr[1:0])
                     2'b00:begin
@@ -373,6 +405,7 @@ always @(*)begin
                 ram_be <= 0;
                 ram_ce <= 1;
                 ram_we <= 0;
+                isbaseram<=0;
             end
         endcase
     end   

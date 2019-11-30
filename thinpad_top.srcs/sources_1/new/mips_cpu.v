@@ -23,7 +23,7 @@
 module mips_cpu(
     input wire clk,
     input wire rst,
-    input wire[31:0] base_ram_data,
+    inout wire[31:0] base_ram_data,
     output wire[19:0] base_ram_addr,
     output wire[3:0] base_ram_be_n,
     output wire base_ram_ce_n,
@@ -43,9 +43,15 @@ module mips_cpu(
 );
 
 
-assign base_ram_oe_n = 0;
-assign base_ram_we_n = 1;
+//assign base_ram_oe_n = 0;
+//assign base_ram_we_n = 1;
 assign base_ram_be_n = 0;
+
+
+
+wire isbaseram;
+wire[31:0] inst_ram_data_o;
+wire[31:0] inst_ram_addr;
 
 
 
@@ -210,11 +216,12 @@ ctrl ctrl_inst(
 
 
 
+wire base_ram_ce_n_half;
 inst_fetch inst_fetch_inst(
     .clk(clk),
     .rst(rst),
     .pc(pc),
-    .ce(base_ram_ce_n),
+    .ce(base_ram_ce_n_half),
     .stop(stop[0]),
     .branch_addr(id_branch_addr),
     .branch_we(id_branch_we),
@@ -224,9 +231,10 @@ inst_fetch inst_fetch_inst(
 
 
 
+wire base_ram_addr_half;
 pc2addr_debug pc2addr_debug_inst(
     .pc(pc),
-    .addr(base_ram_addr)
+    .addr(base_ram_addr_half)
 );
 
 
@@ -474,6 +482,11 @@ wire[31:0] ext_ram_data_out;
 
 assign ext_ram_data_in = ext_ram_data;
 assign ext_ram_data = ram_we ? ext_ram_data_out : 32'bz;
+assign base_ram_data = isbaseram ? inst_ram_data_o : 32'bz;
+assign base_ram_addr = isbaseram ? inst_ram_addr[21:2] : base_ram_addr_half;
+assign base_ram_ce_n = isbaseram ? 1'b0 : base_ram_ce_n_half;
+assign base_ram_oe_n = ~base_ram_we_n;
+assign base_ram_we_n = ~isbaseram;
 
 memory memory_inst(
     .rst(rst),
@@ -525,7 +538,10 @@ memory memory_inst(
     .cp0_epc_o(latest_epc),
     .current_inst_address_o(mem_current_inst_address_o),
     .ext_uart_rx(ext_uart_rx),
-    .ext_uart_tx(ext_uart_tx)
+    .ext_uart_tx(ext_uart_tx),
+    .isbaseram(isbaseram),
+    .inst_ram_data_o(inst_ram_data_o),
+    .inst_ram_addr(inst_ram_addr)
 );
 
 mem_wb mem_wb_inst(
