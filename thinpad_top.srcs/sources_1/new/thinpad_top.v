@@ -359,7 +359,9 @@ mips_cpu_main mips_sopc(
     .ext_ram_be_n(ext_ram_be_n),
     .ext_ram_ce_n(ext_ram_ce_n),
     .ext_ram_oe_n(ext_ram_oe_n),
-    .ext_ram_we_n(ext_ram_we_n)
+    .ext_ram_we_n(ext_ram_we_n),
+    .ext_uart_rx(ext_uart_rx),
+    .ext_uart_tx(ext_uart_tx)
 );
 
 
