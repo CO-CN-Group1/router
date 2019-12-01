@@ -38,8 +38,11 @@ module mips_cpu(
 
     input wire[5:0] int_i,
     output wire timer_int_o,
-    input wire[7:0] ext_uart_rx,
-    output wire[7:0] ext_uart_tx
+    output wire uart_rdn,
+    output wire uart_wrn,
+    input wire uart_dataready,
+    input wire uart_tbre,
+    input wire uart_tsre
 );
 
 
@@ -52,6 +55,8 @@ assign base_ram_be_n = 0;
 wire isbaseram;
 wire[31:0] inst_ram_data_o;
 wire[31:0] inst_ram_addr;
+wire inst_ram_oe_n;
+wire inst_ram_we_n;
 
 
 
@@ -478,15 +483,17 @@ assign ext_ram_addr = ram_addr[21:2];
 assign ext_ram_oe_n = ram_we;
 assign ext_ram_we_n = ~ram_we;
 wire[31:0] ext_ram_data_in;
+wire[31:0] base_ram_data_in;
 wire[31:0] ext_ram_data_out;
 
 assign ext_ram_data_in = ext_ram_data;
 assign ext_ram_data = ram_we ? ext_ram_data_out : 32'bz;
-assign base_ram_data = isbaseram ? inst_ram_data_o : 32'bz;
+assign base_ram_data_in = base_ram_data;
+assign base_ram_data = (base_ram_we_n==1'b0) ? inst_ram_data_o : 32'bz;
 assign base_ram_addr = isbaseram ? inst_ram_addr[21:2] : base_ram_addr_half;
 assign base_ram_ce_n = isbaseram ? 1'b0 : base_ram_ce_n_half;
-assign base_ram_oe_n = ~base_ram_we_n;
-assign base_ram_we_n = ~isbaseram;
+assign base_ram_oe_n = isbaseram ? inst_ram_oe_n : 1'b0;
+assign base_ram_we_n = isbaseram ? inst_ram_we_n : 1'b1;
 
 memory memory_inst(
     .rst(rst),
@@ -537,11 +544,17 @@ memory memory_inst(
     .excepttype_o(mem_excepttype_o),
     .cp0_epc_o(latest_epc),
     .current_inst_address_o(mem_current_inst_address_o),
-    .ext_uart_rx(ext_uart_rx),
-    .ext_uart_tx(ext_uart_tx),
     .isbaseram(isbaseram),
+    .inst_ram_data_i(base_ram_data_in),
     .inst_ram_data_o(inst_ram_data_o),
-    .inst_ram_addr(inst_ram_addr)
+    .inst_ram_addr(inst_ram_addr),
+    .inst_ram_oe_n(inst_ram_oe_n),
+    .inst_ram_we_n(inst_ram_we_n),
+    .uart_rdn(uart_rdn),
+    .uart_wrn(uart_wrn),
+    .uart_dataready(uart_dataready),
+    .uart_tbre(uart_tbre),
+    .uart_tsre(uart_tsre)
 );
 
 mem_wb mem_wb_inst(

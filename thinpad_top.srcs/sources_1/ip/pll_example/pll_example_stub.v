@@ -1,10 +1,10 @@
 // Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-// Date        : Wed Nov  6 23:43:02 2019
+// Date        : Sun Dec  1 10:37:26 2019
 // Host        : LIANGZHAOA230 running 64-bit Service Pack 1  (build 7601)
 // Command     : write_verilog -force -mode synth_stub
-//               C:/Users/liangzhao/cod19grp1-after8/thinpad_top.srcs/sources_1/ip/pll_example/pll_example_stub.v
+//               C:/Users/liangzhao/cod19grp1-closeMips32/thinpad_top.srcs/sources_1/ip/pll_example/pll_example_stub.v
 // Design      : pll_example
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7a100tfgg676-2L

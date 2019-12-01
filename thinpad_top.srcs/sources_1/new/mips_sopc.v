@@ -35,8 +35,11 @@ module mips_sopc(
     output wire ext_ram_ce_n,
     output wire ext_ram_oe_n,
     output wire ext_ram_we_n,
-    input wire[7:0] ext_uart_rx,
-    output wire[7:0] ext_uart_tx
+    output wire uart_rdn,
+    output wire uart_wrn,
+    input wire uart_dataready,
+    input wire uart_tbre,
+    input wire uart_tsre
 );
 
 wire[5:0] int;
@@ -62,8 +65,11 @@ mips_cpu mips_cpu_inst(
     .ext_ram_we_n(ext_ram_we_n),
     .int_i(int),
     .timer_int_o(timer_int),
-    .ext_uart_rx(ext_uart_rx),
-    .ext_uart_tx(ext_uart_tx)
+    .uart_rdn(uart_rdn),
+    .uart_wrn(uart_wrn),
+    .uart_dataready(uart_dataready),
+    .uart_tbre(uart_tbre),
+    .uart_tsre(uart_tsre)
 );
 
 
