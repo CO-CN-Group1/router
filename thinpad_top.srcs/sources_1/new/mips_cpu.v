@@ -243,11 +243,12 @@ pc2addr_debug pc2addr_debug_inst(
 );
 
 
+wire[31:0] base_ram_data_in;
 if_id if_id_inst(
     .clk(clk),
     .rst(rst),
     .if_pc(pc),
-    .if_inst(base_ram_data),
+    .if_inst(base_ram_data_in),
     .id_pc(id_pc),
     .id_inst(id_inst),
     .stop(stop[1:2]),
@@ -483,7 +484,6 @@ assign ext_ram_addr = ram_addr[21:2];
 assign ext_ram_oe_n = ram_we;
 assign ext_ram_we_n = ~ram_we;
 wire[31:0] ext_ram_data_in;
-wire[31:0] base_ram_data_in;
 wire[31:0] ext_ram_data_out;
 
 assign ext_ram_data_in = ext_ram_data;
