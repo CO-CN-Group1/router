@@ -316,14 +316,14 @@ begin
 end
 
 
-(*mark_debug = "true"*)wire [7:0] eth_rx_axis_fifo_tdata;
-(*mark_debug = "true"*)wire eth_rx_axis_fifo_tvalid;
-(*mark_debug = "true"*)wire eth_rx_axis_fifo_tlast;
-(*mark_debug = "true"*)wire eth_rx_axis_fifo_tready;
-(*mark_debug = "true"*)wire [7:0] eth_tx_axis_fifo_tdata;
-(*mark_debug = "true"*)wire eth_tx_axis_fifo_tvalid;
-(*mark_debug = "true"*)wire eth_tx_axis_fifo_tlast;
-(*mark_debug = "true"*)wire eth_tx_axis_fifo_tready;
+wire [7:0] eth_rx_axis_fifo_tdata;
+wire eth_rx_axis_fifo_tvalid;
+wire eth_rx_axis_fifo_tlast;
+wire eth_rx_axis_fifo_tready;
+wire [7:0] eth_tx_axis_fifo_tdata;
+wire eth_tx_axis_fifo_tvalid;
+wire eth_tx_axis_fifo_tlast;
+wire eth_tx_axis_fifo_tready;
 
 
 eth_mac_fifo_block trimac_fifo_block (
