@@ -40,12 +40,39 @@ module exe(
     input wire div_finish,
 
     input wire[31:0] link_addr,
-    input wire in_delayslot,
+    input wire in_delayslot_i,
     input wire[31:0] inst,
     output wire[7:0] aluop_o,
     output wire[31:0] load_store_addr,
-    output wire[31:0] load_store_data
+    output wire[31:0] load_store_data,
+
+    input wire mem_cp0_reg_we,
+    input wire[4:0] mem_cp0_reg_write_addr,
+    input wire[31:0] mem_cp0_reg_data,
+    
+    input wire wb_cp0_reg_we,
+    input wire[4:0] wb_cp0_reg_write_addr,
+    input wire[31:0] wb_cp0_reg_data,
+
+    input wire[31:0] cp0_reg_data_i,
+    output reg[4:0] cp0_reg_read_addr_o,
+
+    output reg cp0_reg_we_o,
+    output reg[4:0] cp0_reg_write_addr_o,
+    output reg[31:0] cp0_reg_data_o,
+    
+    input wire[31:0] excepttype_i,
+    input wire[31:0] current_inst_address_i,
+
+    output wire[31:0] excepttype_o,
+    output wire in_delayslot_o,
+    output wire[31:0] current_inst_address_o,
+
+    output wire isLoadInst
+
 );
+
+assign isLoadInst = (aluop == `EXE_LB_OP)||(aluop == `EXE_LBU_OP)||(aluop == `EXE_LH_OP)||(aluop == `EXE_LHU_OP)||(aluop == `EXE_LL_OP)||(aluop == `EXE_LW_OP)||(aluop == `EXE_LWL_OP)||(aluop == `EXE_LWR_OP);
 
 reg[31:0] logic_ans;
 reg[31:0] shift_ans;
@@ -64,6 +91,66 @@ wire overflow;
 
 reg stop_div;
 reg stop_madd_and_msub;
+
+reg trapassert;
+reg ovassert;
+wire reg1_eq_reg2;
+wire reg1_lt_reg2;
+    
+
+assign excepttype_o = {excepttype_i[31:12],ovassert,trapassert,excepttype_i[9:8],8'h00};
+assign in_delayslot_o = in_delayslot_i;
+assign current_inst_address_o = current_inst_address_i;
+
+assign reg2_mux = ((aluop == `EXE_SUB_OP) || (aluop == `EXE_SUBU_OP) ||(aluop == `EXE_SLT_OP)|| (aluop == `EXE_TLT_OP) ||(aluop == `EXE_TLTI_OP) || (aluop == `EXE_TGE_OP) ||(aluop == `EXE_TGEI_OP)) ? (~reg2)+1 : reg2;
+  
+
+assign reg1addreg2 = reg1 + reg2_mux;
+
+assign overflow = (!reg1[31]&&!reg2_mux[31] && reg1addreg2[31])||(reg1[31]&&reg2_mux[31] && !reg1addreg2[31]);
+
+
+                                    
+assign reg1_lt_reg2 = ((aluop == `EXE_SLT_OP) || (aluop == `EXE_TLT_OP) || (aluop == `EXE_TLTI_OP) || (aluop == `EXE_TGE_OP) || (aluop == `EXE_TGEI_OP)) ?((reg1[31] && !reg2[31]) || (!reg1[31] && !reg2[31] && reg1addreg2[31])||(reg1[31] && reg2[31] && reg1addreg2[31])) :(reg1 < reg2);
+  
+
+always @ (*) begin
+    if(rst) begin
+        trapassert <= 0;
+    end else begin
+        case (aluop)
+            `EXE_TEQ_OP, `EXE_TEQI_OP: begin
+                if( reg1 == reg2 )
+                    trapassert <= 1;
+                else
+                    trapassert <= 0;
+            end
+            `EXE_TGE_OP, `EXE_TGEI_OP, `EXE_TGEIU_OP,`EXE_TGEU_OP: begin
+                if( ~reg1_lt_reg2 )
+                    trapassert <= 1;
+                else 
+                    trapassert <= 0;
+            end
+            `EXE_TLT_OP, `EXE_TLTI_OP, `EXE_TLTIU_OP, `EXE_TLTU_OP: begin
+                if( reg1_lt_reg2 )
+                    trapassert <= 1;
+                else
+                    trapassert <= 0;
+            end
+            `EXE_TNE_OP, `EXE_TNEI_OP: begin
+                if( reg1 != reg2 )
+                    trapassert <= 1;
+                else
+                    trapassert <= 0;
+            end
+            default:                begin
+                trapassert <= 0;
+            end
+        endcase
+    end
+end
+
+
 
 assign aluop_o = aluop;
 assign load_store_data = reg2;
@@ -196,6 +283,18 @@ always @(*)begin
                 hi_o <= hilo_m_ans[63:32];
                 lo_o <= hilo_m_ans[31:0];
             end
+            `EXE_MFC0_OP:begin
+                cp0_reg_read_addr_o <= inst[15:11];
+                move_ans <= cp0_reg_data_i;
+                if(mem_cp0_reg_we&&mem_cp0_reg_write_addr == inst[15:11] ) begin
+                    move_ans <= mem_cp0_reg_data;
+                end else if(wb_cp0_reg_we&&wb_cp0_reg_write_addr == inst[15:11] ) begin
+                    move_ans <= wb_cp0_reg_data;
+                end
+                hilo_we <= 0;
+                hi_o <= 0;
+                lo_o <= 0;
+            end
             default:begin
                 move_ans <= 0;
                 hi_o <= 0;
@@ -250,12 +349,6 @@ always @(*)begin
         endcase 
     end
 end
-
-assign reg2_mux = ((aluop==`EXE_SUB_OP) || (aluop==`EXE_SUBU_OP) || (aluop==`EXE_SLT_OP))?(~reg2)+1:reg2;
-assign reg1addreg2 = reg1 + reg2_mux;
-
-assign overflow = (!reg1[31]&&!reg2_mux[31] && reg1addreg2[31])||(reg1[31]&&reg2_mux[31] && !reg1addreg2[31]);
-
 
 always @(*)begin
     if(rst)begin
@@ -356,11 +449,13 @@ end
 
 always@(*) begin
     wd_o <= wd_i;
-    if((aluop == `EXE_ADD_OP || aluop == `EXE_ADDI_OP || aluop == `EXE_SUB_OP) && overflow == 1) begin
-	 	wreg_o <= 0;
-	end else begin
-	    wreg_o <= wreg_i;
-	end
+    if((aluop == `EXE_ADD_OP || aluop == `EXE_ADDI_OP || aluop == `EXE_SUB_OP) && overflow) begin
+         wreg_o <= 0;
+         ovassert <= 1'b1;
+    end else begin
+        wreg_o <= wreg_i;
+        ovassert <= 1'b0;
+    end
     case(alusel)
         `EXE_RES_LOGIC: begin
             wdata <= logic_ans;
@@ -385,4 +480,22 @@ always@(*) begin
         end
     endcase
 end
+
+always @ (*) begin
+    if(rst) begin
+        cp0_reg_write_addr_o <= 5'b00000;
+        cp0_reg_we_o <= 1'b0;
+        cp0_reg_data_o <= 0;
+    end else if(aluop == `EXE_MTC0_OP) begin
+        cp0_reg_write_addr_o <= inst[15:11];
+        cp0_reg_we_o <= 1'b1;
+        cp0_reg_data_o <= reg1;
+    end else begin
+        cp0_reg_write_addr_o <= 5'b00000;
+        cp0_reg_we_o <= 1'b0;
+        cp0_reg_data_o <= 0;
+    end
+end
+
+
 endmodule

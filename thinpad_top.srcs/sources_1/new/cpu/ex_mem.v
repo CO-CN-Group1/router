@@ -24,7 +24,23 @@ module ex_mem(
     input wire[31:0] ex_load_store_addr,
     output reg[7:0] mem_aluop,
     output reg[31:0] mem_load_store_data,
-    output reg[31:0] mem_load_store_addr
+    output reg[31:0] mem_load_store_addr,
+
+    input wire ex_cp0_reg_we,
+    input wire[4:0] ex_cp0_reg_write_addr,
+    input wire[31:0] ex_cp0_reg_data,    
+    output reg mem_cp0_reg_we,
+    output reg[4:0] mem_cp0_reg_write_addr,
+    output reg[31:0] mem_cp0_reg_data,
+
+
+    input wire[31:0] ex_excepttype,
+    input wire ex_in_delayslot,
+    input wire[31:0] ex_current_inst_address,
+    output reg[31:0] mem_excepttype,
+    output reg mem_in_delayslot,
+    output reg[31:0] mem_current_inst_address,
+    input wire flush
 );
 
 always @(posedge clk)begin
@@ -40,6 +56,31 @@ always @(posedge clk)begin
         mem_aluop <= 0;
         mem_load_store_addr <= 0;
         mem_load_store_data <= 0;
+        mem_cp0_reg_we <= 1'b0;
+        mem_cp0_reg_write_addr <= 5'b00000;
+        mem_cp0_reg_data <= 0;
+        mem_excepttype <= 0;
+        mem_in_delayslot <= 0;
+        mem_current_inst_address <= 0;
+    end else if(flush)begin
+        
+        mem_wdata <= 0;
+        mem_wreg <= 0;
+        mem_wd <= 0;
+        mem_hi <= 0;
+        mem_lo <= 0;
+        mem_hilo_we <= 0;
+        hilo_tmp_o <= 0;
+        hilo_cnt_o <= 0;
+        mem_aluop <= 0;
+        mem_load_store_addr <= 0;
+        mem_load_store_data <= 0;
+        mem_cp0_reg_we <= 1'b0;
+        mem_cp0_reg_write_addr <= 5'b00000;
+        mem_cp0_reg_data <= 0;
+        mem_excepttype <= 0;
+        mem_in_delayslot <= 0;
+        mem_current_inst_address <= 0;
     end else if(stop[0]&&!stop[1])begin
         mem_wdata <= 0;
         mem_wreg <= 0;
@@ -52,6 +93,12 @@ always @(posedge clk)begin
         mem_aluop <= 0;
         mem_load_store_addr <= 0;
         mem_load_store_data <= 0;
+        mem_cp0_reg_we <= 1'b0;
+        mem_cp0_reg_write_addr <= 5'b00000;
+        mem_cp0_reg_data <= 0;
+        mem_excepttype <= 0;
+        mem_in_delayslot <= 0;
+        mem_current_inst_address <= 9;
     end else if(!stop[0]) begin
         mem_wd <= ex_wd;
         mem_wreg <= ex_wreg;
@@ -64,6 +111,12 @@ always @(posedge clk)begin
         mem_aluop <= ex_aluop;
         mem_load_store_addr <= ex_load_store_addr;
         mem_load_store_data <= ex_load_store_data;
+        mem_cp0_reg_we <= ex_cp0_reg_we;
+        mem_cp0_reg_write_addr <= ex_cp0_reg_write_addr;
+        mem_cp0_reg_data <= ex_cp0_reg_data;
+        mem_excepttype <= ex_excepttype;
+        mem_in_delayslot <= ex_in_delayslot;
+        mem_current_inst_address <= ex_current_inst_address;
     end else begin
         hilo_tmp_o <= hilo_tmp_i;
         hilo_cnt_o <= hilo_cnt_i;
