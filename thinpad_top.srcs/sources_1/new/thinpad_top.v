@@ -41,14 +41,14 @@ module thinpad_top(
     input  wire rxd,  //直连串口接收�?
 
     //Flash存储器信号，参�?? JS28F640 芯片手册
-    output wire [22:0]flash_a,      //Flash地址，a0仅在8bit模式有效�?16bit模式无意�?
+    output reg [22:0]flash_a,      //Flash地址，a0仅在8bit模式有效�?16bit模式无意�?
     inout  wire [15:0]flash_d,      //Flash数据
-    output wire flash_rp_n,         //Flash复位信号，低有效
-    output wire flash_vpen,         //Flash写保护信号，低电平时不能擦除、烧�?
-    output wire flash_ce_n,         //Flash片�?�信号，低有�?
-    output wire flash_oe_n,         //Flash读使能信号，低有�?
-    output wire flash_we_n,         //Flash写使能信号，低有�?
-    output wire flash_byte_n,       //Flash 8bit模式选择，低有效。在使用flash�?16位模式时请设�?1
+    output reg flash_rp_n,         //Flash复位信号，低有效
+    output reg flash_vpen,         //Flash写保护信号，低电平时不能擦除、烧�?
+    output reg flash_ce_n,         //Flash片�?�信号，低有�?
+    output reg flash_oe_n,         //Flash读使能信号，低有�?
+    output reg flash_we_n,         //Flash写使能信号，低有�?
+    output reg flash_byte_n,       //Flash 8bit模式选择，低有效。在使用flash�?16位模式时请设�?1
 
     //USB+SD 控制器信号，参�?? CH376T 芯片手册
     output wire ch376t_sdi,
@@ -439,67 +439,60 @@ routing_table_lookup lookup_inst(
 
 wire[31:0] openmips_if_addr_o;
 reg[31:0] openmips_if_data_i;
+wire openmips_if_ce_o;
 wire openmips_if_sram_ce_o;
+wire openmips_if_flash_ce_o;
 wire openmips_if_serial_ce_o;
+wire openmips_if_vga_ce_o;
+wire openmips_if_rom_ce_o;
 wire openmips_mem_we_o;
 wire[31:0] openmips_mem_addr_o;
 wire[3:0] openmips_mem_sel_o;
 wire[31:0] openmips_mem_data_o;
 reg[31:0] openmips_mem_data_i;
+wire openmips_mem_ce_o;
 wire openmips_mem_sram_ce_o;
+wire openmips_mem_flash_ce_o;
 wire openmips_mem_serial_ce_o;
+wire openmips_mem_vga_ce_o;
+wire openmips_mem_rom_ce_o;
+wire openmips_mem_sram_sum;
 reg uart_we_o;
 reg uart_re_o;
 assign uart_wrn = uart_we_o;
 assign uart_rdn = uart_re_o;
-
-
-wire[31:0] addr_bus1_addr;
-wire[31:0] addr_bus2_addr;
-
-wire timer_int;
-wire[5:0] int;
-
-assign int = {5'b00000,timer_int};
-
 mips_cpu mips_cpu_inst(
     .clk(clk_20M),
     .rst(~locked),
 
+    .if_addr_o(openmips_if_addr_o),
     .if_data_i(openmips_if_data_i),
-    .if_addr(addr_bus1_addr),
+    .if_ce_o(openmips_if_ce_o),
+    .if_sram_ce_o(openmips_if_sram_ce_o),
+    .if_flash_ce_o(openmips_if_flash_ce_o),
+    .if_serial_ce_o(openmips_if_serial_ce_o),
+    .if_vga_ce_o(openmips_if_vga_ce_o),
+    .if_rom_ce_o(openmips_if_rom_ce_o),
 
+    .mem_we_o(openmips_mem_we_o),
+    .mem_addr_o(openmips_mem_addr_o),
+    .mem_sel_o(openmips_mem_sel_o),
+    .mem_data_o(openmips_mem_data_o),
     .mem_data_i(openmips_mem_data_i),
-    .mem_data_o(openmips_mem_data_o), 
-    .mem_addr(addr_bus2_addr),
-    .mem_be(openmips_mem_sel_o),
-
-    .int_i(int),
-    .timer_int_o(timer_int),
-    
-    .ctrl_we_o(openmips_mem_we_o)
+    .mem_ce_o(openmips_mem_ce_o),
+    .mem_sram_ce_o(openmips_mem_sram_ce_o),
+    .mem_flash_ce_o(openmips_mem_flash_ce_o),
+    .mem_serial_ce_o(openmips_mem_serial_ce_o),
+    .mem_vga_ce_o(openmips_mem_vga_ce_o),
+    .mem_rom_ce_o(openmips_mem_rom_ce_o),
+    .mem_sram_sum(openmips_mem_sram_sum)
 );
 
-addr_bus addr_bus_inst1(
-    .clk(clk_20M),
-    .rst(~locked),
-    .addr_i(addr_bus1_addr),
-    .sram_ce(openmips_if_sram_ce_o),
-    .serial_ce(openmips_if_serial_ce_o),
-    .addr_o(openmips_if_addr_o)
-);
-
-addr_bus addr_bus_inst2(
-    .clk(clk_20M),
-    .rst(~locked),
-    .addr_i(addr_bus2_addr),
-    .sram_ce(openmips_mem_sram_ce_o),
-    .serial_ce(openmips_mem_serial_ce_o),
-    .addr_o(openmips_mem_addr_o)
-);
-
-assign base_ram_data = (openmips_mem_we_o && (openmips_mem_sram_ce_o||openmips_mem_serial_ce_o))? openmips_mem_data_o: 32'bzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz;
-assign ext_ram_data = (openmips_mem_we_o && openmips_mem_sram_ce_o)? openmips_mem_data_o: 32'bzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz;
+reg rom_ce;
+reg[11:0] rom_addr;
+wire[31:0] rom_data;
+assign base_ram_data = (openmips_mem_ce_o && openmips_mem_we_o && openmips_mem_sram_sum)? openmips_mem_data_o: 32'bzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz;
+assign ext_ram_data = (openmips_mem_ce_o && openmips_mem_we_o && openmips_mem_sram_ce_o)? openmips_mem_data_o: 32'bzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz;
 always@(*)begin
     if(~locked)begin
         base_ram_addr <= 20'b0;
@@ -512,8 +505,18 @@ always@(*)begin
         ext_ram_ce_n <= 1'b1;
         ext_ram_oe_n <= 1'b1;
         ext_ram_we_n <= 1'b1;
+        flash_a <= 23'b0;
+        flash_rp_n <= 1'b1;
+        flash_oe_n <= 1'b1;
+        flash_ce_n <= 1'b1;
+        flash_byte_n <= 1'b1;
+        flash_we_n <= 1'b1;
+        //ext_uart_tx <= 8'b0;
+        //ext_uart_start <= 1'b0;
         uart_we_o <= 1'b1;
         uart_re_o <= 1'b1;
+        rom_ce <= 1'b0;
+        rom_addr <= 12'b0;
         openmips_if_data_i <= 32'b0;
         openmips_mem_data_i <= 32'b0;
     end else begin
@@ -527,75 +530,114 @@ always@(*)begin
         ext_ram_ce_n <= 1'b1;
         ext_ram_oe_n <= 1'b1;
         ext_ram_we_n <= 1'b1;
+        flash_a <= 23'b0;
+        flash_rp_n <= 1'b1;
+        flash_oe_n <= 1'b1;
+        flash_ce_n <= 1'b1;
+        flash_byte_n <= 1'b1;
+        flash_we_n <= 1'b1;
+        //ext_uart_tx <= 8'b0;
+        //ext_uart_start <= 1'b0;
+        rom_ce <= 1'b0;
+        rom_addr <= 12'b0;
         uart_we_o <= 1'b1;
         uart_re_o <= 1'b1;
         openmips_if_data_i <= 32'b0;
         openmips_mem_data_i <= 32'b0;
-        if (openmips_mem_sram_ce_o) begin
-            if (openmips_mem_addr_o[22] == 1'b0) begin
-                base_ram_addr <= openmips_mem_addr_o[21:2];
-                base_ram_be_n <= openmips_mem_sel_o;
-                base_ram_ce_n <= 1'b0;
-                if (openmips_mem_we_o) begin
-                    base_ram_oe_n <= 1'b1;
-                    base_ram_we_n <= 1'b0;
-                end else begin
+        if (openmips_mem_ce_o) begin
+            if (openmips_mem_sram_ce_o) begin
+                if (openmips_mem_addr_o[22] == 1'b0) begin
+                    base_ram_addr <= openmips_mem_addr_o[21:2];
+                    base_ram_be_n <= ~openmips_mem_sel_o;
+                    base_ram_ce_n <= 1'b0;
+                    if (openmips_mem_we_o) begin
+                        base_ram_oe_n <= 1'b1;
+                        base_ram_we_n <= 1'b0;
+                    end else begin
+                        base_ram_oe_n <= 1'b0;
+                        base_ram_we_n <= 1'b1;
+                        openmips_mem_data_i <= base_ram_data;
+                    end
+                end else if (openmips_mem_addr_o[22] == 1'b1) begin
+                    ext_ram_addr <= openmips_mem_addr_o[21:2];
+                    ext_ram_be_n <= ~openmips_mem_sel_o;
+                    ext_ram_ce_n <= 1'b0;
+                    if (openmips_mem_we_o) begin
+                        ext_ram_oe_n <= 1'b1;
+                        ext_ram_we_n <= 1'b0;
+                    end else begin
+                        ext_ram_oe_n <= 1'b0;
+                        ext_ram_we_n <= 1'b1;
+                        openmips_mem_data_i <= ext_ram_data;
+                    end
+                end
+            end else if (openmips_mem_flash_ce_o) begin
+                flash_a <= openmips_mem_addr_o[23:1];
+                flash_rp_n <= 1'b1;
+                flash_oe_n <= 1'b0;
+                flash_ce_n <= 1'b0;
+                flash_byte_n <= 1'b1;
+                flash_we_n <= 1'b1;
+                openmips_mem_data_i <= { 16'b0, flash_d };
+            end else if (openmips_mem_serial_ce_o) begin
+                if (openmips_mem_addr_o[3:0] == 4'hc) begin
+                    openmips_mem_data_i <= { 30'b0, uart_dataready, uart_tsre&uart_tbre}; // <TODO>
+                end else if (openmips_mem_addr_o[3:0] == 4'h8) begin
+                    if (openmips_mem_we_o) begin
+                        uart_we_o <= 1'b0;
+                    end else begin
+                        uart_re_o <= 1'b0;
+                        openmips_mem_data_i <= {24'b0, base_ram_data[7:0]};
+                        //already_read_status <= serial_read_status;
+                        //openmips_mem_data_i <= { 24'b0, serial_read_data };
+                    end
+                end
+            end else if (openmips_mem_rom_ce_o) begin
+                rom_addr <= openmips_mem_addr_o[13:2];
+                rom_ce <= 1'b1;
+                openmips_mem_data_i <= rom_data; 
+            end
+        end else if (openmips_if_ce_o) begin
+            if (openmips_if_sram_ce_o) begin
+                if (openmips_if_addr_o[22] == 1'b0) begin
+                    base_ram_addr <= openmips_if_addr_o[21:2];
+                    base_ram_be_n <= 4'b0000;
+                    base_ram_ce_n <= 1'b0;
                     base_ram_oe_n <= 1'b0;
                     base_ram_we_n <= 1'b1;
-                    openmips_mem_data_i <= base_ram_data;
-                end
-            end else if (openmips_mem_addr_o[22] == 1'b1) begin
-                ext_ram_addr <= openmips_mem_addr_o[21:2];
-                ext_ram_be_n <= openmips_mem_sel_o;
-                ext_ram_ce_n <= 1'b0;
-                if (openmips_mem_we_o) begin
-                    ext_ram_oe_n <= 1'b1;
-                    ext_ram_we_n <= 1'b0;
-                end else begin
+                    openmips_if_data_i <= base_ram_data;
+                end else if (openmips_if_addr_o[22] == 1'b1) begin
+                    ext_ram_addr <= openmips_if_addr_o[21:2];
+                    ext_ram_be_n <= 4'b0000;
+                    ext_ram_ce_n <= 1'b0;
                     ext_ram_oe_n <= 1'b0;
                     ext_ram_we_n <= 1'b1;
-                    openmips_mem_data_i <= ext_ram_data;
+                    openmips_if_data_i <= ext_ram_data;
                 end
-            end
-        end else if (openmips_mem_serial_ce_o) begin
-            if (openmips_mem_addr_o[3:0] == 4'hc) begin
-                openmips_mem_data_i <= { 30'b0, uart_dataready, uart_tsre&uart_tbre}; // <TODO>
-            end else if (openmips_mem_addr_o[3:0] == 4'h8) begin
-                if (openmips_mem_we_o) begin
-                    uart_we_o <= 1'b0;
-                end else begin
+            end else if (openmips_if_flash_ce_o) begin
+                flash_a <= openmips_if_addr_o[23:1];
+                flash_rp_n <= 1'b1;
+                flash_oe_n <= 1'b0;
+                flash_ce_n <= 1'b0;
+                flash_byte_n <= 1'b1;
+                flash_we_n <= 1'b1;
+                openmips_if_data_i <= { 16'b0, flash_d };
+            end else if (openmips_if_serial_ce_o) begin
+                if (openmips_if_addr_o[3:0] == 4'hc) begin
+                    openmips_if_data_i <= { 30'b0, uart_dataready, uart_tbre&uart_tsre }; // <TODO>
+                end else if (openmips_if_addr_o[3:0] == 4'h8) begin
                     uart_re_o <= 1'b0;
-                    openmips_mem_data_i <= {24'b0, base_ram_data[7:0]};
+                    openmips_if_data_i <= {24'b0, base_ram_data[7:0]};
+                    //already_read_status <= serial_read_status;
+                    //openmips_if_data_i <= { 24'b0, serial_read_data };
                 end
-            end
-        end else if (openmips_if_sram_ce_o) begin
-            if (openmips_if_addr_o[22] == 1'b0) begin
-                base_ram_addr <= openmips_if_addr_o[21:2];
-                base_ram_be_n <= 4'b0000;
-                base_ram_ce_n <= 1'b0;
-                base_ram_oe_n <= 1'b0;
-                base_ram_we_n <= 1'b1;
-                openmips_if_data_i <= base_ram_data;
-            end else if (openmips_if_addr_o[22] == 1'b1) begin
-                ext_ram_addr <= openmips_if_addr_o[21:2];
-                ext_ram_be_n <= 4'b0000;
-                ext_ram_ce_n <= 1'b0;
-                ext_ram_oe_n <= 1'b0;
-                ext_ram_we_n <= 1'b1;
-                openmips_if_data_i <= ext_ram_data;
-            end
-        end else if (openmips_if_serial_ce_o) begin
-            if (openmips_if_addr_o[3:0] == 4'hc) begin
-                openmips_if_data_i <= { 30'b0, uart_dataready, uart_tbre&uart_tsre }; // <TODO>
-            end else if (openmips_if_addr_o[3:0] == 4'h8) begin
-                uart_re_o <= 1'b0;
-                openmips_if_data_i <= {24'b0, base_ram_data[7:0]};
-                //already_read_status <= serial_read_status;
-                //openmips_if_data_i <= { 24'b0, serial_read_data };
+            end else if (openmips_if_rom_ce_o) begin
+                rom_addr <= openmips_if_addr_o[13:2];
+                rom_ce <= 1'b1;
+                openmips_if_data_i <= rom_data;
             end
         end
     end
 end
-
 
 endmodule

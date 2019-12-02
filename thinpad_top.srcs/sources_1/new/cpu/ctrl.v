@@ -1,104 +1,67 @@
+`include "defines.v"
+
 module ctrl(
-    input wire rst,
-    input wire clk,
-    input wire stop_from_ex,
-    output reg[0:5] stop,
-    
-    input wire[31:0] excepttype_i,
-    input wire[31:0] cp0_epc_i,
-    output reg[31:0] new_pc,
-    output reg flush,
-    input wire load_inst,
-    input wire store_inst,
-    output reg we_o
+	input wire clk,
+	input wire rst,
+	input wire mem_we_i,
+	input wire stallreq_from_id,
+	input wire stallreq_from_ex,
+	input wire stallreq_from_mem,
+	output reg[5:0] stall,
+
+	input wire is_load_i,
+
+	output reg[31:0] new_pc,
+	output reg mem_we_o
 );
 
-reg[1:0] load_cnt,store_cnt;
+reg pause_for_store;
+reg pause_for_load;
 
-always @(*)begin
-    if(rst)begin
-        stop <= 0;
-        flush <= 0;
-        new_pc <= 0;
-        we_o <= 0; 
-    end else if(excepttype_i) begin
-        flush <= 1'b1;
-        stop <= 6'b000000;
-        we_o <= 0;
-        case (excepttype_i)
-            32'h00000001: begin   //interrupt
-                new_pc <= 32'h00000020;
-            end
-            32'h00000008: begin   //syscall
-                new_pc <= 32'h00000040;
-            end
-            32'h0000000a: begin   //inst_invalid
-                new_pc <= 32'h00000040;
-            end
-            32'h0000000d: begin   //trap
-                new_pc <= 32'h00000040;
-            end
-            32'h0000000c: begin   //ov
-                new_pc <= 32'h00000040;
-            end
-            32'h0000000e: begin   //eret
-                new_pc <= cp0_epc_i;
-            end
-            default : begin
-            end
-        endcase                         
-    end else if(stop_from_ex)begin
-        stop <= 6'b111100;
-        flush <= 0;
-        we_o <= 0;
-    end else if(store_inst)begin
-        //we_o <= 1'b1;
-        if(store_cnt==1)begin
-            we_o <= 1'b1;
-        end else 
-            we_o <= 1'b0;
-        if(store_cnt!=2)begin
-            stop <= 6'b111110;
-            flush <= 0;
-        end else begin
-            stop <= 0;
-            flush <= 0;
-        end
-    end else if(load_inst)begin
-        we_o <= 1'b0;
-        if(load_cnt!=2)begin
-            stop <= 6'b111000;
-            flush <= 0;
-        end else begin
-            stop <= 0;
-            flush <= 0;
-        end
-    end else begin
-        we_o <= 1'b0;
-        stop <= 0;
-        flush <= 0;
-        new_pc <= 0;
-    end
+always@(posedge clk)begin
+	if(rst == 1'b1)begin
+		pause_for_store <= 1'b0;
+	end else if(mem_we_i == 1'b1)begin
+		pause_for_store <= ~pause_for_store;
+	end
 end
-always @(posedge clk)begin
-    if(rst)begin
-        load_cnt <= 0;
-        store_cnt <= 0;
-    end else if(store_inst)begin
-        if(store_cnt!=2)begin
-            store_cnt <= store_cnt + 1;
-        end else begin
-            store_cnt <= 0;
-        end
-    end else if(load_inst)begin
-        if(load_cnt!=2)begin
-            load_cnt <= load_cnt + 1;
-        end else begin
-            load_cnt <= 0;
-        end
-    end else begin
-        load_cnt <= 0;
-        store_cnt <= 0;
-    end
+
+always@(posedge clk)begin
+	if(rst == 1'b1)begin
+		pause_for_load <= 1'b0;
+	end else if(is_load_i == 1'b1)begin
+		pause_for_load <= ~pause_for_load;
+	end
 end
-endmodule
+
+always@(*)begin
+	if(rst == 1'b1)begin
+		stall <= 6'b000000;
+		mem_we_o <= 1'b0;
+		new_pc <= `start_inst_addr;
+	end else if(stallreq_from_ex == 1'b1)begin
+		stall <= 6'b001111;
+		mem_we_o <= 1'b0;
+	end else if(mem_we_i == 1'b1 && pause_for_store == 1'b0)begin
+		stall <= 6'b011111;
+		mem_we_o <= 1'b1;
+	end else if(mem_we_i == 1'b1 && pause_for_store == 1'b1)begin
+		stall <= 6'b001111;
+		mem_we_o <= 1'b1;
+	end else if(is_load_i == 1'b1 && pause_for_load == 1'b0)begin
+		stall <= 6'b000111;
+		mem_we_o <= 1'b0;
+	end else if(is_load_i == 1'b1 && pause_for_load == 1'b1)begin
+		stall <= 6'b000111;
+		mem_we_o <= 1'b0;
+	end else if(stallreq_from_mem == 1'b1)begin
+		stall <= 6'b000111;
+		mem_we_o <= 1'b0;
+	end else begin
+		stall <= 6'b000000;
+		new_pc <= `start_inst_addr;
+		mem_we_o <= 1'b0;
+	end
+end
+
+endmodule // ctrl

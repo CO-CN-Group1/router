@@ -1,1405 +1,838 @@
-`timescale 1ns/1ps
 `include "defines.v"
 
 module inst_decode(
-    input wire rst,
-    input wire[31:0] pc,
-    input wire[31:0] inst,
-    input wire[31:0] regs_data1,
-    output reg[4:0] regs_addr1,
-    output reg regs_re1,
-    input wire[31:0] regs_data2,
-    output reg[4:0] regs_addr2,
-    output reg regs_re2,
-    output reg[7:0]aluop,
-    output reg[2:0]alusel,
-    output reg[31:0] reg1,
-    output reg[31:0] reg2,
-    output reg[4:0] wd,
-    output reg wreg,
-    
-    input wire ex_wreg,
-    input wire[31:0] ex_wdata,
-    input wire[4:0] ex_wd,
+	input wire rst,
+	input wire[31:0] pc_i,
+	input wire[31:0] inst_i,
+	
+	input wire[7:0] ex_aluop_i,
+	input wire ex_wreg_i,
+	input wire[31:0] ex_wdata_i,
+	input wire[4:0] ex_wd_i,
 
-    input wire mem_wreg,
-    input wire[31:0] mem_wdata,
-    input wire[4:0] mem_wd,
-    
-    output wire stop,
+	input wire mem_wreg_i,
+	input wire[31:0] mem_wdata_i,
+	input wire[4:0] mem_wd_i,
 
-    input wire in_delayslot_i,
-    output reg in_delayslot_o,
-    output reg[31:0] branch_addr,
-    output reg branch_we,
-    output reg[31:0] link_addr,
-    output reg next_in_delayslot,
-    
-    output wire[31:0] inst_o,
-    input wire[7:0] ex_aluop,
+	input wire[31:0] reg1_data_i,
+	input wire[31:0] reg2_data_i,
 
-    output wire[31:0] excepttype_o,
-    output wire[31:0] current_inst_address_o
+	input wire is_in_delayslot_i,
+
+	output reg reg1_read_o,
+	output reg reg2_read_o,
+	output reg[4:0] reg1_addr_o,
+	output reg[4:0] reg2_addr_o,
+
+	output reg[7:0] aluop_o,
+	output reg[2:0] alusel_o,
+	output reg[31:0] reg1_o,
+	output reg[31:0] reg2_o,
+	output reg[4:0] wd_o,
+	output reg wreg_o,
+	output wire[31:0] inst_o,
+
+	output reg next_inst_in_delayslot_o,
+
+	output reg branch_flag_o,
+	output reg[31:0] branch_target_address_o,
+	output reg[31:0] link_addr_o,
+	output reg is_in_delayslot_o,
+
+	output wire[31:0] current_inst_address_o,
+
+	output wire stallreq
 );
 
-reg[31:0] imme;
-wire[5:0] op = inst[31:26];
-wire[5:0] func = inst[5:0];
-wire[4:0] func2 = inst[20:16];
-wire[31:0] pc_next;
-assign pc_next = pc + 4;
-wire[31:0] pc_next2;
-assign pc_next2 = pc + 8;
-always @(*)begin
-    if(rst)
-        in_delayslot_o <= 0;
-    else
-        in_delayslot_o <= in_delayslot_i; 
-end
+wire[5:0] op = inst_i[31:26];
+wire[4:0] op2 = inst_i[10:6];
+wire[5:0] op3 = inst_i[5:0];
+wire[4:0] op4 = inst_i[20:16];
+reg[31:0] imm;
+reg inst_valid;
+wire[31:0] pc_plus_8;
+wire[31:0] pc_plus_4;
+wire[31:0] imm_sll2_signedext;
 
-assign inst_o = inst;
-
-reg stop_load_reg1;
-reg stop_load_reg2;
-
+reg stallreq_for_reg1_loadrelate;
+reg stallreq_for_reg2_loadrelate;
 wire pre_inst_is_load;
 
-assign stop = stop_load_reg1 | stop_load_reg2;
+assign pc_plus_8 = pc_i+8;
+assign pc_plus_4 = pc_i+4;
+assign imm_sll2_signedext = {{14{inst_i[15]}}, inst_i[15:0], 2'b00};
+assign stallreq = stallreq_for_reg1_loadrelate | stallreq_for_reg2_loadrelate;
+assign pre_inst_is_load = ((ex_aluop_i == `exe_lb_op)||
+						   (ex_aluop_i == `exe_lbu_op)||
+						   (ex_aluop_i == `exe_lh_op)||
+						   (ex_aluop_i == `exe_lhu_op)||
+						   (ex_aluop_i == `exe_lw_op)||
+						   (ex_aluop_i == `exe_lwr_op)||
+						   (ex_aluop_i == `exe_lwl_op)||
+						   (ex_aluop_i == `exe_ll_op)||
+						   (ex_aluop_i == `exe_sc_op))?1'b1:1'b0;
+assign inst_o = inst_i;
+assign current_inst_address_o = pc_i;
 
-assign pre_inst_is_load = (ex_aluop == `EXE_LB_OP) || (ex_aluop == `EXE_LBU_OP) || (ex_aluop == `EXE_LH_OP) || (ex_aluop == `EXE_LHU_OP) || (ex_aluop == `EXE_LW_OP) || (ex_aluop == `EXE_LL_OP) || (ex_aluop == `EXE_LWL_OP) || (ex_aluop == `EXE_LWR_OP) || (ex_aluop == `EXE_SC_OP);
+always@(*)begin
+	if(rst == 1'b1)begin
+		aluop_o <= `exe_nop_op;
+		alusel_o <= `exe_res_nop;
+		wd_o <= `nop_reg_addr;
+		wreg_o <= 1'b0;
+		inst_valid <= 1'b0;
+		reg1_read_o <= 1'b0;
+		reg2_read_o <= 1'b0;
+		reg1_addr_o <= `nop_reg_addr;
+		reg2_addr_o <= `nop_reg_addr;
+		imm <= `zero_word;
+		link_addr_o <= `zero_word;
+		branch_target_address_o <= `zero_word;
+		branch_flag_o <= 1'b0;
+		next_inst_in_delayslot_o <= 1'b0;
+	end else begin
+		aluop_o <= `exe_nop_op;
+		alusel_o <= `exe_res_nop;
+		wd_o <= inst_i[15:11];
+		wreg_o <= 1'b0;
+		inst_valid <= 1'b0;
+		reg1_read_o <= 1'b0;
+		reg2_read_o <= 1'b0;
+		reg1_addr_o <= inst_i[25:21];
+		reg2_addr_o <= inst_i[20:16];
+		imm <= `zero_word;
+		link_addr_o <= `zero_word;
+		branch_target_address_o <= `zero_word;
+		branch_flag_o <= 1'b0;
+		next_inst_in_delayslot_o <= 1'b0;
+		case(op)
+			`exe_special_inst:begin
+				case(op2)
+					5'b00000:begin
+						case(op3)
+							`exe_or:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_or_op;
+								alusel_o <= `exe_res_logic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_and:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_and_op;
+								alusel_o <= `exe_res_logic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_xor:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_xor_op;
+								alusel_o <= `exe_res_logic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_nor:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_nor_op;
+								alusel_o <= `exe_res_logic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_sllv:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_sll_op;
+								alusel_o <= `exe_res_shift;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_srlv:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_srl_op;
+								alusel_o <= `exe_res_shift;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_srav:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_sra_op;
+								alusel_o <= `exe_res_shift;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_sync:begin
+								wreg_o <= 1'b0;
+								aluop_o <= `exe_nop_op;
+								alusel_o <= `exe_res_nop;
+								reg1_read_o <= 1'b0;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_mfhi:begin
+								wreg_o <=1'b1;
+								aluop_o <= `exe_mfhi_op;
+								alusel_o <= `exe_res_move;
+								reg1_read_o <= 1'b0;
+								reg2_read_o <= 1'b0;
+								inst_valid <= 1'b0;
+							end
+							`exe_mflo:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_mflo_op;
+								alusel_o <= `exe_res_move;
+								reg1_read_o <= 1'b0;
+								reg2_read_o <= 1'b0;
+								inst_valid <= 1'b0;
+							end
+							`exe_mthi:begin
+								wreg_o <= 1'b0;
+								aluop_o <= `exe_mthi_op;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b0;
+								inst_valid <= 1'b0;
+							end
+							`exe_mtlo:begin
+								wreg_o <= 1'b0;
+								aluop_o <= `exe_mtlo_op;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b0;
+								inst_valid <= 1'b0;
+							end
+							`exe_movn:begin
+								aluop_o <= `exe_movn_op;
+								alusel_o <= `exe_res_move;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+								if(reg2_o != `zero_word)begin
+									wreg_o <= 1'b1;
+								end else begin
+									wreg_o <= 1'b0;
+								end
+							end
+							`exe_movz:begin
+								aluop_o <= `exe_movz_op;
+								alusel_o <= `exe_res_move;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+								if(reg2_o == `zero_word)begin
+									wreg_o <= 1'b1;
+								end else begin
+									wreg_o <= 1'b0;
+								end
+							end
+							`exe_slt:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_slt_op;
+								alusel_o <= `exe_res_arithmetic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_sltu:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_sltu_op;
+								alusel_o <= `exe_res_arithmetic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_add:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_add_op;
+								alusel_o <= `exe_res_arithmetic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_addu:begin
+								wreg_o <=  1'b1;
+								aluop_o <= `exe_addu_op;
+								alusel_o <= `exe_res_arithmetic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_sub:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_sub_op;
+								alusel_o <= `exe_res_arithmetic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_subu:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_subu_op;
+								alusel_o <= `exe_res_arithmetic;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_mult:begin
+								wreg_o <= 1'b0;
+								aluop_o <= `exe_mult_op;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_multu:begin
+								wreg_o <= 1'b0;
+								aluop_o <= `exe_multu_op;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_div:begin
+								wreg_o <= 1'b0;
+								aluop_o <= `exe_div_op;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_divu:begin
+								wreg_o <= 1'b0;
+								aluop_o <= `exe_divu_op;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_jr:begin
+								wreg_o <= 1'b0;
+								aluop_o <= `exe_jr_op;
+								alusel_o <= `exe_res_jump_branch;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b0;
+								link_addr_o <= `zero_word;
+								branch_target_address_o <= reg1_o;
+								branch_flag_o <= 1'b1;
+								next_inst_in_delayslot_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							`exe_jalr:begin
+								wreg_o <= 1'b1;
+								aluop_o <= `exe_jalr_op;
+								alusel_o <= `exe_res_jump_branch;
+								reg1_read_o <= 1'b1;
+								reg2_read_o <= 1'b0;
+								wd_o <= inst_i[15:11];
+								link_addr_o <= pc_plus_8;
+								branch_target_address_o <= reg1_o;
+								branch_flag_o <= 1'b1;
+								next_inst_in_delayslot_o <= 1'b1;
+								inst_valid <= 1'b0;
+							end
+							default:begin
+							end
+						endcase
+					end
+					default:begin
+					end
+				endcase
+			end
+			`exe_ori:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_or_op;
+				alusel_o <= `exe_res_logic;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				imm <= {16'h0, inst_i[15:0]};
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_andi:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_and_op;
+				alusel_o <= `exe_res_logic;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				imm <= {16'h0, inst_i[15:0]};
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_xori:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_xor_op;
+				alusel_o <= `exe_res_logic;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				imm <= {16'h0, inst_i[15:0]};
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_lui:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_or_op;
+				alusel_o <= `exe_res_logic;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				imm <= {inst_i[15:0], 16'h0};
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_slti:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_slt_op;
+				alusel_o <= `exe_res_arithmetic;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				imm <= {{16{inst_i[15]}}, inst_i[15:0]};
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_sltiu:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_sltu_op;
+				alusel_o <= `exe_res_arithmetic;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				imm <= {{16{inst_i[15]}}, inst_i[15:0]};
+				inst_valid <= 1'b0;
+			end
+			`exe_addi:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_addi_op;
+				alusel_o <= `exe_res_arithmetic;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				imm <= {{16{inst_i[15]}}, inst_i[15:0]};
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_addiu:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_addiu_op;
+				alusel_o <= `exe_res_arithmetic;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				imm <= {{16{inst_i[15]}}, inst_i[15:0]};
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_j:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_j_op;
+				alusel_o <= `exe_res_jump_branch;
+				reg1_read_o <= 1'b0;
+				reg2_read_o <= 1'b0;
+				link_addr_o <= `zero_word;
+				branch_target_address_o <= {pc_plus_4[31:28], inst_i[25:0], 2'b00};
+				branch_flag_o <= 1'b1;
+				next_inst_in_delayslot_o <= 1'b1;
+				inst_valid <= 1'b0;
+			end
+			`exe_jal:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_jal_op;
+				alusel_o <= `exe_res_jump_branch;
+				reg1_read_o <= 1'b0;
+				reg2_read_o <= 1'b0;
+				wd_o <= 5'b11111;
+				link_addr_o <= pc_plus_8;
+				branch_target_address_o <= {pc_plus_4[31:28], inst_i[25:0], 2'b00};
+				branch_flag_o <= 1'b1;
+				next_inst_in_delayslot_o <= 1'b1;
+				inst_valid <= 1'b0;
+			end
+			`exe_beq:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_beq_op;
+				alusel_o <= `exe_res_jump_branch;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				inst_valid <= 1'b0;
+				if(reg1_o == reg2_o)begin
+					branch_target_address_o <= pc_plus_4+imm_sll2_signedext;
+					branch_flag_o <= 1'b1;
+					next_inst_in_delayslot_o <= 1'b1;
+				end
+			end
+			`exe_bgtz:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_bgtz_op;
+				alusel_o <= `exe_res_jump_branch;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				inst_valid <= 1'b0;
+				if((reg1_o[31] == 1'b0) && (reg1_o != `zero_word))begin
+					branch_target_address_o <= pc_plus_4+imm_sll2_signedext;
+					branch_flag_o <= 1'b1;
+					next_inst_in_delayslot_o <= 1'b1;
+				end
+			end
+			`exe_blez:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_blez_op;
+				alusel_o <= `exe_res_jump_branch;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				inst_valid <= 1'b0;
+				if((reg1_o[31] == 1'b1) || (reg1_o == `zero_word))begin
+					branch_target_address_o <= pc_plus_4+imm_sll2_signedext;
+					branch_flag_o <= 1'b1;
+					next_inst_in_delayslot_o <= 1'b1;
+				end
+			end
+			`exe_bne:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_blez_op;
+				alusel_o <= `exe_res_jump_branch;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				inst_valid <= 1'b0;
+				if(reg1_o != reg2_o)begin
+				    branch_target_address_o <= pc_plus_4+imm_sll2_signedext;
+					branch_flag_o <= 1'b1;
+					next_inst_in_delayslot_o <= 1'b1;
+				end
+			end
+			`exe_lb:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_lb_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_lbu:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_lbu_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_lh:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_lh_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_lhu:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_lhu_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_lw:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_lw_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_ll:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_ll_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b0;
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_lwl:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_lwl_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_lwr:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_lwr_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_sb:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_sb_op;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				inst_valid <= 1'b0;
+				alusel_o <= `exe_res_load_store;
+			end
+			`exe_sh:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_sh_op;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				inst_valid <= 1'b0;
+				alusel_o <= `exe_res_load_store;
+			end
+			`exe_sw:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_sw_op;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				inst_valid <= 1'b0;
+				alusel_o <= `exe_res_load_store;
+			end
+			`exe_swl:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_swl_op;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				inst_valid <= 1'b0;
+				alusel_o <= `exe_res_load_store;
+			end
+			`exe_swr:begin
+				wreg_o <= 1'b0;
+				aluop_o <= `exe_swr_op;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				inst_valid <= 1'b0;
+				alusel_o <= `exe_res_load_store;
+			end
+			`exe_sc:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_sc_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b1;
+				reg2_read_o <= 1'b1;
+				wd_o <= inst_i[20:16];
+				inst_valid <= 1'b0;
+			end
+			`exe_regimm_inst:begin
+				case(op4)
+					`exe_bgez:begin
+						wreg_o <= 1'b0;
+						aluop_o <= `exe_bgez_op;
+						alusel_o <= `exe_res_jump_branch;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b0;
+						inst_valid <= 1'b0;
+						if(reg1_o[31] == 1'b0)begin
+							branch_target_address_o <= pc_plus_4+imm_sll2_signedext;
+							branch_flag_o <= 1'b1;
+							next_inst_in_delayslot_o <= 1'b1;
+						end
+					end
+					`exe_bgezal:begin
+						wreg_o <= 1'b1;
+						aluop_o <= `exe_bgezal_op;
+						alusel_o <= `exe_res_jump_branch;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b0;
+						link_addr_o <= pc_plus_8;
+						wd_o <= 5'b11111;
+						inst_valid <= 1'b0;
+						if(reg1_o[31] == 1'b0)begin
+							branch_target_address_o <= pc_plus_4+imm_sll2_signedext;
+							branch_flag_o <= 1'b1;
+							next_inst_in_delayslot_o <= 1'b1;
+						end
+					end
+					`exe_bltz:begin
+						wreg_o <= 1'b0;
+						aluop_o <= `exe_bgezal_op;
+						alusel_o <= `exe_res_jump_branch;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b0;
+						inst_valid <= 1'b0;
+						if(reg1_o[31] == 1'b1)begin
+							branch_target_address_o <= pc_plus_4+imm_sll2_signedext;
+							branch_flag_o <= 1'b1;
+							next_inst_in_delayslot_o <= 1'b1;
+						end
+					end
+					`exe_bltzal:begin
+						wreg_o <= 1'b1;
+						aluop_o <= `exe_bgezal_op;
+						alusel_o <= `exe_res_jump_branch;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b0;
+						link_addr_o <= pc_plus_8;
+						wd_o <= 5'b11111;
+						inst_valid <= 1'b0;
+						if(reg1_o[31] == 1'b1)begin
+							branch_target_address_o <= pc_plus_4+imm_sll2_signedext;
+							branch_flag_o <= 1'b1;
+							next_inst_in_delayslot_o <= 1'b1;
+						end
+					end
+					default:begin
+					end
+				endcase
+			end
+			`exe_special2_inst:begin
+				case(op3)
+					`exe_clz:begin
+						wreg_o <= 1'b1;
+						aluop_o <= `exe_clz_op;
+						alusel_o <= `exe_res_arithmetic;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b0;
+						inst_valid <= 1'b0;
+					end
+					`exe_clo:begin
+						wreg_o <= 1'b1;
+						aluop_o <= `exe_clo_op;
+						alusel_o <= `exe_res_arithmetic;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b0;
+						inst_valid <= 1'b0;
+					end
+					`exe_mul:begin
+						wreg_o <= 1'b1;
+						aluop_o <= `exe_mul_op;
+						alusel_o <= `exe_res_mul;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b1;
+						inst_valid <= 1'b0;
+					end
+					`exe_madd:begin
+						wreg_o <= 1'b0;
+						aluop_o <= `exe_madd_op;
+						alusel_o <= `exe_res_mul;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b1;
+						inst_valid <= 1'b0;
+					end
+					`exe_maddu:begin
+						wreg_o <= 1'b0;
+						aluop_o <= `exe_maddu_op;
+						alusel_o <= `exe_res_mul;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b1;
+						inst_valid <= 1'b0;
+					end
+					`exe_msub:begin
+						wreg_o <= 1'b0;
+						aluop_o <= `exe_msub_op;
+						alusel_o <= `exe_res_mul;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b1;
+						inst_valid <= 1'b0;
+					end
+					`exe_msubu:begin
+						wreg_o <= 1'b0;
+						aluop_o <= `exe_msubu_op;
+						alusel_o <= `exe_res_mul;
+						reg1_read_o <= 1'b1;
+						reg2_read_o <= 1'b1;
+						inst_valid <= 1'b0;
+					end
+					default:begin
+					end
+				endcase
+			end
+			`exe_pref:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_nop_op;
+				alusel_o <= `exe_res_nop;
+				reg1_read_o <= 1'b0;
+				reg2_read_o <= 1'b0;
+				inst_valid <= 1'b0;
+			end
+			default:begin
+			end
+		endcase
 
-reg excepttype_is_syscall;
-reg excepttype_is_eret;
-reg instValid;
-
-assign excepttype_o = {19'b0,excepttype_is_eret,2'b0,instValid, excepttype_is_syscall,8'b0};
-assign current_inst_address_o = pc;
-always @(*) begin
-    if(rst) begin
-        aluop <= 0;
-        alusel <= 0;
-        regs_addr1 <= 0;
-        regs_addr2 <= 0;
-        regs_re1 <= 0;
-        regs_re2 <= 0;
-        //reg1 <= 0;
-        //reg2 <= 0;
-        wd <= 0;
-        wreg <= 0;
-        imme <= 0;
-        branch_addr <= 0;
-        branch_we <= 0;
-        next_in_delayslot <= 0;
-        link_addr <= 0;
-        excepttype_is_syscall <= 1'b0;
-        excepttype_is_eret <= 1'b0;
-        instValid = 1'b1;
-    end else begin
-        excepttype_is_syscall <= 1'b0;
-        excepttype_is_eret <= 1'b0; 
-        case (op)
-            `EXE_C0:begin
-                if(inst == `EXE_ERET)begin
-                    wreg <= 0;
-                    aluop <= `EXE_ERET_OP;
-                    alusel <= `EXE_RES_NOP;   
-                    regs_re1 <= 1'b0;
-                    regs_re2 <= 1'b0;
-                    instValid <= 1'b0; 
-                    excepttype_is_eret<= 1'b1;        
-                end else if(inst[31:21] == 11'b01000000000 && inst[10:0] == 11'b00000000000) begin
-                    aluop <= `EXE_MFC0_OP;
-                    alusel <= `EXE_RES_MOVE;
-                    wd <= inst[20:16];
-                    wreg <= 1;
-                    regs_re1 <= 1'b0;
-                    regs_re2 <= 1'b0;
-                    instValid <= 1'b0;        
-                end else if(inst[31:21] == 11'b01000000100 && inst[10:0] == 11'b00000000000) begin
-                    aluop <= `EXE_MTC0_OP;
-                    alusel <= `EXE_RES_NOP;
-                    wreg <= 1'b0;       
-                    regs_re1 <= 1'b1;
-                    regs_addr1 <= inst[20:16];
-                    regs_re2 <= 1'b0;
-                    instValid <= 1'b0;                    
-                end
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_LB:begin
-                wreg <= 1;
-                aluop <= `EXE_LB_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 0;
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_LBU:begin
-                wreg <= 1;
-                aluop <= `EXE_LBU_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 0;
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_LH:begin
-                wreg <= 1;
-                aluop <= `EXE_LH_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 0;
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_LHU:begin
-                wreg <= 1;
-                aluop <= `EXE_LHU_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 0;
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_LW:begin
-                wreg <= 1;
-                aluop <= `EXE_LW_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 0;
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_LWL:begin
-                wreg <= 1;
-                aluop <= `EXE_LWL_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_addr2 <= inst[20:16];
-                regs_re2 <= 1;
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_LWR:begin
-                wreg <= 1;
-                aluop <= `EXE_LWR_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_addr2 <= inst[20:16];
-                regs_re2 <= 1;
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_SB:begin
-                wreg <= 0;
-                aluop <= `EXE_SB_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 1;
-                regs_addr2 <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_SH:begin
-                wreg <= 0;
-                aluop <= `EXE_SH_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 1;
-                regs_addr2 <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_SW:begin
-                wreg <= 0;
-                aluop <= `EXE_SW_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 1;
-                regs_addr2 <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_SWL:begin
-                wreg <= 0;
-                aluop <= `EXE_SWL_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 1;
-                regs_addr2 <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_SWR:begin
-                wreg <= 0;
-                aluop <= `EXE_SWR_OP;
-                alusel <= `EXE_RES_LOAD_STORE;
-                regs_re1 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_re2 <= 1;
-                regs_addr2 <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_ORI:begin
-                wreg <= 1;
-                aluop <= `EXE_OR_OP;
-                alusel <= `EXE_RES_LOGIC;
-                regs_re1 <= 1;
-                regs_re2 <= 0;
-                imme <= {16'h0,inst[15:0]};
-                regs_addr1 <= inst[25:21];
-                regs_addr2 <= inst[20:16];
-                wd <= inst[20:16]; 
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_ANDI:begin
-                wreg <= 1;
-                aluop <= `EXE_AND_OP;
-                alusel <= `EXE_RES_LOGIC;
-                regs_re1 <= 1;
-                regs_re2 <= 0;
-                imme <= {16'h0,inst[15:0]};
-                regs_addr1 <= inst[25:21];
-                regs_addr2 <= inst[20:16];
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_XORI:begin
-                wreg <= 1;
-                aluop <= `EXE_XOR_OP;
-                alusel <= `EXE_RES_LOGIC;
-                regs_re1 <= 1;
-                regs_re2 <= 0;
-                imme <= {16'h0,inst[15:0]};
-                regs_addr1 <= inst[25:21];
-                regs_addr2 <= inst[20:16];
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_LUI:begin
-                wreg <= 1;
-                aluop <= `EXE_OR_OP;
-                alusel <= `EXE_RES_LOGIC;
-                regs_re1 <= 0;
-                regs_re2 <= 0;
-                imme <= {inst[15:0],16'b0};
-                wd <= inst[20:16];
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_PREF:begin
-                wreg <= 0;
-                aluop <= `EXE_NOP_OP;
-                alusel <= `EXE_RES_NOP;
-                regs_re1 <= 0;
-                regs_re2 <= 0;
-                imme <= 0;
-                wd <= 0; 
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_SPECIAL:begin
-                case(func)
-                    `EXE_TEQ: begin
-                        wreg <= 0;
-                        aluop <= `EXE_TEQ_OP;
-                        alusel <= `EXE_RES_NOP;
-                        regs_re1 <= 1'b1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16]; 
-                        regs_re2 <= 1'b1;
-                        imme <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_TGE: begin
-                        wreg <= 0;
-                        aluop <= `EXE_TGE_OP;
-                        alusel <= `EXE_RES_NOP;   
-                        regs_re1 <= 1'b1;
-                        regs_re2 <= 1'b1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        imme <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_TGEU: begin
-                        wreg <= 0;
-                        aluop <= `EXE_TGEU_OP;
-                        alusel <= `EXE_RES_NOP;
-                        regs_re1 <= 1'b1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16]; 
-                        regs_re2 <= 1'b1;
-                        imme <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_TLT: begin
-                        wreg <= 0;
-                        aluop <= `EXE_TLT_OP;
-                        alusel <= `EXE_RES_NOP;   
-                        regs_re1 <= 1'b1;
-                        regs_re2 <= 1'b1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        imme <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_TLTU: begin
-                        wreg <= 0;
-                        aluop <= `EXE_TLTU_OP;
-                        alusel <= `EXE_RES_NOP;   
-                        regs_re1 <= 1'b1;
-                        regs_re2 <= 1'b1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        imme <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_TNE: begin
-                        wreg <= 0;
-                        aluop <= `EXE_TNE_OP;
-                        alusel <= `EXE_RES_NOP;   
-                        regs_re1 <= 1'b1;
-                        regs_re2 <= 1'b1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        imme <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SYSCALL: begin
-                        wreg <= 0;
-                        aluop <= `EXE_SYSCALL_OP;
-                        alusel <= `EXE_RES_NOP;   
-                        regs_re1 <= 1'b0;
-                        regs_re2 <= 1'b0;
-                        imme <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                        excepttype_is_syscall <= 1'b1;
-                    end
-                    `EXE_AND:begin
-                        wreg <= 1;
-                        aluop <= `EXE_AND_OP;
-                        alusel <= `EXE_RES_LOGIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        imme <= 0;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_OR:begin
-                        wreg <= 1;
-                        aluop <= `EXE_OR_OP;
-                        alusel <= `EXE_RES_LOGIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        imme <= 0;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_XOR:begin
-                        wreg <= 1;
-                        aluop <= `EXE_XOR_OP;
-                        alusel <= `EXE_RES_LOGIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        imme <= 0;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_NOR:begin
-                        wreg <= 1;
-                        aluop <= `EXE_NOR_OP;
-                        alusel <= `EXE_RES_LOGIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        imme <= 0;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SLLV:begin
-                        wreg <= 1;
-                        aluop <= `EXE_SLL_OP;
-                        alusel <= `EXE_RES_SHIFT;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        imme <= 0;
-                        regs_addr1 <= inst[20:16];
-                        regs_addr2 <= inst[25:21];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SRLV:begin
-                        wreg <= 1;
-                        aluop <= `EXE_SRL_OP;
-                        alusel <= `EXE_RES_SHIFT;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        imme <= 0;
-                        regs_addr1 <= inst[20:16];
-                        regs_addr2 <= inst[25:21];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SRAV:begin
-                        wreg <= 1;
-                        aluop <= `EXE_SRA_OP;
-                        alusel <= `EXE_RES_SHIFT;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        imme <= 0;
-                        regs_addr1 <= inst[20:16];
-                        regs_addr2 <= inst[25:21];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SLL:begin
-                        wreg <= 1;
-                        aluop <= `EXE_SLL_OP;
-                        alusel <= `EXE_RES_SHIFT;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[20:16];
-                        imme[4:0] <= inst[10:6];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SRL:begin
-                        wreg <= 1;
-                        aluop <= `EXE_SRL_OP;
-                        alusel <= `EXE_RES_SHIFT;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[20:16];
-                        imme[4:0] <= inst[10:6];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SRA:begin
-                        wreg <= 1;
-                        aluop <= `EXE_SRA_OP;
-                        alusel <= `EXE_RES_SHIFT;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[20:16];
-                        imme[4:0] <= inst[10:6];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MOVN:begin
-                        aluop <= `EXE_MOVN_OP;
-                        alusel <= `EXE_RES_MOVE;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                        if(reg2!=0)
-                            wreg <= 1;
-                        else
-                            wreg <= 0;
-                    end
-                    `EXE_MOVZ:begin
-                        aluop <= `EXE_MOVN_OP;
-                        alusel <= `EXE_RES_MOVE;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                        if(reg2!=0)
-                            wreg <= 0;
-                        else
-                            wreg <= 1;
-                    end
-                    `EXE_MFHI:begin
-                        aluop <= `EXE_MFHI_OP;
-                        alusel <= `EXE_RES_MOVE;
-                        wreg <= 1;
-                        regs_re1 <= 0;
-                        regs_re2 <= 0;
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MTHI:begin
-                        aluop <= `EXE_MTHI_OP;
-                        alusel <= `EXE_RES_MOVE;
-                        wreg <= 0;
-                        regs_re1 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_re2 <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MFLO:begin
-                        aluop <= `EXE_MFLO_OP;
-                        alusel <= `EXE_RES_MOVE;
-                        wreg <= 1;
-                        regs_re1 <= 0;
-                        regs_re2 <= 0;
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MTLO:begin
-                        aluop <= `EXE_MTLO_OP;
-                        alusel <= `EXE_RES_MOVE;
-                        wreg <= 0;
-                        regs_re1 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_re2 <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SLT:begin
-                        aluop <= `EXE_SLT_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wreg <= 1;
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SLTU:begin
-                        aluop <= `EXE_SLTU_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wreg <= 1;
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_ADD:begin
-                        aluop <= `EXE_ADD_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wreg <= 1;
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_ADDU:begin
-                        aluop <= `EXE_ADDU_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wreg <= 1;
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SUB:begin
-                        aluop <= `EXE_SUB_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wreg <= 1;
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_SUBU:begin
-                        aluop <= `EXE_SUBU_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wreg <= 1;
-                        wd <= inst[15:11];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MULT:begin
-                        aluop <= `EXE_MULT_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wreg <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MULTU:begin
-                        aluop <= `EXE_MULTU_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        wreg <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_DIV:begin
-                        wreg <= 0;
-                        aluop <= `EXE_DIV_OP;
-                        alusel <= `EXE_NOP_OP;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_DIVU:begin
-                        wreg <= 0;
-                        aluop <= `EXE_DIVU_OP;
-                        alusel <= `EXE_NOP_OP;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_JR:begin
-                        wreg <= 0;
-                        aluop <= `EXE_JR_OP;
-                        alusel <= `EXE_RES_JB;
-                        regs_re1 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_re2 <= 0;
-                        link_addr <= 0;
-                        branch_addr <= reg1;
-                        branch_we <= 1;
-                        next_in_delayslot <= 1;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_JALR:begin
-                        wreg <=1;
-                        aluop <= `EXE_JALR_OP;
-                        alusel <= `EXE_RES_JB;
-                        regs_re1 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_re2 <= 0;
-                        wd <= inst[15:11];
-                        link_addr <= pc_next2;
-                        branch_addr <= reg1;
-                        branch_we <= 1;
-                        next_in_delayslot <= 1; 
-                        instValid <= 1'b0;
-                    end
-                    default:begin
-                        instValid <= 1'b1;
-                    end
-                endcase
-            end
-            `EXE_J:begin
-                aluop <= `EXE_J_OP;
-                alusel <= `EXE_RES_JB;
-                regs_re1 <= 0;
-                regs_re2 <= 0;
-                wreg <= 0;
-                link_addr <= 0;
-                branch_we <= 1;
-                next_in_delayslot <= 1;
-                branch_addr <= {pc_next[31:28],inst[25:0],2'b00};
-                instValid <= 1'b0;
-            end
-            `EXE_JAL:begin
-                aluop <= `EXE_JAL_OP;
-                alusel <= `EXE_RES_JB;
-                regs_re1 <= 0;
-                regs_re2 <= 0;
-                wd <= 5'b11111;
-                wreg <= 1;
-                link_addr <= pc+8;
-                branch_we <= 1;
-                next_in_delayslot <= 1;
-                branch_addr <= {pc_next[31:28],inst[25:0],2'b00};
-                instValid <= 1'b0;
-            end
-            `EXE_BEQ:begin
-                wreg <= 0;
-                aluop <= `EXE_BEQ_OP;
-                alusel <= `EXE_RES_JB;
-                regs_re1 <= 1;
-                regs_re2 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_addr2 <= inst[20:16];
-                link_addr <= 0;
-                instValid <= 1'b0;
-                if(reg1==reg2)begin
-                    branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
-                    branch_we <= 1;
-                    next_in_delayslot <= 1;
-                end else begin
-                    branch_addr <= 0;
-                    branch_we <= 0;
-                    next_in_delayslot <= 0;
-                end
-            end
-            `EXE_BGTZ:begin
-                wreg <= 0;
-                aluop <= `EXE_BGTZ_OP;
-                alusel <= `EXE_RES_JB;
-                regs_re1 <= 1;
-                regs_re2 <= 0;
-                regs_addr1 <= inst[25:21];
-                link_addr <=0;
-                instValid <= 1'b0;
-                if(!reg1[31]&&reg1)begin
-                    branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
-                    branch_we <= 1;
-                    next_in_delayslot <= 1;
-                end else begin
-                    branch_addr <= 0;
-                    branch_we <= 0;
-                    next_in_delayslot <= 0;
-                end
-            end
-            `EXE_BLEZ:begin
-                wreg <= 0;
-                aluop <= `EXE_BLEZ_OP;
-                alusel <= `EXE_RES_JB;
-                regs_re1 <= 1;
-                regs_re2 <= 0;
-                regs_addr1 <= inst[25:21];
-                link_addr <= 0;
-                instValid <= 1'b0;
-                if(reg1[31]||reg1==0)begin
-                    branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
-                    branch_we <= 1;
-                    next_in_delayslot <= 1;
-                end else begin
-                    branch_addr <= 0;
-                    branch_we <= 0;
-                    next_in_delayslot <= 0;
-                end
-            end
-            `EXE_BNE:begin
-                wreg <= 0;
-                aluop <= `EXE_BNE_OP;
-                alusel <= `EXE_RES_JB;
-                regs_re1 <= 1;
-                regs_re2 <= 1;
-                regs_addr1 <= inst[25:21];
-                regs_addr2 <= inst[20:16];
-                link_addr <= 0;
-                instValid <= 1'b0;
-                if(reg1!=reg2)begin
-                    branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
-                    branch_we <= 1;
-                    next_in_delayslot <= 1;
-                end else begin
-                    branch_addr <= 0;
-                    branch_we <= 0;
-                    next_in_delayslot <= 0;
-                end
-            end
-            `EXE_SLTI:begin
-                aluop <= `EXE_SLT_OP;
-                alusel <= `EXE_RES_ARITHMETIC;
-                regs_re1 <= 1;
-                regs_re2 <= 0;
-                regs_addr1 <= inst[25:21];
-                wreg <= 1;
-                wd <= inst[20:16];
-                imme <= {{16{inst[15]}},inst[15:0]};
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_SLTIU:begin
-                aluop <= `EXE_SLTU_OP;
-                alusel <= `EXE_RES_ARITHMETIC;
-                regs_re1 <= 1;
-                regs_re2 <= 0;
-                regs_addr1 <= inst[25:21];
-                wreg <= 1;
-                wd <= inst[20:16];
-                imme <= {{16{inst[15]}},inst[15:0]};
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_ADDI:begin
-                aluop <= `EXE_ADD_OP;
-                alusel <= `EXE_RES_ARITHMETIC;
-                regs_re1 <= 1;
-                regs_re2 <= 0;
-                regs_addr1 <= inst[25:21];
-                wreg <= 1;
-                wd <= inst[20:16];
-                imme <= {{16{inst[15]}},inst[15:0]};
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_ADDIU:begin
-                aluop <= `EXE_ADDU_OP;
-                alusel <= `EXE_RES_ARITHMETIC;
-                regs_re1 <= 1;
-                regs_re2 <= 0;
-                regs_addr1 <= inst[25:21];
-                wreg <= 1;
-                wd <= inst[20:16];
-                imme <= {{16{inst[15]}},inst[15:0]};
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b0;
-            end
-            `EXE_REGIMM:begin
-                case(func2)
-                    `EXE_TEQI:begin
-                        wreg <= 0;
-                        aluop <= `EXE_TEQI_OP;
-                        alusel <= `EXE_RES_NOP;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        link_addr <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        instValid <= 1'b0;
-                        imme <= {{16{inst[15]}}, inst[15:0]};
-                    end
-                    `EXE_TGEI:begin
-                        wreg <= 0;
-                        aluop <= `EXE_TGEI_OP;
-                        alusel <= `EXE_RES_NOP;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        link_addr <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        instValid <= 1'b0;
-                        imme <= {{16{inst[15]}}, inst[15:0]};
-                    end
-                    `EXE_TGEIU:begin
-                        wreg <= 0;
-                        aluop <= `EXE_TGEIU_OP;
-                        alusel <= `EXE_RES_NOP;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        link_addr <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        instValid <= 1'b0;
-                        imme <= {{16{inst[15]}}, inst[15:0]};
-                    end
-                    `EXE_TLTI:begin
-                        wreg <= 0;
-                        aluop <= `EXE_TLTI_OP;
-                        alusel <= `EXE_RES_NOP;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        link_addr <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        instValid <= 1'b0;
-                        imme <= {{16{inst[15]}}, inst[15:0]};
-                    end
-                    `EXE_TLTIU:begin
-                        wreg <= 0;
-                        aluop <= `EXE_TLTIU_OP;
-                        alusel <= `EXE_RES_NOP;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        link_addr <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        instValid <= 1'b0;
-                        imme <= {{16{inst[15]}}, inst[15:0]};
-                    end
-                    `EXE_TNEI:begin
-                        wreg <= 0;
-                        aluop <= `EXE_TNEI_OP;
-                        alusel <= `EXE_RES_NOP;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        link_addr <= 0;
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        instValid <= 1'b0;
-                        imme <= {{16{inst[15]}}, inst[15:0]};
-                    end                                                
-                    `EXE_BGEZ:begin
-                        wreg <= 0;
-                        aluop <= `EXE_BGEZ_OP;
-                        alusel <= `EXE_RES_JB;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        link_addr <= 0;
-                        if(!reg1[31])begin
-                            branch_we <= 1;
-                            next_in_delayslot <= 1;
-                            branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
-                        end else begin
-                            branch_addr <= 0;
-                            branch_we <= 0;
-                            next_in_delayslot <= 0;
-                        end
-                        instValid <= 1'b0;
-                    end
-                    `EXE_BGEZAL:begin
-                        wreg <= 1;
-                        wd <= 5'b11111;
-                        link_addr <= pc_next2;
-                        aluop <= `EXE_BGEZAL_OP;
-                        alusel <= `EXE_RES_JB;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        instValid <= 1'b0;
-                        if(!reg1[31])begin
-                            branch_we <= 1;
-                            next_in_delayslot <= 1;
-                            branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
-                        end else begin
-                            branch_addr <= 0;
-                            branch_we <= 0;
-                            next_in_delayslot <= 0;
-                        end
-                    end
-                    `EXE_BLTZ:begin
-                        wreg <= 0;
-                        aluop <= `EXE_BLTZ_OP;
-                        alusel <= `EXE_RES_JB;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                        if(reg1[31])begin
-                            branch_we <= 1;
-                            next_in_delayslot <= 1;
-                            branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
-                        end else begin
-                            branch_addr <= 0;
-                            branch_we <= 0;
-                            next_in_delayslot <= 0;
-                        end
-                    end
-                    `EXE_BLTZAL:begin
-                        wreg <= 1;
-                        wd <= 5'b11111;
-                        link_addr <= pc_next2;
-                        aluop <= `EXE_BGEZAL_OP;
-                        alusel <= `EXE_RES_JB;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <= inst[25:21];
-                        instValid <= 1'b0;
-                        if(reg1[31])begin
-                            branch_we <= 1;
-                            next_in_delayslot <= 1;
-                            branch_addr <= pc_next + {{14{inst[15]}},inst[15:0],2'b00};
-                        end else begin
-                            branch_addr <= 0;
-                            branch_we <= 0;
-                            next_in_delayslot <= 0;
-                        end
-                    end
-                    default:begin
-                        instValid <= 1'b1;
-                    end
-                endcase
-            end
-            `EXE_SPECIAL2:begin
-                case(func)
-                    `EXE_CLZ:begin
-                        wreg <= 1;
-                        wd <= inst[15:11];
-                        aluop <= `EXE_CLZ_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <=  inst[25:21];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_CLO:begin
-                        wreg <= 1;
-                        wd <= inst[15:11];
-                        aluop <= `EXE_CLO_OP;
-                        alusel <= `EXE_RES_ARITHMETIC;
-                        regs_re1 <= 1;
-                        regs_re2 <= 0;
-                        regs_addr1 <=  inst[25:21];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MUL:begin
-                        wreg <= 1;
-                        wd <= inst[15:11];
-                        aluop <= `EXE_MUL_OP;
-                        alusel <= `EXE_RES_MUL;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MADD:begin
-                        wreg <= 0;
-                        aluop <= `EXE_MADD_OP;
-                        alusel <= `EXE_RES_MUL;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MADDU:begin
-                        wreg <= 0;
-                        aluop <= `EXE_MADDU_OP;
-                        alusel <= `EXE_RES_MUL;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MSUB:begin
-                        wreg <= 0;
-                        aluop <= `EXE_MSUB_OP;
-                        alusel <= `EXE_RES_MUL;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    `EXE_MSUBU:begin
-                        wreg <= 0;
-                        aluop <= `EXE_MSUBU_OP;
-                        alusel <= `EXE_RES_MUL;
-                        regs_re1 <= 1;
-                        regs_re2 <= 1;
-                        regs_addr1 <= inst[25:21];
-                        regs_addr2 <= inst[20:16];
-                        branch_addr <= 0;
-                        branch_we <= 0;
-                        next_in_delayslot <= 0;
-                        link_addr <= 0;
-                        instValid <= 1'b0;
-                    end
-                    default:begin
-                        instValid <= 1'b1;
-                    end
-                endcase
-            end
-            default:begin
-                aluop <= `EXE_NOP_OP;
-                alusel <= `EXE_RES_NOP;
-                regs_addr1 <= 0;
-                regs_addr2 <= 0;
-                regs_re1 <= 0;
-                regs_re2 <= 0;
-                wd <= 0;
-                wreg <= 0;
-                branch_addr <= 0;
-                branch_we <= 0;
-                next_in_delayslot <= 0;
-                link_addr <= 0;
-                instValid <= 1'b1;
-            end
-        endcase
-    end
+		if(inst_i[31:21] == 11'b00000000000)begin
+			if(op3 == `exe_sll)begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_sll_op;
+				alusel_o <= `exe_res_shift;
+				reg1_read_o <= 1'b0;
+				reg2_read_o <= 1'b1;
+				imm[4:0] <= inst_i[10:6];
+				wd_o <= inst_i[15:11];
+				inst_valid <= 1'b0;
+			end else if(op3 == `exe_srl)begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_srl_op;
+				alusel_o <= `exe_res_shift;
+				reg1_read_o <= 1'b0;
+				reg2_read_o <= 1'b1;
+				imm[4:0] <= inst_i[10:6];
+				wd_o <= inst_i[15:11];
+				inst_valid <= 1'b0;
+			end else if(op3 == `exe_sra)begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_sra_op;
+				alusel_o <= `exe_res_shift;
+				reg1_read_o <= 1'b0;
+				reg2_read_o <= 1'b1;
+				imm[4:0] <= inst_i[10:6];
+				wd_o <= inst_i[15:11];
+				inst_valid <= 1'b0;
+			end
+		end
+	end
 end
 
-always @(*) begin
-    if(rst) begin
-        reg1 <= 0;
-        stop_load_reg1 <= 0;
-    end else if(pre_inst_is_load && ex_wd == regs_addr1 && regs_re1)begin
-        stop_load_reg1 <= 1;
-    end else if(ex_wreg && ex_wd == regs_addr1 && regs_re1)begin
-        reg1 <= ex_wdata;
-        stop_load_reg1 <= 0; 
-    end else if(mem_wreg && mem_wd == regs_addr1 && regs_re1)begin
-        reg1 <= mem_wdata;
-        stop_load_reg1 <= 0;
-    end else if(regs_re1)begin
-        reg1 <= regs_data1;
-        stop_load_reg1 <= 0;
-    end else begin
-        reg1 <= imme; 
-        stop_load_reg1 <= 0;
-    end
-end 
-always @(*) begin
-    if(rst) begin
-        reg2 <= 0;
-        stop_load_reg2 <= 0;
-    end else if(pre_inst_is_load && ex_wd == regs_addr2 && regs_re2)begin
-        stop_load_reg2 <= 1;
-    end else if(ex_wreg && ex_wd == regs_addr2 && regs_re2)begin
-        reg2 <= ex_wdata;   
-        stop_load_reg2 <= 0; 
-    end else if(mem_wreg && mem_wd == regs_addr2 && regs_re2)begin
-        reg2 <= mem_wdata;
-        stop_load_reg2 <= 0;
-    end else if(regs_re2)begin
-        reg2 <= regs_data2;
-        stop_load_reg2 <= 0;
-    end else begin
-        reg2 <= imme; 
-        stop_load_reg2 <= 0;
-    end
-end 
-endmodule
+always@(*)begin
+	stallreq_for_reg1_loadrelate <= 1'b0;
+	if(rst == 1'b1)begin
+		reg1_o <= `zero_word;
+	end else if(pre_inst_is_load == 1'b1 && ex_wd_i == reg1_addr_o
+				&& reg1_read_o == 1'b1)begin
+		stallreq_for_reg1_loadrelate <= 1'b1;
+	end else if((reg1_read_o == 1'b1) && (ex_wreg_i == 1'b1)
+				&& (ex_wd_i == reg1_addr_o))begin
+		reg1_o <= ex_wdata_i;
+	end else if((reg1_read_o == 1'b1) && (mem_wreg_i == 1'b1)
+				&& (mem_wd_i == reg1_addr_o))begin
+		reg1_o <= mem_wdata_i;
+	end else if(reg1_read_o == 1'b1)begin
+		reg1_o <= reg1_data_i;
+	end else if(reg1_read_o == 1'b0)begin
+		reg1_o <= imm;
+	end else begin
+		reg1_o <= `zero_word;
+	end
+end
+
+always@(*)begin
+	stallreq_for_reg2_loadrelate <= 1'b0;
+	if(rst == 1'b1)begin
+		reg2_o <= `zero_word;
+	end else if(pre_inst_is_load == 1'b1 && ex_wd_i == reg2_addr_o
+				&& reg2_read_o == 1'b1)begin
+		stallreq_for_reg2_loadrelate <= 1'b1;
+	end else if((reg2_read_o == 1'b1) && (ex_wreg_i == 1'b1)
+				&& (ex_wd_i == reg2_addr_o))begin
+		reg2_o <= ex_wdata_i;
+	end else if((reg2_read_o == 1'b1) && (mem_wreg_i == 1'b1)
+				&& (mem_wd_i == reg2_addr_o))begin
+		reg2_o <= mem_wdata_i;
+	end else if(reg2_read_o == 1'b1)begin
+		reg2_o <= reg2_data_i;
+	end else if(reg2_read_o == 1'b0)begin
+		reg2_o <= imm;
+	end else begin
+		reg2_o <= `zero_word;
+	end
+end
+
+always@(*)begin
+	if(rst == 1'b1)begin
+		is_in_delayslot_o <= 1'b0;
+	end else begin
+		is_in_delayslot_o <= is_in_delayslot_i;
+	end
+end
+
+endmodule // id

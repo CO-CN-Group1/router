@@ -1,55 +1,59 @@
-`timescale 1ns / 1ps
+`include "defines.v"
 
 module regs(
-    input wire clk,
-    input wire rst,
-    
-    input wire we,
-    input wire[4:0] waddr,
-    input wire[31:0] wdata,
-    
-    input wire re1,
-    input wire[4:0] raddr1,
-    output reg[31:0] rdata1,
+	input wire clk,
+	input wire rst,
 
-    input wire re2,
-    input wire[4:0] raddr2,
-    output reg[31:0] rdata2
-    
+	input wire we,
+	input wire[4:0] waddr,
+	input wire[31:0] wdata,
+
+	input wire re1,
+	input wire[4:0] raddr1,
+	output reg[31:0] rdata1,
+
+	input wire re2,
+	input wire[4:0] raddr2,
+	output reg[31:0] rdata2
 );
 
-reg[31:0] reg_arr[0:31];
+reg[31:0] regs[0:`reg_num-1];
 
-always @(posedge clk)begin
-    if(!rst && we && waddr!=0)begin
-        reg_arr[waddr] <= wdata;
-    end
-end
-always @(*)begin
-    if(rst)begin
-        rdata1 <= 0;
-    end else if(raddr1==0)begin
-        rdata1 <= 0;
-    end else if(raddr1==waddr && we && re1)begin
-        rdata1 <= wdata;
-    end else if(re1)begin
-        rdata1 <= reg_arr[raddr1];
-    end else begin
-        rdata1 <= 0;
-    end
+always@(posedge clk)begin
+	if(rst == 1'b0)begin
+		if((we == 1'b1) && (waddr != `reg_num_log2'h0))begin
+			regs[waddr] <= wdata;
+		end
+	end
 end
 
-always @(*)begin
-    if(rst)begin
-        rdata2 <= 0;
-    end else if(raddr2==0)begin
-        rdata2 <= 0;
-    end else if(raddr2==waddr && we && re2)begin
-        rdata2 <= wdata;
-    end else if(re2)begin
-        rdata2 <= reg_arr[raddr2];
-    end else begin
-        rdata2 <= 0;
-    end
+always@(*)begin
+	if(rst == 1'b1)begin
+		rdata1 <= `zero_word;
+	end else if(raddr1 == `reg_num_log2'h0)begin
+		rdata1 <= `zero_word;
+	end else if((raddr1 == waddr) && (we == 1'b1) && (re1 == 1'b1))begin
+		rdata1 <= wdata;
+	end else if(re1 == 1'b1)begin
+		rdata1 <= regs[raddr1];
+	end else begin
+		rdata1 <= `zero_word;
+	end
 end
+
+always@(*)begin
+	if(rst == 1'b1)begin
+		rdata2 <= `zero_word;
+	end else if(raddr2 == `reg_num_log2'h0)begin
+		rdata2 <= `zero_word;
+	end else if((raddr2 == waddr) && (we == 1'b1) && (re2 == 1'b1))begin
+		rdata2 <= wdata;
+	end else if(re2 == 1'b1)begin
+		rdata2 <= regs[raddr2];
+	end else begin
+		rdata2 <= `zero_word;
+	end
+end
+
+
 endmodule
