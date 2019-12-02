@@ -316,14 +316,14 @@ begin
 end
 
 
-(*mark_debug = "true"*)wire [7:0] eth_rx_axis_fifo_tdata;
-(*mark_debug = "true"*)wire eth_rx_axis_fifo_tvalid;
-(*mark_debug = "true"*)wire eth_rx_axis_fifo_tlast;
-(*mark_debug = "true"*)wire eth_rx_axis_fifo_tready;
-(*mark_debug = "true"*)wire [7:0] eth_tx_axis_fifo_tdata;
-(*mark_debug = "true"*)wire eth_tx_axis_fifo_tvalid;
-(*mark_debug = "true"*)wire eth_tx_axis_fifo_tlast;
-(*mark_debug = "true"*)wire eth_tx_axis_fifo_tready;
+wire [7:0] eth_rx_axis_fifo_tdata;
+wire eth_rx_axis_fifo_tvalid;
+wire eth_rx_axis_fifo_tlast;
+wire eth_rx_axis_fifo_tready;
+wire [7:0] eth_tx_axis_fifo_tdata;
+wire eth_tx_axis_fifo_tvalid;
+wire eth_tx_axis_fifo_tlast;
+wire eth_tx_axis_fifo_tready;
 
 
 eth_mac_fifo_block trimac_fifo_block (
@@ -363,10 +363,10 @@ eth_mac_fifo_block trimac_fifo_block (
     .tx_configuration_vector        (80'b10000000000110)
 );
 
-(*mark_debug = "true"*)wire[7:0] eth_rx_axis_no_crc_tdata;
-(*mark_debug = "true"*)wire eth_rx_axis_no_crc_tvalid;
-(*mark_debug = "true"*)wire eth_rx_axis_no_crc_tlast;
-(*mark_debug = "true"*)wire eth_rx_axis_no_crc_tready;
+wire[7:0] eth_rx_axis_no_crc_tdata;
+wire eth_rx_axis_no_crc_tvalid;
+wire eth_rx_axis_no_crc_tlast;
+wire eth_rx_axis_no_crc_tready;
 
 rx_axis_tdata_crc_filter rx_crc_filter(
     .clk(clk_125M),
