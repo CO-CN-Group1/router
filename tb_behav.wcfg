@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1324683333fs"></ZoomStartTime>
-      <ZoomEndTime time="1953683334fs"></ZoomEndTime>
-      <Cursor1Time time="1848183000fs"></Cursor1Time>
+      <ZoomStartTime time="10860000000fs"></ZoomStartTime>
+      <ZoomEndTime time="11181000001fs"></ZoomEndTime>
+      <Cursor1Time time="10915000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="175"></NameColumnWidth>
-      <ValueColumnWidth column_width="90"></ValueColumnWidth>
+      <ValueColumnWidth column_width="85"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="39" />
+   <WVObjectSize size="18" />
    <wvobject fp_name="/tb/ext_ram_data" type="array">
       <obj_property name="ElementShortName">ext_ram_data[31:0]</obj_property>
       <obj_property name="ObjectShortName">ext_ram_data[31:0]</obj_property>
@@ -68,70 +68,6 @@
       <obj_property name="ElementShortName">base_ram_we_n</obj_property>
       <obj_property name="ObjectShortName">base_ram_we_n</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/inst_fetch_inst/clk" type="logic">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/inst_fetch_inst/rst" type="logic">
-      <obj_property name="ElementShortName">rst</obj_property>
-      <obj_property name="ObjectShortName">rst</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/inst_fetch_inst/stop" type="logic">
-      <obj_property name="ElementShortName">stop</obj_property>
-      <obj_property name="ObjectShortName">stop</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/inst_fetch_inst/branch_we" type="logic">
-      <obj_property name="ElementShortName">branch_we</obj_property>
-      <obj_property name="ObjectShortName">branch_we</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/inst_fetch_inst/branch_addr" type="array">
-      <obj_property name="ElementShortName">branch_addr[31:0]</obj_property>
-      <obj_property name="ObjectShortName">branch_addr[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/inst_fetch_inst/pc" type="array">
-      <obj_property name="ElementShortName">pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">pc[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/inst_fetch_inst/flush" type="logic">
-      <obj_property name="ElementShortName">flush</obj_property>
-      <obj_property name="ObjectShortName">flush</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/inst_fetch_inst/new_pc" type="array">
-      <obj_property name="ElementShortName">new_pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">new_pc[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/if_id_inst/clk" type="logic">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/if_id_inst/rst" type="logic">
-      <obj_property name="ElementShortName">rst</obj_property>
-      <obj_property name="ObjectShortName">rst</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/if_id_inst/if_pc" type="array">
-      <obj_property name="ElementShortName">if_pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">if_pc[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/if_id_inst/if_inst" type="array">
-      <obj_property name="ElementShortName">if_inst[31:0]</obj_property>
-      <obj_property name="ObjectShortName">if_inst[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/if_id_inst/stop" type="array">
-      <obj_property name="ElementShortName">stop[0:1]</obj_property>
-      <obj_property name="ObjectShortName">stop[0:1]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/if_id_inst/id_pc" type="array">
-      <obj_property name="ElementShortName">id_pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">id_pc[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/if_id_inst/id_inst" type="array">
-      <obj_property name="ElementShortName">id_inst[31:0]</obj_property>
-      <obj_property name="ObjectShortName">id_inst[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/if_id_inst/flush" type="logic">
-      <obj_property name="ElementShortName">flush</obj_property>
-      <obj_property name="ObjectShortName">flush</obj_property>
-   </wvobject>
    <wvobject fp_name="/tb/dut/mips_cpu_inst/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -140,13 +76,13 @@
       <obj_property name="ElementShortName">rst</obj_property>
       <obj_property name="ObjectShortName">rst</obj_property>
    </wvobject>
+   <wvobject fp_name="/tb/dut/clk_10M" type="logic">
+      <obj_property name="ElementShortName">clk_10M</obj_property>
+      <obj_property name="ObjectShortName">clk_10M</obj_property>
+   </wvobject>
    <wvobject fp_name="/tb/dut/mips_cpu_inst/if_data_i" type="array">
       <obj_property name="ElementShortName">if_data_i[31:0]</obj_property>
       <obj_property name="ObjectShortName">if_data_i[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/if_addr" type="array">
-      <obj_property name="ElementShortName">if_addr[31:0]</obj_property>
-      <obj_property name="ObjectShortName">if_addr[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/mips_cpu_inst/mem_data_i" type="array">
       <obj_property name="ElementShortName">mem_data_i[31:0]</obj_property>
@@ -155,25 +91,5 @@
    <wvobject fp_name="/tb/dut/mips_cpu_inst/mem_data_o" type="array">
       <obj_property name="ElementShortName">mem_data_o[31:0]</obj_property>
       <obj_property name="ObjectShortName">mem_data_o[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/mem_addr" type="array">
-      <obj_property name="ElementShortName">mem_addr[31:0]</obj_property>
-      <obj_property name="ObjectShortName">mem_addr[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/mem_be" type="array">
-      <obj_property name="ElementShortName">mem_be[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mem_be[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/int_i" type="array">
-      <obj_property name="ElementShortName">int_i[5:0]</obj_property>
-      <obj_property name="ObjectShortName">int_i[5:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/timer_int_o" type="logic">
-      <obj_property name="ElementShortName">timer_int_o</obj_property>
-      <obj_property name="ObjectShortName">timer_int_o</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/ctrl_we_o" type="logic">
-      <obj_property name="ElementShortName">ctrl_we_o</obj_property>
-      <obj_property name="ObjectShortName">ctrl_we_o</obj_property>
    </wvobject>
 </wave_config>

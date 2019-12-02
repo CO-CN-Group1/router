@@ -86,12 +86,12 @@ module thinpad_top(
 /* =========== Demo code begin =========== */
 
 // PLL分频示例
-wire locked, clk_10M, clk_20M, clk_125M, clk_200M;
+wire locked, clk_10M, clk_40M, clk_125M, clk_200M;
 pll_example clock_gen 
  (
   // Clock out ports
   .clk_out1(clk_10M), // 时钟输出1，频率在IP配置界面中设�?
-  .clk_out2(clk_20M), // 时钟输出2，频率在IP配置界面中设�?
+  .clk_out2(clk_40M), // 时钟输出2，频率在IP配置界面中设�?
   .clk_out3(clk_125M), // 时钟输出3，频率在IP配置界面中设�?
   .clk_out4(clk_200M), // 时钟输出4，频率在IP配置界面中设�?
   // Status and control signals
@@ -462,7 +462,7 @@ reg uart_re_o;
 assign uart_wrn = uart_we_o;
 assign uart_rdn = uart_re_o;
 mips_cpu mips_cpu_inst(
-    .clk(clk_20M),
+    .clk(clk_40M),
     .rst(~locked),
 
     .if_addr_o(openmips_if_addr_o),
