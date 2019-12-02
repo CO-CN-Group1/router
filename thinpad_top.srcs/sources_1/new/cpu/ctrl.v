@@ -39,9 +39,6 @@ always@(*)begin
 		stall <= 6'b000000;
 		mem_we_o <= 1'b0;
 		new_pc <= `start_inst_addr;
-	end else if(stallreq_from_ex == 1'b1)begin
-		stall <= 6'b001111;
-		mem_we_o <= 1'b0;
 	end else if(mem_we_i == 1'b1 && pause_for_store == 1'b0)begin
 		stall <= 6'b011111;
 		mem_we_o <= 1'b1;
@@ -49,10 +46,16 @@ always@(*)begin
 		stall <= 6'b001111;
 		mem_we_o <= 1'b1;
 	end else if(is_load_i == 1'b1 && pause_for_load == 1'b0)begin
-		stall <= 6'b011111;
+		stall <= 6'b111111;
 		mem_we_o <= 1'b0;
 	end else if(is_load_i == 1'b1 && pause_for_load == 1'b1)begin
 		stall <= 6'b001111;
+		mem_we_o <= 1'b0;
+	end else if(stallreq_from_ex == 1'b1)begin
+		stall <= 6'b001111;
+		mem_we_o <= 1'b0;
+	end else if(stallreq_from_id == 1'b1)begin
+		stall <= 6'b000111;
 		mem_we_o <= 1'b0;
 	end else if(stallreq_from_mem == 1'b1)begin
 		stall <= 6'b000111;
