@@ -145,6 +145,7 @@ wire LLbit_o;
 wire[31:0] new_pc;
 wire we_from_mem;
 wire ex_is_load;
+wire mem_is_load;
 
 inst_fetch inst_fetch0(
 	.clk(clk),
@@ -412,7 +413,8 @@ memory memory0(
 	.mem_ce_o(mem_ce_o),
 
 	.virtual_addr(virtual_addr),
-	.physical_addr(physical_addr)
+	.physical_addr(physical_addr),
+	.is_load_o(mem_is_load)
 );
 
 addr_bus addr_bus1(
@@ -478,7 +480,7 @@ ctrl ctrl0(
 	.stallreq_from_mem(mem_ce_o),
 	.new_pc(new_pc),
 	.mem_we_i(we_from_mem),
-	.is_load_i(ex_is_load),
+	.is_load_i(mem_is_load),
 	.mem_we_o(mem_we_o),
 	.stall(stall)
 );

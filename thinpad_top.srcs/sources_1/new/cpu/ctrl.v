@@ -49,10 +49,10 @@ always@(*)begin
 		stall <= 6'b001111;
 		mem_we_o <= 1'b1;
 	end else if(is_load_i == 1'b1 && pause_for_load == 1'b0)begin
-		stall <= 6'b000111;
+		stall <= 6'b011111;
 		mem_we_o <= 1'b0;
 	end else if(is_load_i == 1'b1 && pause_for_load == 1'b1)begin
-		stall <= 6'b000111;
+		stall <= 6'b001111;
 		mem_we_o <= 1'b0;
 	end else if(stallreq_from_mem == 1'b1)begin
 		stall <= 6'b000111;

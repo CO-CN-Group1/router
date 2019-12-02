@@ -41,8 +41,12 @@ module memory(
 	output wire[31:0] current_inst_address_o,
 
 	output wire[31:0] virtual_addr,
-    input wire[31:0] physical_addr
+    input wire[31:0] physical_addr,
+	output wire is_load_o
 );
+
+
+assign is_load_o = (aluop_i==`exe_lb_op)||(aluop_i==`exe_lbu_op)||(aluop_i==`exe_lh_op)||(aluop_i==`exe_lhu_op)||(aluop_i==`exe_ll_op)||(aluop_i==`exe_lw_op)||(aluop_i==`exe_lwl_op)||(aluop_i==`exe_lwr_op);
 
 reg LLbit;
 wire[31:0] zero32;
