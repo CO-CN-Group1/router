@@ -52,7 +52,7 @@ module exe(
 	output wire is_load_o,
 
 	output wire[7:0] aluop_o,
-	output wire[31:0] mem_addr_o,
+	output reg[31:0] mem_addr_o,
 	output wire[31:0] reg2_o,
 	output wire[31:0] current_inst_address_o,
 
@@ -80,11 +80,27 @@ reg stallreq_for_madd_msub;
 reg stallreq_for_div;
 
 assign aluop_o = aluop_i;
-assign mem_addr_o = reg1_i+{{16{inst_i[15]}}, inst_i[15:0]};
+
+always@(*)begin
+	if(rst==1'b1)begin
+		mem_addr_o <= 0;
+	end else begin
+		case(aluop_i)
+			`exe_lwpc_op:begin
+				mem_addr_o <= current_inst_address_i + {{12{inst_i[18]}},inst_i[17:0],2'b00};
+			end
+			default:begin
+				mem_addr_o <= reg1_i+{{16{inst_i[15]}}, inst_i[15:0]};
+			end
+		endcase
+	end
+end
+
+//assign mem_addr_o = reg1_i+{{16{inst_i[15]}}, inst_i[15:0]};
 assign reg2_o = reg2_i;
 assign inst_o = inst_i;
 assign current_inst_address_o = current_inst_address_i;
-assign is_load_o = ((aluop_i == `exe_lb_op) ||  (aluop_i == `exe_lh_op) || (aluop_i == `exe_lw_op));
+assign is_load_o = ((aluop_i == `exe_lb_op) ||  (aluop_i == `exe_lh_op) || (aluop_i == `exe_lw_op)||(aluop_i == `exe_lwpc_op));
 
 always@(*)begin
 	if(rst == 1'b1)begin

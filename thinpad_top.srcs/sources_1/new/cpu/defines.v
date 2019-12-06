@@ -3,6 +3,9 @@
 `define start_inst_addr 32'h80000000
 
 //op_code
+
+`define exe_lwpc 6'b111011
+
 `define exe_and 6'b100100
 `define exe_or  6'b100101
 `define exe_xor 6'b100110
@@ -88,6 +91,8 @@
 `define exe_special2_inst 6'b011100
 
 //alu_op
+`define exe_lwpc_op 8'b11101111
+
 `define exe_and_op 8'b00100100
 `define exe_or_op 8'b00100101
 `define exe_xor_op 8'b00100110

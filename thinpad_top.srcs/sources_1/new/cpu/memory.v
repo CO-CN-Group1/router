@@ -46,7 +46,7 @@ module memory(
 );
 
 
-assign is_load_o = (aluop_i==`exe_lb_op)||(aluop_i==`exe_lbu_op)||(aluop_i==`exe_lh_op)||(aluop_i==`exe_lhu_op)||(aluop_i==`exe_ll_op)||(aluop_i==`exe_lw_op)||(aluop_i==`exe_lwl_op)||(aluop_i==`exe_lwr_op);
+assign is_load_o = (aluop_i==`exe_lb_op)||(aluop_i==`exe_lbu_op)||(aluop_i==`exe_lh_op)||(aluop_i==`exe_lhu_op)||(aluop_i==`exe_ll_op)||(aluop_i==`exe_lw_op)||(aluop_i==`exe_lwl_op)||(aluop_i==`exe_lwr_op)||(aluop_i==`exe_lwpc);
 
 reg LLbit;
 wire[31:0] zero32;
@@ -97,6 +97,15 @@ always@(*)begin
 		mem_sel_o <= 4'b1111;
 		mem_ce_o <= 1'b0;
 		case(aluop_i)
+			`exe_lwpc_op:begin
+				//`exe_lw_op:begin
+				mem_addr_o <= physical_addr;
+				mem_we <= 1'b0;
+				wdata_o <= mem_data_i;
+				mem_sel_o <= 4'b1111;
+				mem_ce_o <= 1'b1;
+				//end
+			end
 			`exe_lb_op:begin
 				mem_addr_o <= physical_addr;
 				mem_we <= 1'b0;

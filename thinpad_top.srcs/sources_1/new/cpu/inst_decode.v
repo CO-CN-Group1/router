@@ -70,7 +70,8 @@ assign pre_inst_is_load = ((ex_aluop_i == `exe_lb_op)||
 						   (ex_aluop_i == `exe_lwr_op)||
 						   (ex_aluop_i == `exe_lwl_op)||
 						   (ex_aluop_i == `exe_ll_op)||
-						   (ex_aluop_i == `exe_sc_op))?1'b1:1'b0;
+						   (ex_aluop_i == `exe_sc_op)||
+						   (ex_aluop_i == `exe_lwpc_op))?1'b1:1'b0;
 assign inst_o = inst_i;
 assign current_inst_address_o = pc_i;
 
@@ -106,6 +107,17 @@ always@(*)begin
 		branch_flag_o <= 1'b0;
 		next_inst_in_delayslot_o <= 1'b0;
 		case(op)
+			`exe_lwpc:begin
+				//`exe_lw:begin
+				wreg_o <= 1'b1;
+				aluop_o <= `exe_lwpc_op;
+				alusel_o <= `exe_res_load_store;
+				reg1_read_o <= 1'b0;
+				reg2_read_o <= 1'b0;
+				wd_o <= inst_i[25:21];
+				inst_valid <= 1'b0;
+				//end
+			end
 			`exe_special_inst:begin
 				case(op2)
 					5'b00000:begin
