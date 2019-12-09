@@ -1,0 +1,6 @@
+*.o
+checksum
+std
+std.cpp
+!*_output*.out
+!Makefile
