@@ -165,6 +165,10 @@
 `define exe_swr_op 8'b11101110 
 `define exe_sync_op 8'b00001111
 
+`define exe_mfc0_op 8'b01011101
+`define exe_mtc0_op 8'b01100000
+
+
 `define exe_nop_op 8'b00000000
 
 //alu_sel
@@ -198,3 +202,12 @@
 `define div_result_not_ready 1'b0 
 `define div_start 1'b1
 `define div_stop 1'b0
+
+//cp0
+`define cp0_reg_count 5'b01001
+`define cp0_reg_compare 5'b01011
+`define cp0_reg_status 5'b01100
+`define cp0_reg_cause 5'b01101
+`define cp0_reg_epc 5'b01110
+`define cp0_reg_prid 5'b01111
+`define cp0_reg_config 5'b10000

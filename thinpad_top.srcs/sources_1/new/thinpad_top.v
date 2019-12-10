@@ -86,12 +86,12 @@ module thinpad_top(
 /* =========== Demo code begin =========== */
 
 // PLL分频示例
-wire locked, clk_10M, clk_20M, clk_125M, clk_200M;
+wire locked, clk_10M, clk_40M, clk_125M, clk_200M;
 pll_example clock_gen 
  (
   // Clock out ports
   .clk_out1(clk_10M), // 时钟输出1，频率在IP配置界面中设�?
-  .clk_out2(clk_20M), // 时钟输出2，频率在IP配置界面中设�?
+  .clk_out2(clk_40M), // 时钟输出2，频率在IP配置界面中设�?
   .clk_out3(clk_125M), // 时钟输出3，频率在IP配置界面中设�?
   .clk_out4(clk_200M), // 时钟输出4，频率在IP配置界面中设�?
   // Status and control signals
@@ -459,11 +459,15 @@ wire openmips_mem_rom_ce_o;
 wire openmips_mem_sram_sum;
 reg uart_we_o;
 reg uart_re_o;
+wire[5:0] int;
+wire timer_int;
+assign int = {5'b00000, timer_int};
 assign uart_wrn = uart_we_o;
 assign uart_rdn = uart_re_o;
 mips_cpu mips_cpu_inst(
-    .clk(clk_20M),
+    .clk(clk_40M),
     .rst(~locked),
+    .int_i(int),
 
     .if_addr_o(openmips_if_addr_o),
     .if_data_i(openmips_if_data_i),
@@ -485,7 +489,8 @@ mips_cpu mips_cpu_inst(
     .mem_serial_ce_o(openmips_mem_serial_ce_o),
     .mem_vga_ce_o(openmips_mem_vga_ce_o),
     .mem_rom_ce_o(openmips_mem_rom_ce_o),
-    .mem_sram_sum(openmips_mem_sram_sum)
+    .mem_sram_sum(openmips_mem_sram_sum),
+    .timer_int_o(timer_int)
 );
 
 reg rom_ce;
