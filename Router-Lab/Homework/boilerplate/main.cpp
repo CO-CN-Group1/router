@@ -58,15 +58,15 @@ int main(int argc, char *argv[]) {
       last_time = time;
       // TODO: broadcast everything
       resp.command = 2;
-          resp.numEntries = 0;
-          for(int i = 0; i < cnt; i++)
-            if(!isDisable[i]){
-              resp.entries[resp.numEntries].addr = routersList[i].addr;
-              //resp.entries[resp.numEntries].mask
-              resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
-              resp.entries[resp.numEntries].metric = 16;
-              resp.numEntries++;
-            }
+            resp.numEntries = 0;
+            for(int i = 0; i < cnt; i++)
+              if(!isDisable[i]){
+                resp.entries[resp.numEntries].addr = routersList[i].addr;
+                resp.entries[resp.numEntries].mask = routersList[i].mask;
+                resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
+                resp.entries[resp.numEntries].metric = routerList[i].metric;
+                resp.numEntries++;
+              }
           // assemble
           // IP
           output[0] = 0x45;
@@ -131,16 +131,36 @@ int main(int argc, char *argv[]) {
           // only need to respond to whole table requests in the lab
           RipPacket resp;
           // TODO: fill resp
-          resp.command = 2;
-          resp.numEntries = 0;
-          for(int i = 0; i < cnt; i++)
-            if(!isDisable[i]){
-              resp.entries[resp.numEntries].addr = routersList[i].addr;
-              //resp.entries[resp.numEntries].mask
-              resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
-              resp.entries[resp.numEntries].metric = 16;
+          if(rip.numEntries == 1 && rip.entries[0].metric == 16){
+            resp.command = 2;
+            resp.numEntries = 0;
+            for(int i = 0; i < cnt; i++)
+              if(!isDisable[i]){
+                resp.entries[resp.numEntries].addr = routersList[i].addr;
+                resp.entries[resp.numEntries].mask = routersList[i].mask;
+                resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
+                resp.entries[resp.numEntries].metric = routerList[i].metric;
+                resp.numEntries++;
+              }
+          }
+          else{
+            resp.command = 2;
+            resp.numEntries = 0;
+            for(int i = 0; i < rip.numEntries; i++){
+              uint32_t qnexthop, qifindex;
+              resp.entries[resp.numEntries].addr = rip.entries[i].addr;
+              resp.entries[resp.numEntries].mask = rip.entries[i].mask;
+              if(query(rip.entries[i].addr, &qnexthop, &qifindex)){
+                resp.entries[resp.numEntries].nexthop = qnexthop;
+                resp.entries[resp.numEntries].metric = qmetric;
+              }
+              else{
+                resp.entries[resp.numEntries].nexthop = 0;
+                resp.entries[resp.numEntries].metric = 16;
+              }
               resp.numEntries++;
             }
+          }
           // assemble
           // IP
           output[0] = 0x45;

@@ -22,6 +22,7 @@
 RoutingTableEntry routersList[55];
 bool isDisable[55] = {0};
 int cnt = 0;
+uint32_t qmetric;
 
 /**
  * @brief 插入/删除一条路由表表项
@@ -53,6 +54,7 @@ void update(bool insert, RoutingTableEntry entry) {
 bool query(uint32_t addr, uint32_t *nexthop, uint32_t *if_index) {
   *nexthop = 0;
   *if_index = 0;
+  qmetric = 16;
   int lstMatchSize = -1;
   for (int i = 0; i < cnt; i++){
     bool equal = true;
@@ -70,6 +72,7 @@ bool query(uint32_t addr, uint32_t *nexthop, uint32_t *if_index) {
     if(!isDisable[i] && equal && MatchSize > lstMatchSize){
       *nexthop = routersList[i].nexthop;
       *if_index = routersList[i].if_index;
+      qmetric = routersList[i].metric;
       lstMatchSize = MatchSize;
     }
   }
