@@ -14,10 +14,23 @@ module routing_table_lookup #
     input wire                      rx_axis_tlast,
     output wire                     rx_axis_tready,
 
-    output wire [DATA_WIDTH-1:0]     tx_axis_tdata,
+    input wire [DATA_WIDTH-1:0] receiver_data_i,
+    output reg [DATA_WIDTH-1:0] receiver_data_o,
+    output reg [8:0] receiver_addr,
+    output reg receiver_ce,
+    output reg receiver_we,
+
+    output wire [DATA_WIDTH-1:0]    tx_axis_tdata,
     output reg                      tx_axis_tvalid,
-    output wire                      tx_axis_tlast,
+    output wire                     tx_axis_tlast,
     input  wire                     tx_axis_tready,
+
+    input wire [DATA_WIDTH-1:0] sender_data_i,
+    output reg [DATA_WIDTH-1:0] sender_data_o,
+    output reg [8:0] sender_addr,
+    output reg sender_ce,
+    output reg sender_we,
+
     output reg [15:0] led_out
 );
 

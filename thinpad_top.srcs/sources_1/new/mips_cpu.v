@@ -14,6 +14,8 @@ module mips_cpu(
     output wire if_serial_ce_o,
     output wire if_vga_ce_o,
     output wire if_ce_o,
+    output wire if_sender_mem_ce_o,
+    output wire if_receiver_mem_ce_o,
 
     input wire[31:0] mem_data_i,
     output wire[31:0] mem_addr_o,
@@ -26,6 +28,8 @@ module mips_cpu(
     output wire mem_serial_ce_o,
     output wire mem_vga_ce_o,
     output wire mem_ce_o,
+    output wire mem_sender_mem_ce_o,
+    output wire mem_receiver_mem_ce_o,
     output wire mem_sram_sum,
     output wire timer_int_o
 );
@@ -187,6 +191,8 @@ addr_bus addr_bus0(
     .rom_ce(if_rom_ce_o),
     .serial_ce(if_serial_ce_o),
     .vga_ce(if_vga_ce_o),
+    .sender_mem_ce(if_sender_mem_ce_o),
+    .receiver_mem_ce(if_receiver_mem_ce_o),
     .addr_o(physical_pc)
 );
 
@@ -479,7 +485,9 @@ addr_bus addr_bus1(
     .serial_ce(mem_serial_ce_o),
     .vga_ce(mem_vga_ce_o),
     .addr_o(physical_addr),
-    .sram_sum(mem_sram_sum)
+    .sram_sum(mem_sram_sum),
+    .sender_mem_ce(mem_sender_mem_ce_o),
+    .receiver_mem_ce(mem_receiver_mem_ce_o)
 );
 
 mem_wb mem_wb0(
