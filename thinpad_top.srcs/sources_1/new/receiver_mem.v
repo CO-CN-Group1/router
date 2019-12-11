@@ -53,13 +53,13 @@ always @(*) begin
                 if(cpu_we_n == 1'b0) begin
                     if(data[511] != 8'b00000000) begin
                         if(cpu_be_n[0] == 1'b0)
-                            data[{cpu_addr,2'b00}] <= cpu_data_o[7:0];
+                            data[{cpu_addr,2'b00}] <= cpu_data_i[7:0];
                         if(cpu_be_n[1] == 1'b0)
-                            data[{cpu_addr,2'b01}] <= cpu_data_o[15:8];
+                            data[{cpu_addr,2'b01}] <= cpu_data_i[15:8];
                         if(cpu_be_n[2] == 1'b0)
-                            data[{cpu_addr,2'b10}] <= cpu_data_o[23:16];
+                            data[{cpu_addr,2'b10}] <= cpu_data_i[23:16];
                         if(cpu_be_n[3] == 1'b0)
-                            data[{cpu_addr,2'b11}] <= cpu_data_o[31:24];
+                            data[{cpu_addr,2'b11}] <= cpu_data_i[31:24];
                     end
                 end else begin
                     if(cpu_be_n[0] == 1'b0)
@@ -118,21 +118,21 @@ always @(*) begin
                     2'b01:begin
                         if(data[511] != 8'b00000000) begin
                             if(cpu_be_n[0] == 1'b0)
-                                data[{cpu_addr,2'b00}] <= cpu_data_o[7:0];
+                                data[{cpu_addr,2'b00}] <= cpu_data_i[7:0];
                             if(cpu_be_n[1] == 1'b0)
-                                data[{cpu_addr,2'b01}] <= cpu_data_o[15:8];
+                                data[{cpu_addr,2'b01}] <= cpu_data_i[15:8];
                             if(cpu_be_n[2] == 1'b0)
-                                data[{cpu_addr,2'b10}] <= cpu_data_o[23:16];
+                                data[{cpu_addr,2'b10}] <= cpu_data_i[23:16];
                             if(cpu_be_n[3] == 1'b0)
-                                data[{cpu_addr,2'b11}] <= cpu_data_o[31:24];
+                                data[{cpu_addr,2'b11}] <= cpu_data_i[31:24];
                             if(router_addr == {cpu_addr,2'b00} && cpu_be_n[0] == 1'b0)
-                                router_data_o <= cpu_data_o[7:0];
+                                router_data_o <= cpu_data_i[7:0];
                             else if(router_addr == {cpu_addr,2'b01} && cpu_be_n[1] == 1'b0)
-                                router_data_o <= cpu_data_o[15:8];
+                                router_data_o <= cpu_data_i[15:8];
                             else if(router_addr == {cpu_addr,2'b10} && cpu_be_n[2] == 1'b0)
-                                router_data_o <= cpu_data_o[23:16];
+                                router_data_o <= cpu_data_i[23:16];
                             else if(router_addr == {cpu_addr,2'b11} && cpu_be_n[3] == 1'b0)
-                                router_data_o <= cpu_data_o[31:24];
+                                router_data_o <= cpu_data_i[31:24];
                         end else begin
                             router_data_o <= data[router_addr];
                         end
@@ -142,13 +142,13 @@ always @(*) begin
                             data[router_addr] <= router_data_i;
                         end else begin
                             if(cpu_be_n[0] == 1'b0)
-                                data[{cpu_addr,2'b00}] <= cpu_data_o[7:0];
+                                data[{cpu_addr,2'b00}] <= cpu_data_i[7:0];
                             if(cpu_be_n[1] == 1'b0)
-                                data[{cpu_addr,2'b01}] <= cpu_data_o[15:8];
+                                data[{cpu_addr,2'b01}] <= cpu_data_i[15:8];
                             if(cpu_be_n[2] == 1'b0)
-                                data[{cpu_addr,2'b10}] <= cpu_data_o[23:16];
+                                data[{cpu_addr,2'b10}] <= cpu_data_i[23:16];
                             if(cpu_be_n[3] == 1'b0)
-                                data[{cpu_addr,2'b11}] <= cpu_data_o[31:24];
+                                data[{cpu_addr,2'b11}] <= cpu_data_i[31:24];
                         end
                     end
                 endcase
