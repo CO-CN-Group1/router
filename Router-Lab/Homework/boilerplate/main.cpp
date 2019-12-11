@@ -57,14 +57,16 @@ int main(int argc, char *argv[]) {
       printf("30s Timer\n");
       last_time = time;
       // TODO: broadcast everything
-      resp.command = 2;
+      /*
+            RipPacket resp;
+            resp.command = 2;
             resp.numEntries = 0;
             for(int i = 0; i < cnt; i++)
               if(!isDisable[i]){
                 resp.entries[resp.numEntries].addr = routersList[i].addr;
                 resp.entries[resp.numEntries].mask = routersList[i].mask;
                 resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
-                resp.entries[resp.numEntries].metric = routerList[i].metric;
+                resp.entries[resp.numEntries].metric = routersList[i].metric;
                 resp.numEntries++;
               }
           // assemble
@@ -81,7 +83,8 @@ int main(int argc, char *argv[]) {
           // checksum calculation for ip and udp
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
-          HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
+          //for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac);
+          */
     }
 
     int mask = (1 << N_IFACE_ON_BOARD) - 1;
@@ -139,7 +142,7 @@ int main(int argc, char *argv[]) {
                 resp.entries[resp.numEntries].addr = routersList[i].addr;
                 resp.entries[resp.numEntries].mask = routersList[i].mask;
                 resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
-                resp.entries[resp.numEntries].metric = routerList[i].metric;
+                resp.entries[resp.numEntries].metric = routersList[i].metric;
                 resp.numEntries++;
               }
           }
@@ -152,7 +155,7 @@ int main(int argc, char *argv[]) {
               resp.entries[resp.numEntries].mask = rip.entries[i].mask;
               if(query(rip.entries[i].addr, &qnexthop, &qifindex)){
                 resp.entries[resp.numEntries].nexthop = qnexthop;
-                resp.entries[resp.numEntries].metric = qmetric;
+                resp.entries[resp.numEntries].metric = routersList[goal].metric;
               }
               else{
                 resp.entries[resp.numEntries].nexthop = 0;
@@ -183,43 +186,71 @@ int main(int argc, char *argv[]) {
           // update metric, if_index, nexthop
           // what is missing from RoutingTableEntry?
           // TODO: use query and update
+          RipPacket resp;
+          resp.numEntries = 0;
           for (int i = 0; i < rip.numEntries; i++){
             uint32_t ifindex, nxthop;
             bool hasroute = query(rip.entries[i].addr, &nxthop, &ifindex);
             RoutingTableEntry routingentry;
             routingentry.addr = rip.entries[i].addr;
-            if(hasroute&&nxthop==rip.entries[i].nexthop&&ifindex==if_index){
-              // nothing to do
+            if(hasroute){
+              if(routersList[goal].metric>rip.entries[i].metric + 1){
+                //update(false, routingentry);
+                routingentry.metric = rip.entries[i].metric + 1;
+                routingentry.mask = rip.entries[i].mask;
+                routingentry.nexthop = rip.entries[i].nexthop;
+                routingentry.if_index = if_index;
+                routingentry.timer = time;
+                routersList[goal] = routingentry;
+                //update(true, routingentry);
+              }
+              else if(routersList[goal].if_index == if_index && routersList[goal].metric!=rip.entries[i].metric + 1){
+                update(false, routingentry);
+                routingentry.metric = rip.entries[i].metric + 1;
+                routingentry.mask = rip.entries[i].mask;
+                routingentry.nexthop = rip.entries[i].nexthop;
+                routingentry.if_index = if_index;
+                routingentry.timer = time;
+                //routersList[goal] = routingentry;
+                if(routingentry.metric < 16)update(true, routingentry);
+              }
+              else{
+                routersList[goal].timer = time;
+              }
             }
-            else {
-              update(false, routingentry);
+            else{
+              routingentry.metric = rip.entries[i].metric + 1;
+              if(routingentry.metric>=16)continue;
+              routingentry.mask = rip.entries[i].mask;
               routingentry.nexthop = rip.entries[i].nexthop;
               routingentry.if_index = if_index;
-              //routingentry.len = 24;
+              routingentry.timer = time;
+              //routersList[goal] = routingentry;
               update(true, routingentry);
-              // assemble
-              // IP
-              output[0] = 0x45;
-              // ...
-              // UDP
-              // port = 520
-              output[20] = 0x02;
-              output[21] = 0x08;
-              // ...
-              // RIP
-              RipPacket resp;
-              resp.command = 2;
-              resp.numEntries = 1;
-              resp.entries[0] = rip.entries[i];
-              uint32_t rip_len = assemble(&resp, &output[20 + 8]);
-              // checksum calculation for ip and udp
-              // if you don't want to calculate udp checksum, set it to zero
-              // send it back
-              HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
+              resp.entries[resp.numEntries].addr = rip.entries[i].addr;
+              resp.entries[resp.numEntries].mask = rip.entries[i].mask;
+              resp.entries[resp.numEntries].nexthop = rip.entries[i].nexthop;
+              resp.entries[resp.numEntries].metric = routingentry.metric;
+              resp.numEntries++;
             }
           }
-
           // triggered updates? ref. RFC2453 3.10.1
+          resp.command = 2;
+          // assemble
+          // IP
+          output[0] = 0x45;
+          // ...
+          // UDP
+          // port = 520
+          output[20] = 0x02;
+          output[21] = 0x08;
+          // ...
+          // RIP
+          uint32_t rip_len = assemble(&resp, &output[20 + 8]);
+          // checksum calculation for ip and udp
+          // if you don't want to calculate udp checksum, set it to zero
+          // send it back
+          for(int i = 0; i < 4; i++)HAL_SendIPPacket(i, output, rip_len + 20 + 8, src_mac);
         }
       }
     } else {

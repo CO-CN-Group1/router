@@ -19,10 +19,7 @@
   你可以在全局变量中把路由表以一定的数据结构格式保存下来。
 */
 
-RoutingTableEntry routersList[55];
-bool isDisable[55] = {0};
-int cnt = 0;
-uint32_t qmetric;
+
 
 /**
  * @brief 插入/删除一条路由表表项
@@ -34,7 +31,13 @@ uint32_t qmetric;
  */
 void update(bool insert, RoutingTableEntry entry) {
   if(insert){
-    routersList[cnt++] = entry;
+    int i;
+    for (i = 0; i < cnt; i++)
+      if(entry.addr == routersList[i].addr){
+        routersList[i] = entry;
+        isDisable[i] = false;
+      }
+    if(i==cnt)routersList[cnt++] = entry;
   }
   else{
     for (int i = 0; i < cnt; i++)
@@ -54,7 +57,7 @@ void update(bool insert, RoutingTableEntry entry) {
 bool query(uint32_t addr, uint32_t *nexthop, uint32_t *if_index) {
   *nexthop = 0;
   *if_index = 0;
-  qmetric = 16;
+  goal = -1;
   int lstMatchSize = -1;
   for (int i = 0; i < cnt; i++){
     bool equal = true;
@@ -72,7 +75,7 @@ bool query(uint32_t addr, uint32_t *nexthop, uint32_t *if_index) {
     if(!isDisable[i] && equal && MatchSize > lstMatchSize){
       *nexthop = routersList[i].nexthop;
       *if_index = routersList[i].if_index;
-      qmetric = routersList[i].metric;
+      goal = i;
       lstMatchSize = MatchSize;
     }
   }
