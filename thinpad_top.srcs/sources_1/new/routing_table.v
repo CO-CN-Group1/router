@@ -1,9 +1,9 @@
 /*
- * �?多路由表中可以放2048�?
+ * �??多路由表中可以放2048�??
  * 因此Trie树中节点的个数为2048*32
- * Trie树对应数组下标的宽度�? 11 + 5 = 16
+ * Trie树对应数组下标的宽度�?? 11 + 5 = 16
  * RouterEntry 64 = nexthop,left son index,right son index
- * 如果nexthop = 32'h00000000 表示 该节点不对应�?个路由表�?
+ * 如果nexthop = 32'h00000000 表示 该节点不对应�??个路由表�??
  * locked_by_cpu 时，表示路由表正在被cpu修改
  */
 module routing_table
@@ -52,8 +52,8 @@ xpm_memory_tdpram #(
     .BYTE_WRITE_WIDTH_B(8),
     .READ_DATA_WIDTH_B(64),
     .READ_LATENCY_B(0),
-    .MEMORY_SIZE(2048*32*64),
-    .USER_MEMORY_INIT(1'b1)
+    .MEMORY_SIZE(2048*32*64)
+//    .USER_MEMORY_INIT(1'b1)
 ) xpm_memory_tdpram_data (
     .dina(os_din),
     .addra(os_addr),
@@ -76,7 +76,7 @@ reg[31:0] dest_ip_cache;
 
 localparam[1:0]
     STATE_IDLE = 0,
-    STATE_WAIT = 1, // cpu正在修改路由�?
+    STATE_WAIT = 1, // cpu正在修改路由�??
     STATE_SEARCH = 2;
 
 reg[1:0] state = STATE_IDLE;

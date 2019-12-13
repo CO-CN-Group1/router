@@ -31,21 +31,12 @@ reg [7:0] data[0:511];
 //data[508-510] 表示帧的长度 单位bytes 小端序
 //当data[511] == 8'b00000000时表示还没有接收到帧，此时cpu不能进行写操作
 
-reg debug;
-
-
 always @(*) begin
     if(rst) begin
         cpu_data_o <= 0;
         router_data_o <= 0;
         data[511] <= 8'b00000000;
-        data[510] <= 8'b00000000;
-        data[509] <= 8'b00000000;
-        data[508] <= 8'b00000000;
-        
-        debug <= 0;
     end else begin
-        debug <= 0;
         case({cpu_ce_n,router_ce_n})
             2'b11: begin
                 // nothing to do
@@ -95,7 +86,6 @@ always @(*) begin
                         router_data_o <= data[router_addr];
                     end
                     2'b10:begin //路由器写，cpu读
-                        debug <= 1;
                         if(data[511] == 8'b00000000) begin
                             data[router_addr] <= router_data_i;
                             if(cpu_be_n[0] == 1'b0 && {cpu_addr,2'b00} == router_addr)
