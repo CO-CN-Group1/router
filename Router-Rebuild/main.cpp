@@ -1,4 +1,3 @@
-#include "router.h"
 #include "router_hal.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -340,6 +339,8 @@ int main(int argc, char *argv[]) {
     macaddr_t src_mac;
     macaddr_t dst_mac;
     int if_index;
+
+    // TODO: Implement Receive packet
     res = HAL_ReceiveIPPacket(mask, packet, sizeof(packet), src_mac, dst_mac,
                               1000, &if_index);
     if (res == HAL_ERR_EOF) {
