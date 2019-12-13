@@ -384,39 +384,6 @@ wire sender_router_we_n;
 
 
 
-routing_table_lookup lookup_inst(
-
-    .rst                            (~locked),
-    .clk                            (clk_125M),
-    // data from the RX data path
-    .rx_axis_tdata                  (eth_rx_axis_no_crc_tdata),
-    .rx_axis_tvalid                 (eth_rx_axis_no_crc_tvalid),
-    .rx_axis_tlast                  (eth_rx_axis_no_crc_tlast),
-    .rx_axis_tready                 (eth_rx_axis_no_crc_tready),
-
-    .receiver_data_i(receiver_router_data_i),
-    .receiver_data_o(receiver_router_data_o),
-    .receiver_addr(receiver_router_addr),
-    .receiver_ce(receiver_router_ce_n),
-    .receiver_we(receiver_router_we_n),
-
-
-    // data to the TX data path
-    .tx_axis_tdata                  (eth_tx_axis_fifo_tdata),
-    .tx_axis_tvalid                 (eth_tx_axis_fifo_tvalid),
-    .tx_axis_tlast                  (eth_tx_axis_fifo_tlast),
-    .tx_axis_tready                 (eth_tx_axis_fifo_tready),
-    //.led_out(led_bits)
-
-    
-    .sender_data_i(sender_router_data_i),
-    .sender_data_o(sender_router_data_o),
-    .sender_addr(sender_router_addr),
-    .sender_ce(sender_router_ce_n),
-    .sender_we(sender_router_we_n)
-);
-
-
 //loop back代码
 /*eth_mac_basic_pat_gen temac_pat_gen(
     .axi_tclk                       (clk_125M),
@@ -454,6 +421,7 @@ wire openmips_if_vga_ce_o;
 wire openmips_if_rom_ce_o;
 wire openmips_if_receiver_mem_ce_o;
 wire openmips_if_sender_mem_ce_o;
+wire openmips_if_router_table_ce_o;
 wire openmips_mem_we_o;
 wire[31:0] openmips_mem_addr_o;
 wire[3:0] openmips_mem_sel_o;
@@ -468,6 +436,7 @@ wire openmips_mem_rom_ce_o;
 wire openmips_mem_sram_sum;
 wire openmips_mem_receiver_mem_ce_o;
 wire openmips_mem_sender_mem_ce_o;
+wire openmips_mem_router_table_ce_o;
 reg uart_we_o;
 reg uart_re_o;
 wire[5:0] int;
@@ -475,6 +444,56 @@ wire timer_int;
 assign int = {5'b00000, timer_int};
 assign uart_wrn = uart_we_o;
 assign uart_rdn = uart_re_o;
+
+reg[15:0] router_table_os_addr;
+wire[63:0] router_table_os_dout;
+reg router_table_os_we;
+reg router_table_os_en;
+
+routing_table_lookup lookup_inst(
+
+    .rst                            (~locked),
+    .clk                            (clk_125M),
+    // data from the RX data path
+    .rx_axis_tdata                  (eth_rx_axis_no_crc_tdata),
+    .rx_axis_tvalid                 (eth_rx_axis_no_crc_tvalid),
+    .rx_axis_tlast                  (eth_rx_axis_no_crc_tlast),
+    .rx_axis_tready                 (eth_rx_axis_no_crc_tready),
+
+    .receiver_data_i(receiver_router_data_i),
+    .receiver_data_o(receiver_router_data_o),
+    .receiver_addr(receiver_router_addr),
+    .receiver_ce(receiver_router_ce_n),
+    .receiver_we(receiver_router_we_n),
+
+
+    // data to the TX data path
+    .tx_axis_tdata                  (eth_tx_axis_fifo_tdata),
+    .tx_axis_tvalid                 (eth_tx_axis_fifo_tvalid),
+    .tx_axis_tlast                  (eth_tx_axis_fifo_tlast),
+    .tx_axis_tready                 (eth_tx_axis_fifo_tready),
+    //.led_out(led_bits)
+
+    
+    .sender_data_i(sender_router_data_i),
+    .sender_data_o(sender_router_data_o),
+    .sender_addr(sender_router_addr),
+    .sender_ce(sender_router_ce_n),
+    .sender_we(sender_router_we_n),
+
+    .router_table_os_clk(clk_20M),
+    .router_table_os_rst(~locked),
+    .router_table_os_addr(router_table_os_addr),
+    .router_table_os_din({openmips_mem_data_o,openmips_mem_data_o}),
+    .router_table_os_dout(router_table_os_dout),
+    .router_table_os_we(router_table_os_we),
+    .router_table_os_en(router_table_os_en)
+);
+
+
+
+
+
 mips_cpu mips_cpu_inst(
     .clk(clk_20M),
     .rst(~locked),
@@ -490,7 +509,8 @@ mips_cpu mips_cpu_inst(
     .if_rom_ce_o(openmips_if_rom_ce_o),
     .if_receiver_mem_ce_o(openmips_if_receiver_mem_ce_o),
     .if_sender_mem_ce_o(openmips_if_sender_mem_ce_o),
-
+    .if_router_table_ce_o(openmips_if_router_table_ce_o),
+    
     .mem_we_o(openmips_mem_we_o),
     .mem_addr_o(openmips_mem_addr_o),
     .mem_sel_o(openmips_mem_sel_o),
@@ -502,9 +522,9 @@ mips_cpu mips_cpu_inst(
     .mem_serial_ce_o(openmips_mem_serial_ce_o),
     .mem_vga_ce_o(openmips_mem_vga_ce_o),
     .mem_rom_ce_o(openmips_mem_rom_ce_o),
-    
     .mem_receiver_mem_ce_o(openmips_mem_receiver_mem_ce_o),
     .mem_sender_mem_ce_o(openmips_mem_sender_mem_ce_o),
+    .mem_router_table_ce_o(openmips_mem_router_table_ce_o),
     .mem_sram_sum(openmips_mem_sram_sum),
     .timer_int_o(timer_int)
 );
@@ -595,6 +615,10 @@ always@(*)begin
         sender_cpu_ce_n <= 1'b1;
         sender_cpu_we_n <= 1'b1;
 
+        router_table_os_addr <= 16'b0;
+        router_table_os_we <= 1'b0;
+        router_table_os_en <= 1'b0;
+
     end else begin
         base_ram_addr <= 20'b0;
         base_ram_be_n <= 4'b1111;
@@ -629,6 +653,12 @@ always@(*)begin
         sender_cpu_be_n <= 4'b1111;
         sender_cpu_ce_n <= 1'b1;
         sender_cpu_we_n <= 1'b1;
+
+        
+        router_table_os_addr <= 16'b0;
+        router_table_os_we <= 1'b0;
+        router_table_os_en <= 1'b0;
+
         if (openmips_mem_ce_o) begin
             if (openmips_mem_sram_ce_o) begin
                 if (openmips_mem_addr_o[22] == 1'b0) begin
@@ -695,6 +725,24 @@ always@(*)begin
                 sender_cpu_we_n <= ~openmips_mem_we_o;
                 if(!openmips_mem_we_o)
                     openmips_mem_data_i<= sender_cpu_data_o;
+            end else if(openmips_mem_router_table_ce_o) begin
+                router_table_os_en <= 1'b1;
+                router_table_os_addr <= openmips_mem_addr_o[16:1];
+                if(openmips_mem_we_o) begin
+                    if(openmips_mem_addr_o[0])begin
+                        router_table_os_we <= 8'b11110000;
+                    end else begin
+                        router_table_os_we <= 8'b00001111;
+                    end
+                end else begin
+                    if(openmips_mem_addr_o[0])begin
+                        router_table_os_we <= 8'b00000000;
+                        openmips_mem_data_i <= router_table_os_dout[63:32];
+                    end else begin
+                        router_table_os_we <= 8'b00000000;
+                        openmips_mem_data_i <= router_table_os_dout[31:0];
+                    end
+                end
             end
         end else if (openmips_if_ce_o) begin
             if (openmips_if_sram_ce_o) begin

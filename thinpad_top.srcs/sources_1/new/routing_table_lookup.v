@@ -31,6 +31,14 @@ module routing_table_lookup #
     output reg sender_ce,
     output reg sender_we,
 
+    input wire router_table_os_clk,
+    input wire[15:0] router_table_os_addr,
+    input wire[63:0] router_table_os_din,
+    output wire[63:0] router_table_os_dout,
+    input wire[7:0] router_table_os_we,
+    input wire[7:0] router_table_os_rst,
+    input wire router_table_os_en,
+
     output reg [15:0] led_out
 );
 
@@ -86,7 +94,15 @@ routing_table #(
     .nexthop(nexthop),
     .lookup_ready(lookup_ready),
     .nexthop_valid(nexthop_valid),
-    .nexthop_not_found(nexthop_not_found)
+    .nexthop_not_found(nexthop_not_found),
+    
+    .os_clk(router_table_os_clk),
+    .os_addr(router_table_os_addr),
+    .os_din(router_table_os_din),
+    .os_dout(router_table_os_dout),
+    .os_we(router_table_os_we),
+    .os_rst(router_table_os_rst),
+    .os_en(router_table_os_en)
 );
 
 wire[MAC_LENGTH-1:0] lookup_mac;
