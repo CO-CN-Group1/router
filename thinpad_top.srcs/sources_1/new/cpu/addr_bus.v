@@ -54,8 +54,7 @@ always@(*)begin
             else if (addr_i >= 32'hbfd003f8 && addr_i <= 32'hbfd003fc)begin
                 serial_ce <= 1'b1;
                 sram_sum <= 1'b1;
-            end
-            else if (addr_i == 32'hbfd0f010)begin
+            end else if (addr_i == 32'hbfd0f010)begin
                 serial_ce <= 1'b1;
                 sram_sum <= 1'b1;
             end
