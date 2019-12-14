@@ -447,7 +447,7 @@ assign uart_rdn = uart_re_o;
 
 reg[15:0] router_table_os_addr;
 wire[63:0] router_table_os_dout;
-reg router_table_os_we;
+reg[7:0] router_table_os_we;
 reg router_table_os_en;
 
 routing_table_lookup lookup_inst(
@@ -616,7 +616,7 @@ always@(*)begin
         sender_cpu_we_n <= 1'b1;
 
         router_table_os_addr <= 16'b0;
-        router_table_os_we <= 1'b0;
+        router_table_os_we <= 8'b0;
         router_table_os_en <= 1'b0;
 
     end else begin
@@ -656,7 +656,7 @@ always@(*)begin
 
         
         router_table_os_addr <= 16'b0;
-        router_table_os_we <= 1'b0;
+        router_table_os_we <= 8'b0;
         router_table_os_en <= 1'b0;
 
         if (openmips_mem_ce_o) begin
