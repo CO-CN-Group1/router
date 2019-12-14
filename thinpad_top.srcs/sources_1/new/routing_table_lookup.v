@@ -178,7 +178,7 @@ always @(posedge clk or posedge rst)begin
                 data_head <= 0;
                 //led_out<=16'h0000;
                 //tx_axis_tlast <=0;
-                if (sender_data_i!=8'b00000000)begin
+                if (!(rx_axis_tvalid && rx_axis_tready_int) && sender_data_i!=8'b00000000)begin
                     //sender_addr<=9'd511;
                     rx_axis_tready_int<=0;
                     data_tail<=0;
