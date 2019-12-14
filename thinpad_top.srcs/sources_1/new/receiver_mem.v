@@ -36,6 +36,7 @@ always @(*) begin
         cpu_data_o <= 0;
         router_data_o <= 0;
         data[511] <= 8'b00000000;
+        //data[511] <= 8'b11111111;//debug
         data[510] <= 8'b00000000;
         data[509] <= 8'b00000000;
         data[508] <= 8'b00000000;
