@@ -34,6 +34,10 @@ always @(*) begin
         cpu_data_o <= 0;
         router_data_o <= 0;
         data[511] <= 8'b00000000;
+        data[510] <= 8'b00000000;
+        data[509] <= 8'b00000000;
+        data[508] <= 8'b00000000;
+
     end else begin
         case({cpu_ce_n,router_ce_n})
             2'b11: begin
