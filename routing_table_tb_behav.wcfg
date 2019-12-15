@@ -11,114 +11,89 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="6548613674fs"></ZoomStartTime>
-      <ZoomEndTime time="6898277266fs"></ZoomEndTime>
-      <Cursor1Time time="6840000000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="795000001fs"></ZoomEndTime>
+      <Cursor1Time time="0fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="231"></NameColumnWidth>
-      <ValueColumnWidth column_width="135"></ValueColumnWidth>
+      <ValueColumnWidth column_width="130"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="25" />
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/clk" type="logic">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
+   <WVObjectSize size="19" />
+   <wvobject fp_name="/tb/rgmii/clk_125M" type="logic">
+      <obj_property name="ElementShortName">clk_125M</obj_property>
+      <obj_property name="ObjectShortName">clk_125M</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/rst" type="logic">
-      <obj_property name="ElementShortName">rst</obj_property>
-      <obj_property name="ObjectShortName">rst</obj_property>
+   <wvobject fp_name="/tb/rgmii/clk_125M_90deg" type="logic">
+      <obj_property name="ElementShortName">clk_125M_90deg</obj_property>
+      <obj_property name="ObjectShortName">clk_125M_90deg</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/we" type="logic">
-      <obj_property name="ElementShortName">we</obj_property>
-      <obj_property name="ObjectShortName">we</obj_property>
+   <wvobject fp_name="/tb/rgmii/rgmii_rd" type="array">
+      <obj_property name="ElementShortName">rgmii_rd[3:0]</obj_property>
+      <obj_property name="ObjectShortName">rgmii_rd[3:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/waddr" type="array">
-      <obj_property name="ElementShortName">waddr[4:0]</obj_property>
-      <obj_property name="ObjectShortName">waddr[4:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/rgmii_rx_ctl" type="logic">
+      <obj_property name="ElementShortName">rgmii_rx_ctl</obj_property>
+      <obj_property name="ObjectShortName">rgmii_rx_ctl</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/wdata" type="array">
-      <obj_property name="ElementShortName">wdata[31:0]</obj_property>
-      <obj_property name="ObjectShortName">wdata[31:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/rgmii_rxc" type="logic">
+      <obj_property name="ElementShortName">rgmii_rxc</obj_property>
+      <obj_property name="ObjectShortName">rgmii_rxc</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/re1" type="logic">
-      <obj_property name="ElementShortName">re1</obj_property>
-      <obj_property name="ObjectShortName">re1</obj_property>
+   <wvobject fp_name="/tb/rgmii/packet_clk" type="logic">
+      <obj_property name="ElementShortName">packet_clk</obj_property>
+      <obj_property name="ObjectShortName">packet_clk</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/raddr1" type="array">
-      <obj_property name="ElementShortName">raddr1[4:0]</obj_property>
-      <obj_property name="ObjectShortName">raddr1[4:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/trans" type="logic">
+      <obj_property name="ElementShortName">trans</obj_property>
+      <obj_property name="ObjectShortName">trans</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/rdata1" type="array">
-      <obj_property name="ElementShortName">rdata1[31:0]</obj_property>
-      <obj_property name="ObjectShortName">rdata1[31:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/frame_index" type="array">
+      <obj_property name="ElementShortName">frame_index[7:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_index[7:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/re2" type="logic">
-      <obj_property name="ElementShortName">re2</obj_property>
-      <obj_property name="ObjectShortName">re2</obj_property>
+   <wvobject fp_name="/tb/rgmii/data1" type="array">
+      <obj_property name="ElementShortName">data1[3:0]</obj_property>
+      <obj_property name="ObjectShortName">data1[3:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/raddr2" type="array">
-      <obj_property name="ElementShortName">raddr2[4:0]</obj_property>
-      <obj_property name="ObjectShortName">raddr2[4:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/data2" type="array">
+      <obj_property name="ElementShortName">data2[3:0]</obj_property>
+      <obj_property name="ObjectShortName">data2[3:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/rdata2" type="array">
-      <obj_property name="ElementShortName">rdata2[31:0]</obj_property>
-      <obj_property name="ObjectShortName">rdata2[31:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/buffer" type="array">
+      <obj_property name="ElementShortName">buffer[15999:0]</obj_property>
+      <obj_property name="ObjectShortName">buffer[15999:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/mips_cpu_inst/regs0/regs" type="array">
-      <obj_property name="ElementShortName">regs[0:31][31:0]</obj_property>
-      <obj_property name="ObjectShortName">regs[0:31][31:0]</obj_property>
-      <obj_property name="isExpanded"></obj_property>
+   <wvobject fp_name="/tb/rgmii/count" type="array">
+      <obj_property name="ElementShortName">count[15:0]</obj_property>
+      <obj_property name="ObjectShortName">count[15:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/rst" type="logic">
-      <obj_property name="ElementShortName">rst</obj_property>
-      <obj_property name="ObjectShortName">rst</obj_property>
+   <wvobject fp_name="/tb/rgmii/frame_size" type="array">
+      <obj_property name="ElementShortName">frame_size[99:0][15:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_size[99:0][15:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/cpu_data_i" type="array">
-      <obj_property name="ElementShortName">cpu_data_i[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_data_i[31:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/fd" type="array">
+      <obj_property name="ElementShortName">fd[31:0]</obj_property>
+      <obj_property name="ObjectShortName">fd[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/cpu_data_o" type="array">
-      <obj_property name="ElementShortName">cpu_data_o[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_data_o[31:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/index" type="array">
+      <obj_property name="ElementShortName">index[31:0]</obj_property>
+      <obj_property name="ObjectShortName">index[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/cpu_addr" type="array">
-      <obj_property name="ElementShortName">cpu_addr[6:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_addr[6:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/res" type="array">
+      <obj_property name="ElementShortName">res[31:0]</obj_property>
+      <obj_property name="ObjectShortName">res[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/cpu_be_n" type="array">
-      <obj_property name="ElementShortName">cpu_be_n[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_be_n[3:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/frame_count" type="array">
+      <obj_property name="ElementShortName">frame_count[31:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_count[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/cpu_ce_n" type="logic">
-      <obj_property name="ElementShortName">cpu_ce_n</obj_property>
-      <obj_property name="ObjectShortName">cpu_ce_n</obj_property>
+   <wvobject fp_name="/tb/rgmii/BUFFER_SIZE" type="array">
+      <obj_property name="ElementShortName">BUFFER_SIZE[31:0]</obj_property>
+      <obj_property name="ObjectShortName">BUFFER_SIZE[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/cpu_we_n" type="logic">
-      <obj_property name="ElementShortName">cpu_we_n</obj_property>
-      <obj_property name="ObjectShortName">cpu_we_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/router_data_i" type="array">
-      <obj_property name="ElementShortName">router_data_i[7:0]</obj_property>
-      <obj_property name="ObjectShortName">router_data_i[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/router_data_o" type="array">
-      <obj_property name="ElementShortName">router_data_o[7:0]</obj_property>
-      <obj_property name="ObjectShortName">router_data_o[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/router_addr" type="array">
-      <obj_property name="ElementShortName">router_addr[8:0]</obj_property>
-      <obj_property name="ObjectShortName">router_addr[8:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/router_ce_n" type="logic">
-      <obj_property name="ElementShortName">router_ce_n</obj_property>
-      <obj_property name="ObjectShortName">router_ce_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/router_we_n" type="logic">
-      <obj_property name="ElementShortName">router_we_n</obj_property>
-      <obj_property name="ObjectShortName">router_we_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/receiver_mem0/data" type="array">
-      <obj_property name="ElementShortName">data[0:511][7:0]</obj_property>
-      <obj_property name="ObjectShortName">data[0:511][7:0]</obj_property>
+   <wvobject fp_name="/tb/rgmii/FRAME_COUNT" type="array">
+      <obj_property name="ElementShortName">FRAME_COUNT[31:0]</obj_property>
+      <obj_property name="ObjectShortName">FRAME_COUNT[31:0]</obj_property>
    </wvobject>
 </wave_config>

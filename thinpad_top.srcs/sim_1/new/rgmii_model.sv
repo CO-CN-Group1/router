@@ -8,11 +8,11 @@ module rgmii_model (
     output rgmii_rxc
 );
     localparam BUFFER_SIZE = 2000;
-    localparam FRAME_COUNT = 10;
+    localparam FRAME_COUNT = 100;
 
     logic packet_clk;
     logic trans;
-    logic [7:0] frame_index = 0;
+    logic [7:0] frame_index = -1;
     logic [3:0] data1;
     logic [3:0] data2;
     logic [7:0] frame_data [FRAME_COUNT-1:0][BUFFER_SIZE-1:0];
