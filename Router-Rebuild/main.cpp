@@ -7,6 +7,9 @@
 #define N_IFACE_ON_BOARD 4
 typedef uint8_t macaddr_t[6];
 typedef uint32_t in_addr_t;
+
+macaddr_t interface_mac = {0x00,0xcd,0xef,0xab,0xcd,0xef};
+
 enum HAL_ERROR_NUMBER {
   HAL_ERR_INVALID_PARAMETER = -1000,
   HAL_ERR_IP_NOT_EXIST,
@@ -71,8 +74,42 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
         memcpy(dst_mac, buffer, sizeof(macaddr_t));
         memcpy(src_mac, &buffer[6], sizeof(macaddr_t));
         *if_index = buffer[15];
-        (*hastoRead) = 0;
         printf("has packet in");
+
+        (*hastoRead) = 0;
+    }
+    return 0;
+}
+
+int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
+                     macaddr_t dst_mac) {
+    memcpy(buffer, dst_mac, sizeof(macaddr_t));
+    memcpy(&buffer[6], interface_mac, sizeof(macaddr_t));
+    // VLAN
+    buffer[12] = 0x81;
+    buffer[13] = 0x00;
+    // PID
+    buffer[14] = 0x00;
+    buffer[15] = if_index + 1;
+    // IPv4
+    buffer[16] = 0x08;
+    buffer[17] = 0x00;
+    volatile uint8_t* hastoWrite;
+    hastoWrite = (uint8_t*)0xbc0001ff;
+    while(1){
+        while((*hastoWrite)==0xff){
+        }
+        uint8_t *c,*d,*e;
+        c = (uint8_t*)0xbc0001fc;
+        d = (uint8_t*)0xbc0001fd;
+        e = (uint8_t*)0xbc0001fe;
+        *c = (uint8_t)(length&0xff);
+        *d = (uint8_t)((length>>4)&0xff);
+        *e = (uint8_t)((length>>8)&0xff);
+        c = (uint8_t*)0xbc000000;
+        for (uint32_t i = 0; i < length; i++, c+=1) *c = buffer[i];
+        printf("sent packet");
+        (*hastoWrite) = 0xff;
     }
     return 0;
 }
@@ -328,7 +365,7 @@ int main(int argc, char *argv[]) {
     RoutingTableEntry entry;
     entry.addr = addrs[i] & 0x00FFFFFF; // big endian
     entry.len = 24;        // small endian
-    entry.if_index = i;    // small endian
+    entry.if_index = i + 1;    // small endian
     entry.nexthop = 0;      // big endian, means direct
     update(true, entry);
   }
@@ -371,7 +408,8 @@ int main(int argc, char *argv[]) {
           // checksum calculation for ip and udp
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
-          //for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac);
+          
+for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac);
           */
     }
 
@@ -468,7 +506,7 @@ int main(int argc, char *argv[]) {
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
           // TODO: put the package in the proper position
-         // HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
+          HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
         } else {
           // 3a.2 response, ref. RFC2453 3.9.2
           // update routing table
@@ -540,7 +578,7 @@ int main(int argc, char *argv[]) {
           // checksum calculation for ip and udp
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
-          //for(int i = 0; i < 4; i++)HAL_SendIPPacket(i, output, rip_len + 20 + 8, src_mac);
+          for(int i = 0; i < 4; i++)HAL_SendIPPacket(i, output, rip_len + 20 + 8, src_mac);
         }
       }
     } 
