@@ -12,7 +12,7 @@ int main(){
         d = (uint8_t*)0xbb0001fd;
         e = (uint8_t*)0xbb0001fe;
         (*hastoRead) = 0;
-        printf("has packet");
+        //printf("has packet");
     }
     return 0;
 }
