@@ -43,18 +43,19 @@ typedef struct {
 // 路由表的一项
 typedef struct {
     uint32_t addr; // 地址
-    uint32_t len; // 前缀长度
+    //uint32_t len; // 前缀长度
     uint32_t if_index; // 出端口编号
     uint32_t nexthop; // 下一条的地址，0 表示直连
     uint32_t metric;
     uint32_t mask;
     uint32_t timer;
+    uint32_t lson, rson;
+    bool disabled;
     // 为了实现 RIP 协议，需要在这里添加额外的字段
 } RoutingTableEntry;
 
-RoutingTableEntry routersList[55];
-bool isDisable[55] = {0};
-int cnt = 0, goal;
+RoutingTableEntry routersList[1005];
+uint32_t cnt = 1, goal;
 
 int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
                         macaddr_t src_mac, macaddr_t dst_mac, int64_t timeout,
@@ -147,21 +148,148 @@ bool validateIPChecksum(uint8_t *packet, size_t len) {
  * 删除时按照 addr 和 len 匹配。
  */
 void update(bool insert, RoutingTableEntry entry) {
+  int p = 1, q;
+  uint32_t ii = 1<<31;
+  uint32_t addr = ((entry.addr&0xff)<<24) + (((entry.addr>>8)&0xff)<<16) + (((entry.addr>>16)&0xff)<<8)+ ((entry.addr>>24)&0xff);
+  uint8_t *c = (uint8_t*)(0xbd000000);
+  *c = 1;
+  *(c+1) = 1;
+  *(c+2) = 1;
+  *(c+3) = 1;
+  *(c+4) = 1;
+  *(c+5) = 1;
+  *(c+6) = 1;
+  *(c+7) = 1;
   if(insert){
-    int i;
-    for (i = 0; i < cnt; i++)
-      if(entry.addr == routersList[i].addr){
-        routersList[i] = entry;
-        isDisable[i] = false;
+    for (uint32_t i = 0; i < 32; i++){
+      q = (((ii>>1)&addr)>0);
+      if(q==0){
+        if(!routersList[p].lson){
+          routersList[p].lson = ++cnt;
+          c = (uint8_t*)(0xbd000000+(p<<3)+4);
+          *c = cnt&0xff;
+          *(c+1) = (cnt>>8)&0xff;
+          routersList[cnt].lson = 0;
+          routersList[cnt].rson = 0;
+          if(i == 31){
+            routersList[cnt].addr = entry.addr;
+            routersList[cnt].mask = entry.mask;
+            routersList[cnt].if_index = entry.if_index;
+            routersList[cnt].metric = entry.metric;
+            routersList[cnt].nexthop = entry.nexthop;
+            c = (uint8_t*)(0xbd000000+(cnt<<3));
+            *c = (entry.nexthop&0xff);
+            *(c+1) = ((entry.nexthop>>8)&0xff);
+            *(c+2) = ((entry.nexthop>>16)&0xff);
+            *(c+3) = ((entry.nexthop>>24)&0xff);
+            routersList[cnt].timer = entry.timer;
+          }
+          p = cnt;
+        }
+        else{
+          p = routersList[p].lson;
+          if(i == 31){
+            routersList[p].addr = entry.addr;
+            routersList[p].mask = entry.mask;
+            routersList[p].if_index = entry.if_index;
+            routersList[p].metric = entry.metric;
+            routersList[p].nexthop = entry.nexthop;
+            c = (uint8_t*)(0xbd000000+(p<<3));
+            *c = (entry.nexthop&0xff);
+            *(c+1) = ((entry.nexthop>>8)&0xff);
+            *(c+2) = ((entry.nexthop>>16)&0xff);
+            *(c+3) = ((entry.nexthop>>24)&0xff);
+            routersList[p].timer = entry.timer;
+          }
+        }
       }
-    if(i==cnt)routersList[cnt++] = entry;
+      else{
+        if(!routersList[p].rson){
+          routersList[p].rson = ++cnt;
+          c = (uint8_t*)(0xbd000000+(p<<3)+6);
+          *c = cnt&0xff;
+          *(c+1) = (cnt>>8)&0xff;
+          routersList[cnt].lson = 0;
+          routersList[cnt].rson = 0;
+          if(i == 31){
+            routersList[cnt].addr = entry.addr;
+            routersList[cnt].mask = entry.mask;
+            routersList[cnt].if_index = entry.if_index;
+            routersList[cnt].metric = entry.metric;
+            routersList[cnt].nexthop = entry.nexthop;
+            c = (uint8_t*)(0xbd000000+(cnt<<3));
+            *c = (entry.nexthop&0xff);
+            *(c+1) = ((entry.nexthop>>8)&0xff);
+            *(c+2) = ((entry.nexthop>>16)&0xff);
+            *(c+3) = ((entry.nexthop>>24)&0xff);
+            routersList[cnt].timer = entry.timer;
+          }
+          p = cnt;
+        }
+        else{
+          p = routersList[p].rson;
+          if(i == 31){
+            routersList[p].addr = entry.addr;
+            routersList[p].mask = entry.mask;
+            routersList[p].if_index = entry.if_index;
+            routersList[p].metric = entry.metric;
+            routersList[p].nexthop = entry.nexthop;
+            c = (uint8_t*)(0xbd000000+(p<<3));
+            *c = (entry.nexthop&0xff);
+            *(c+1) = ((entry.nexthop>>8)&0xff);
+            *(c+2) = ((entry.nexthop>>16)&0xff);
+            *(c+3) = ((entry.nexthop>>24)&0xff);
+            routersList[p].timer = entry.timer;
+          }
+        }
+      }
+    }
   }
   else{
-    for (int i = 0; i < cnt; i++)
-      if(entry.addr == routersList[i].addr){
-        isDisable[i] = true;
+    for (uint32_t i = 0; i < 32; i++){
+      q = (((ii>>1)&addr)>0);
+      if(q==0){
+        if(!routersList[p].lson){
+          break;
+        }
+        else{
+          if(i == 30){
+            routersList[routersList[p].lson].disabled = true;
+            routersList[p].lson = 0;
+            c = (uint8_t*)(0xbd000000+(p<<3)+4);
+            *c = 0;
+            *(c+1) = 0;
+            break;
+          }
+          p = routersList[p].lson;
+        }
       }
+      else{
+        if(!routersList[p].rson){
+          break;
+        }
+        else{
+          if(i == 30){
+            routersList[routersList[p].rson].disabled = true;
+            routersList[p].rson = 0;
+            c = (uint8_t*)(0xbd000000+(p<<3)+6);
+            *c = 0;
+            *(c+1) = 0;
+            break;
+          }
+          p = routersList[p].rson;
+        }
+      }
+    }
   }
+  *c = 0;
+  *(c+1) = 0;
+  *(c+2) = 0;
+  *(c+3) = 0;
+  *(c+4) = 0;
+  *(c+5) = 0;
+  *(c+6) = 0;
+  *(c+7) = 0;
 }
 
 /**
@@ -171,33 +299,23 @@ void update(bool insert, RoutingTableEntry entry) {
  * @param if_index 如果查询到目标，把表项的 if_index 写入
  * @return 查到则返回 true ，没查到则返回 false
  */
-bool query(uint32_t addr, uint32_t *nexthop, uint32_t *if_index) {
-  *nexthop = 0;
-  *if_index = 0;
-  goal = -1;
-  int lstMatchSize = -1;
-  for (int i = 0; i < cnt; i++){
-    bool equal = true;
-    int MatchSize = 4;
-    uint32_t xx = routersList[i].addr;
-    uint32_t yy = addr;
-    for (int j = 0; j < 4; j++){
-      uint32_t x = xx & ((1<<8)-1);
-      uint32_t y = yy & ((1<<8)-1);
-      if(x != y && x != 0) equal = false;
-      if(x != y)MatchSize--;
-      xx >>= 8;
-      yy >>= 8;
-    }
-    if(!isDisable[i] && equal && MatchSize > lstMatchSize){
-      *nexthop = routersList[i].nexthop;
-      *if_index = routersList[i].if_index;
-      goal = i;
-      lstMatchSize = MatchSize;
-    }
+bool query(uint32_t addr) {
+  int p = 1, q;
+  uint32_t ii = 1<<31;
+  uint32_t addr = ((addr&0xff)<<24) + (((addr>>8)&0xff)<<16) + (((addr>>16)&0xff)<<8)+ ((addr>>24)&0xff);
+  for (uint32_t i = 0; i < 32; i++){
+      q = (((ii>>1)&addr)>0);
+      if(q==0){
+        p = routersList[p].lson;
+        if(!p)return false;
+      }
+      else{
+        p = routersList[p].rson;
+        if(!p)return false;
+      }
   }
-  if(lstMatchSize >= 0) return true;
-  return false;
+  goal = p;
+  return true;
 }
 
 /**
@@ -353,8 +471,10 @@ int main(int argc, char *argv[]) {
     return res;
   }
   */
- int res = 1;
-
+  int res = 1;
+  cnt = 1;
+  routersList[cnt].lson = 0;
+  routersList[cnt].rson = 0;
   // 0b. Add direct routes
   // For example:
   // 10.0.1.0/24 if 0
@@ -364,7 +484,7 @@ int main(int argc, char *argv[]) {
   for (uint32_t i = 0; i < N_IFACE_ON_BOARD; i++) {
     RoutingTableEntry entry;
     entry.addr = addrs[i] & 0x00FFFFFF; // big endian
-    entry.len = 24;        // small endian
+    entry.mask = 0x00FFFFFF;        // small endian
     entry.if_index = i + 1;    // small endian
     entry.nexthop = 0;      // big endian, means direct
     update(true, entry);
@@ -465,7 +585,7 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
             resp.command = 2;
             resp.numEntries = 0;
             for(int i = 0; i < cnt; i++)
-              if(!isDisable[i]){
+              if(!routersList[i].disabled){
                 resp.entries[resp.numEntries].addr = routersList[i].addr;
                 resp.entries[resp.numEntries].mask = routersList[i].mask;
                 resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
@@ -477,11 +597,10 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
             resp.command = 2;
             resp.numEntries = 0;
             for(int i = 0; i < rip.numEntries; i++){
-              uint32_t qnexthop, qifindex;
               resp.entries[resp.numEntries].addr = rip.entries[i].addr;
               resp.entries[resp.numEntries].mask = rip.entries[i].mask;
-              if(query(rip.entries[i].addr, &qnexthop, &qifindex)){
-                resp.entries[resp.numEntries].nexthop = qnexthop;
+              if(query(rip.entries[i].addr)){
+                resp.entries[resp.numEntries].nexthop = routersList[goal].nexthop;
                 resp.entries[resp.numEntries].metric = routersList[goal].metric;
               }
               else{
@@ -517,20 +636,18 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
           RipPacket resp;
           resp.numEntries = 0;
           for (int i = 0; i < rip.numEntries; i++){
-            uint32_t ifindex, nxthop;
-            bool hasroute = query(rip.entries[i].addr, &nxthop, &ifindex);
+            bool hasroute = query(rip.entries[i].addr);
             RoutingTableEntry routingentry;
             routingentry.addr = rip.entries[i].addr;
             if(hasroute){
               if(routersList[goal].metric>rip.entries[i].metric + 1){
-                //update(false, routingentry);
+                update(false, routingentry);
                 routingentry.metric = rip.entries[i].metric + 1;
                 routingentry.mask = rip.entries[i].mask;
                 routingentry.nexthop = rip.entries[i].nexthop;
                 routingentry.if_index = if_index;
                 routingentry.timer = time;
-                routersList[goal] = routingentry;
-                //update(true, routingentry);
+                update(true, routingentry);
               }
               else if(routersList[goal].if_index == if_index && routersList[goal].metric!=rip.entries[i].metric + 1){
                 update(false, routingentry);
@@ -539,7 +656,6 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
                 routingentry.nexthop = rip.entries[i].nexthop;
                 routingentry.if_index = if_index;
                 routingentry.timer = time;
-                //routersList[goal] = routingentry;
                 if(routingentry.metric < 16)update(true, routingentry);
               }
               else{
