@@ -46,7 +46,7 @@ xpm_memory_tdpram #(
     .WRITE_DATA_WIDTH_A(64),
     .BYTE_WRITE_WIDTH_A(8),
     .READ_DATA_WIDTH_A(64),
-    .READ_LATENCY_A(1),
+    .READ_LATENCY_A(0),
     .ADDR_WIDTH_B(16),
     .WRITE_DATA_WIDTH_B(64),
     .BYTE_WRITE_WIDTH_B(64),
