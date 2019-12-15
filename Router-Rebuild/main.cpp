@@ -1,8 +1,21 @@
-#include "router_hal.h"
+//#include "router_hal.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define N_IFACE_ON_BOARD 4
+typedef uint8_t macaddr_t[6];
+typedef uint32_t in_addr_t;
+enum HAL_ERROR_NUMBER {
+  HAL_ERR_INVALID_PARAMETER = -1000,
+  HAL_ERR_IP_NOT_EXIST,
+  HAL_ERR_IFACE_NOT_EXIST,
+  HAL_ERR_CALLED_BEFORE_INIT,
+  HAL_ERR_EOF,
+  HAL_ERR_NOT_SUPPORTED,
+  HAL_ERR_UNKNOWN,
+};
 
 #define RIP_MAX_ENTRY 25
 typedef struct {
@@ -272,11 +285,14 @@ uint32_t addrs[N_IFACE_ON_BOARD] = {0x0101000a, 0x0102000a, 0x0103000a,
                                      0x0104000a};
 
 int main(int argc, char *argv[]) {
-  // 0a.
+  // 0a. not sure whether needed
+  /*
   int res = HAL_Init(1, addrs);
   if (res < 0) {
     return res;
   }
+  */
+ int res = 1;
 
   // 0b. Add direct routes
   // For example:
@@ -285,18 +301,18 @@ int main(int argc, char *argv[]) {
   // 10.0.3.0/24 if 2
   // 10.0.4.0/24 if 3
   for (uint32_t i = 0; i < N_IFACE_ON_BOARD; i++) {
-    RoutingTableEntry entry = {
-        .addr = addrs[i] & 0x00FFFFFF, // big endian
-        .len = 24,        // small endian
-        .if_index = i,    // small endian
-        .nexthop = 0      // big endian, means direct
-    };
+    RoutingTableEntry entry;
+    entry.addr = addrs[i] & 0x00FFFFFF; // big endian
+    entry.len = 24;        // small endian
+    entry.if_index = i;    // small endian
+    entry.nexthop = 0;      // big endian, means direct
     update(true, entry);
   }
 
   uint64_t last_time = 0;
   while (1) {
-    uint64_t time = HAL_GetTicks();
+    // TODO: fix hardware timer suitcase
+    uint64_t time = 0;//HAL_GetTicks();
     if (time > last_time + 30 * 1000) {
       // What to do?
       // send complete routing table to every interface
@@ -341,8 +357,7 @@ int main(int argc, char *argv[]) {
     int if_index;
 
     // TODO: Implement Receive packet
-    res = HAL_ReceiveIPPacket(mask, packet, sizeof(packet), src_mac, dst_mac,
-                              1000, &if_index);
+   // res = HAL_ReceiveIPPacket(mask, packet, sizeof(packet), src_mac, dst_mac, 1000, &if_index);
     if (res == HAL_ERR_EOF) {
       break;
     } else if (res < 0) {
@@ -428,7 +443,8 @@ int main(int argc, char *argv[]) {
           // checksum calculation for ip and udp
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
-          HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
+          // TODO: put the package in the proper position
+         // HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
         } else {
           // 3a.2 response, ref. RFC2453 3.9.2
           // update routing table
@@ -500,41 +516,10 @@ int main(int argc, char *argv[]) {
           // checksum calculation for ip and udp
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
-          for(int i = 0; i < 4; i++)HAL_SendIPPacket(i, output, rip_len + 20 + 8, src_mac);
+          //for(int i = 0; i < 4; i++)HAL_SendIPPacket(i, output, rip_len + 20 + 8, src_mac);
         }
       }
-    } else {
-      // 3b.1 dst is not me
-      // forward
-      // beware of endianness
-      uint32_t nexthop, dest_if;
-      if (query(dst_addr, &nexthop, &dest_if)) {
-        // found
-        macaddr_t dest_mac;
-        // direct routing
-        if (nexthop == 0) {
-          nexthop = dst_addr;
-        }
-        if (HAL_ArpGetMacAddress(dest_if, nexthop, dest_mac) == 0) {
-          // found
-          memcpy(output, packet, res);
-          // update ttl and checksum
-          forward(output, res);
-          // TODO: you might want to check ttl=0 case
-          // Send ICMP Time Exceeded
-          
-          HAL_SendIPPacket(dest_if, output, res, dest_mac);
-        } else {
-          // not found
-          // you can drop it
-          printf("ARP not found for %x\n", nexthop);
-        }
-      } else {
-        // not found
-        // optionally you can send ICMP Host Unreachable
-        printf("IP not found for %x\n", src_addr);
-      }
-    }
+    } 
   }
   return 0;
 }
