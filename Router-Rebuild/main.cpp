@@ -53,6 +53,30 @@ RoutingTableEntry routersList[55];
 bool isDisable[55] = {0};
 int cnt = 0, goal;
 
+int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
+                        macaddr_t src_mac, macaddr_t dst_mac, int64_t timeout,
+                        int *if_index){
+    volatile uint8_t* hastoRead;
+    hastoRead = (uint8_t*)0xbb0001ff;
+    while(1){
+        while((*hastoRead)==0){
+        }
+        uint8_t *c,*d,*e;
+        c = (uint8_t*)0xbb0001fc;
+        d = (uint8_t*)0xbb0001fd;
+        e = (uint8_t*)0xbb0001fe;
+        length = *c + ((size_t)(*d)<<4) + ((size_t)(*e)<<8);
+        c = (uint8_t*)0xbb000000;
+        for(uint32_t i = 0; i < length; i++, c+=1) buffer[i] = *c;
+        memcpy(dst_mac, buffer, sizeof(macaddr_t));
+        memcpy(src_mac, &buffer[6], sizeof(macaddr_t));
+        *if_index = buffer[15];
+        (*hastoRead) = 0;
+        printf("has packet in");
+    }
+    return 0;
+}
+
 /**
  * @brief 进行 IP 头的校验和的验证
  * @param packet 完整的 IP 头和载荷
@@ -357,7 +381,7 @@ int main(int argc, char *argv[]) {
     int if_index;
 
     // TODO: Implement Receive packet
-   // res = HAL_ReceiveIPPacket(mask, packet, sizeof(packet), src_mac, dst_mac, 1000, &if_index);
+    res = HAL_ReceiveIPPacket(mask, packet, sizeof(packet), src_mac, dst_mac, 1000, &if_index);
     if (res == HAL_ERR_EOF) {
       break;
     } else if (res < 0) {
