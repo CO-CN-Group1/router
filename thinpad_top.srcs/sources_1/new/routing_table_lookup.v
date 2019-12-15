@@ -361,10 +361,7 @@ always @(posedge clk or posedge rst)begin
                 if (insert_ready) begin
                     insert_valid<=0;
                     if (data[24]==8'h00 && data[25]==8'h01) begin
-                        if ({data[42],data[43],data[44],data[45]}==32'h0a000101) begin
-                            state<=STATE_ARPRESPONSE;
-                        end
-                        else if ({data[42],data[43],data[44],data[45]}==32'h0a000201) begin
+                        if ({data[42],data[43],data[44],data[45]}==my_ip[data[15]]) begin
                             state<=STATE_ARPRESPONSE;
                         end
                         else begin
