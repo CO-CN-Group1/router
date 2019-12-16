@@ -4,160 +4,92 @@
  * 对于路由器来说，每个上升沿监听511地址，如果为0的话不能执行写操作
  * 如果511不为0，那么首先将帧读出来，帧长度在508-510，小端序
  * 最后将511 置为 8'b00000000
+ * 注意!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * we high = write low = read
+ * ce high = enable
  */
 
 module sender_mem(
-    input wire rst,
-    //由于两个的时钟周期不同，因此我们不太能使用clk ?
-    
+    input wire cpu_clk,
+    input wire cpu_rst,
     input wire[31:0] cpu_data_i,
-    output reg[31:0] cpu_data_o,
+    output wire[31:0] cpu_data_o,
     input wire[6:0] cpu_addr,
-    input wire[3:0] cpu_be_n,
     input wire cpu_ce_n,
-    input wire cpu_we_n,
+    input wire[3:0] cpu_we_n,
     
+    input wire router_rst,
+    input wire router_clk, 
     input wire[7:0] router_data_i,
     output reg[7:0] router_data_o,
     input wire[8:0] router_addr,
     input wire router_ce_n,
-    input wire router_we_n //低为写，高为读
+    input wire router_we_n
 );
-reg [7:0] data[0:511];
 
-//当data[511]不为0时表示已经准备好了发送帧，此时cpu不能进行写操作
-//data[508-510] 表示帧的长度 单位bytes，小端序
-//当data[511] == 8'b00000000时表示还没有准备好发送帧，此时路由器不能进行写操作
+reg[3:0] web;
+wire[31:0] doutb;
 
 always @(*) begin
-    if(rst) begin
-        cpu_data_o <= 0;
-        router_data_o <= 0;
-        data[511] <= 8'b00000000;
-        data[510] <= 8'b00000000;
-        data[509] <= 8'b00000000;
-        data[508] <= 8'b00000000;
-
+    if(router_rst) begin
+        web <= 4'b0000;
+        router_data_o <= 0; 
     end else begin
-        case({cpu_ce_n,router_ce_n})
-            2'b11: begin
-                // nothing to do
-            end
-            2'b10: begin
-                if(router_we_n == 1'b0) begin
-                    if(data[511] != 8'b00000000)
-                        data[router_addr] <= router_data_i;
-                end else begin
-                    router_data_o <= data[router_addr];
-                end
-            end
-            2'b01: begin
-                if(cpu_we_n == 1'b0) begin
-                    if(data[511] == 8'b00000000) begin
-                        if(cpu_be_n[0] == 1'b0)
-                            data[{cpu_addr,2'b00}] <= cpu_data_i[7:0];
-                        if(cpu_be_n[1] == 1'b0)
-                            data[{cpu_addr,2'b01}] <= cpu_data_i[15:8];
-                        if(cpu_be_n[2] == 1'b0)
-                            data[{cpu_addr,2'b10}] <= cpu_data_i[23:16];
-                        if(cpu_be_n[3] == 1'b0)
-                            data[{cpu_addr,2'b11}] <= cpu_data_i[31:24];
-                    end
-                end else begin
-                    if(cpu_be_n[0] == 1'b0)
-                        cpu_data_o[7:0] <= data[{cpu_addr,2'b00}];
-                    if(cpu_be_n[1] == 1'b0)
-                        cpu_data_o[15:8] <= data[{cpu_addr,2'b01}];
-                    if(cpu_be_n[2] == 1'b0)
-                        cpu_data_o[23:16] <= data[{cpu_addr,2'b10}];
-                    if(cpu_be_n[3] == 1'b0)
-                        cpu_data_o[31:24] <= data[{cpu_addr,2'b11}];
-                end
-            end
+        case(router_addr[1:0])
             2'b00:begin
-                case({cpu_we_n,router_we_n})
-                    2'b11:begin
-                        if(cpu_be_n[0] == 1'b0)
-                            cpu_data_o[7:0] <= data[{cpu_addr,2'b00}];
-                        if(cpu_be_n[1] == 1'b0)
-                            cpu_data_o[15:8] <= data[{cpu_addr,2'b01}];
-                        if(cpu_be_n[2] == 1'b0)
-                            cpu_data_o[23:16] <= data[{cpu_addr,2'b10}];
-                        if(cpu_be_n[3] == 1'b0)
-                            cpu_data_o[31:24] <= data[{cpu_addr,2'b11}];
-                        router_data_o <= data[router_addr];
-                    end
-                    2'b10:begin //路由器写，cpu读
-                        if(data[511] != 8'b00000000) begin
-                            data[router_addr] <= router_data_i;
-                            if(cpu_be_n[0] == 1'b0 && {cpu_addr,2'b00} == router_addr)
-                                cpu_data_o[7:0] <= router_data_i;
-                            else if(cpu_be_n[0] == 1'b0)    
-                                cpu_data_o[7:0] <= data[{cpu_addr,2'b00}];
-                            if(cpu_be_n[1] == 1'b0 && {cpu_addr,2'b01} == router_addr)
-                                cpu_data_o[15:8] <= router_data_i;
-                            else if(cpu_be_n[1] == 1'b0)
-                                cpu_data_o[15:8] <= data[{cpu_addr,2'b01}];
-                            if(cpu_be_n[2] == 1'b0 && {cpu_addr,2'b10} == router_addr)
-                                cpu_data_o[23:16] <= router_data_i;
-                            else if(cpu_be_n[2] == 1'b0)
-                                cpu_data_o[23:16] <= data[{cpu_addr,2'b10}];
-                            if(cpu_be_n[3] == 1'b0 && {cpu_addr,2'b11} == router_addr)
-                                cpu_data_o[31:24] <= router_data_i;
-                            else if(cpu_be_n[3] == 1'b0)
-                                cpu_data_o[31:24] <= data[{cpu_addr,2'b11}];
-                        end else begin
-                            if(cpu_be_n[0] == 1'b0)
-                                cpu_data_o[7:0] <= data[{cpu_addr,2'b00}];
-                            if(cpu_be_n[1] == 1'b0)
-                                cpu_data_o[15:8] <= data[{cpu_addr,2'b01}];
-                            if(cpu_be_n[2] == 1'b0)
-                                cpu_data_o[23:16] <= data[{cpu_addr,2'b10}];
-                            if(cpu_be_n[3] == 1'b0)
-                                cpu_data_o[31:24] <= data[{cpu_addr,2'b11}];
-                        end
-                    end
-                    2'b01:begin
-                        if(data[511] == 8'b00000000) begin
-                            if(cpu_be_n[0] == 1'b0)
-                                data[{cpu_addr,2'b00}] <= cpu_data_i[7:0];
-                            if(cpu_be_n[1] == 1'b0)
-                                data[{cpu_addr,2'b01}] <= cpu_data_i[15:8];
-                            if(cpu_be_n[2] == 1'b0)
-                                data[{cpu_addr,2'b10}] <= cpu_data_i[23:16];
-                            if(cpu_be_n[3] == 1'b0)
-                                data[{cpu_addr,2'b11}] <= cpu_data_i[31:24];
-                            if(router_addr == {cpu_addr,2'b00} && cpu_be_n[0] == 1'b0)
-                                router_data_o <= cpu_data_i[7:0];
-                            else if(router_addr == {cpu_addr,2'b01} && cpu_be_n[1] == 1'b0)
-                                router_data_o <= cpu_data_i[15:8];
-                            else if(router_addr == {cpu_addr,2'b10} && cpu_be_n[2] == 1'b0)
-                                router_data_o <= cpu_data_i[23:16];
-                            else if(router_addr == {cpu_addr,2'b11} && cpu_be_n[3] == 1'b0)
-                                router_data_o <= cpu_data_i[31:24];
-                        end else begin
-                            router_data_o <= data[router_addr];
-                        end
-                    end
-                    2'b00:begin
-                        if(data[511] != 8'b00000000) begin
-                            data[router_addr] <= router_data_i;
-                        end else begin
-                            if(cpu_be_n[0] == 1'b0)
-                                data[{cpu_addr,2'b00}] <= cpu_data_i[7:0];
-                            if(cpu_be_n[1] == 1'b0)
-                                data[{cpu_addr,2'b01}] <= cpu_data_i[15:8];
-                            if(cpu_be_n[2] == 1'b0)
-                                data[{cpu_addr,2'b10}] <= cpu_data_i[23:16];
-                            if(cpu_be_n[3] == 1'b0)
-                                data[{cpu_addr,2'b11}] <= cpu_data_i[31:24];
-                        end
-                    end
-                endcase
-
+                web <= 4'b0001;
+                router_data_o <= doutb[7:0];
             end
-        endcase    
+            2'b01:begin
+                web <= 4'b0010;
+                router_data_o <= doutb[15:8];
+            end
+            2'b10:begin
+                web <= 4'b0100;
+                router_data_o <= doutb[23:16];
+            end
+            2'b11:begin
+                web <= 4'b1000;
+                router_data_o <= doutb[31:24];
+            end 
+        endcase
     end
 end
+
+xpm_memory_tdpram #(
+    // A for cpu B for router
+    .ADDR_WIDTH_A(7),
+    .WRITE_DATA_WIDTH_A(32),
+    .BYTE_WRITE_WIDTH_A(8),
+    .READ_DATA_WIDTH_A(32),
+    .READ_LATENCY_A(0),
+    .ADDR_WIDTH_B(7),
+    .WRITE_DATA_WIDTH_B(32),
+    .BYTE_WRITE_WIDTH_B(8),
+    .READ_DATA_WIDTH_B(32),
+    .READ_LATENCY_B(0),
+    .MEMORY_SIZE(32*128),
+    .CLOCKING_MODE("independent_clock")
+) xpm_memory_tdpram0 (
+    .clka(cpu_clk),
+    .rsta(cpu_rst),
+    .ena(cpu_ce_n),
+    .addra(cpu_addr),
+    .dina(cpu_data_i),
+    .douta(cpu_data_o),
+    .wea(cpu_we_n),
+
+    .clkb(router_clk),
+    .rstb(router_rst),
+    .enb(router_ce_n),
+    .addrb(router_addr[8:2]),
+    .dinb({router_data_i,router_data_i,router_data_i,router_data_i}),
+    .doutb(doutb),
+    .web(web)
+);
+
+//当data[511]不为0时表示已经有了发送帧，此时cpu不能进行写操作
+//data[508-510] 表示帧的长度 单位bytes 小端序
+//当data[511] == 8'b00000000时表示还没有发送的帧，此时路由器不能进行写操作
 
 endmodule

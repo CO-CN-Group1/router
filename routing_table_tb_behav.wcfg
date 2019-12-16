@@ -3,97 +3,97 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="tb_behav.wdb" id="1">
+      <db_ref path="xpm_tb_behav.wdb" id="1">
          <top_modules>
             <top_module name="glbl" />
-            <top_module name="tb" />
+            <top_module name="xpm_tb" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="795000001fs"></ZoomEndTime>
-      <Cursor1Time time="0fs"></Cursor1Time>
+      <ZoomStartTime time="42191667fs"></ZoomStartTime>
+      <ZoomEndTime time="101041668fs"></ZoomEndTime>
+      <Cursor1Time time="52000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="231"></NameColumnWidth>
-      <ValueColumnWidth column_width="130"></ValueColumnWidth>
+      <ValueColumnWidth column_width="115"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="19" />
-   <wvobject fp_name="/tb/rgmii/clk_125M" type="logic">
-      <obj_property name="ElementShortName">clk_125M</obj_property>
-      <obj_property name="ObjectShortName">clk_125M</obj_property>
+   <wvobject fp_name="/xpm_tb/clk_11M0592" type="logic">
+      <obj_property name="ElementShortName">clk_11M0592</obj_property>
+      <obj_property name="ObjectShortName">clk_11M0592</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/clk_125M_90deg" type="logic">
+   <wvobject fp_name="/xpm_tb/clk_125M_90deg" type="logic">
       <obj_property name="ElementShortName">clk_125M_90deg</obj_property>
       <obj_property name="ObjectShortName">clk_125M_90deg</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/rgmii_rd" type="array">
-      <obj_property name="ElementShortName">rgmii_rd[3:0]</obj_property>
-      <obj_property name="ObjectShortName">rgmii_rd[3:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/rgmii_rx_ctl" type="logic">
-      <obj_property name="ElementShortName">rgmii_rx_ctl</obj_property>
-      <obj_property name="ObjectShortName">rgmii_rx_ctl</obj_property>
+   <wvobject fp_name="/xpm_tb/rsta" type="logic">
+      <obj_property name="ElementShortName">rsta</obj_property>
+      <obj_property name="ObjectShortName">rsta</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/rgmii_rxc" type="logic">
-      <obj_property name="ElementShortName">rgmii_rxc</obj_property>
-      <obj_property name="ObjectShortName">rgmii_rxc</obj_property>
+   <wvobject fp_name="/xpm_tb/rstb" type="logic">
+      <obj_property name="ElementShortName">rstb</obj_property>
+      <obj_property name="ObjectShortName">rstb</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/packet_clk" type="logic">
-      <obj_property name="ElementShortName">packet_clk</obj_property>
-      <obj_property name="ObjectShortName">packet_clk</obj_property>
+   <wvobject fp_name="/xpm_tb/ena" type="logic">
+      <obj_property name="ElementShortName">ena</obj_property>
+      <obj_property name="ObjectShortName">ena</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/trans" type="logic">
-      <obj_property name="ElementShortName">trans</obj_property>
-      <obj_property name="ObjectShortName">trans</obj_property>
+   <wvobject fp_name="/xpm_tb/enb" type="logic">
+      <obj_property name="ElementShortName">enb</obj_property>
+      <obj_property name="ObjectShortName">enb</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/frame_index" type="array">
-      <obj_property name="ElementShortName">frame_index[7:0]</obj_property>
-      <obj_property name="ObjectShortName">frame_index[7:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/clk_50M" type="logic">
+      <obj_property name="ElementShortName">clk_50M</obj_property>
+      <obj_property name="ObjectShortName">clk_50M</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/data1" type="array">
-      <obj_property name="ElementShortName">data1[3:0]</obj_property>
-      <obj_property name="ObjectShortName">data1[3:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/wea" type="array">
+      <obj_property name="ElementShortName">wea[3:0]</obj_property>
+      <obj_property name="ObjectShortName">wea[3:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/data2" type="array">
-      <obj_property name="ElementShortName">data2[3:0]</obj_property>
-      <obj_property name="ObjectShortName">data2[3:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/addra" type="array">
+      <obj_property name="ElementShortName">addra[6:0]</obj_property>
+      <obj_property name="ObjectShortName">addra[6:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/buffer" type="array">
-      <obj_property name="ElementShortName">buffer[15999:0]</obj_property>
-      <obj_property name="ObjectShortName">buffer[15999:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/dina" type="array">
+      <obj_property name="ElementShortName">dina[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dina[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/count" type="array">
-      <obj_property name="ElementShortName">count[15:0]</obj_property>
-      <obj_property name="ObjectShortName">count[15:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/douta" type="array">
+      <obj_property name="ElementShortName">douta[31:0]</obj_property>
+      <obj_property name="ObjectShortName">douta[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/frame_size" type="array">
-      <obj_property name="ElementShortName">frame_size[99:0][15:0]</obj_property>
-      <obj_property name="ObjectShortName">frame_size[99:0][15:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/clk_125M" type="logic">
+      <obj_property name="ElementShortName">clk_125M</obj_property>
+      <obj_property name="ObjectShortName">clk_125M</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/fd" type="array">
-      <obj_property name="ElementShortName">fd[31:0]</obj_property>
-      <obj_property name="ObjectShortName">fd[31:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/web" type="array">
+      <obj_property name="ElementShortName">web[3:0]</obj_property>
+      <obj_property name="ObjectShortName">web[3:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/index" type="array">
-      <obj_property name="ElementShortName">index[31:0]</obj_property>
-      <obj_property name="ObjectShortName">index[31:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/addrb" type="array">
+      <obj_property name="ElementShortName">addrb[6:0]</obj_property>
+      <obj_property name="ObjectShortName">addrb[6:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/res" type="array">
-      <obj_property name="ElementShortName">res[31:0]</obj_property>
-      <obj_property name="ObjectShortName">res[31:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/dinb" type="array">
+      <obj_property name="ElementShortName">dinb[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dinb[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/frame_count" type="array">
-      <obj_property name="ElementShortName">frame_count[31:0]</obj_property>
-      <obj_property name="ObjectShortName">frame_count[31:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/doutb" type="array">
+      <obj_property name="ElementShortName">doutb[31:0]</obj_property>
+      <obj_property name="ObjectShortName">doutb[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/BUFFER_SIZE" type="array">
-      <obj_property name="ElementShortName">BUFFER_SIZE[31:0]</obj_property>
-      <obj_property name="ObjectShortName">BUFFER_SIZE[31:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/dataGen" type="array">
+      <obj_property name="ElementShortName">dataGen[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dataGen[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/rgmii/FRAME_COUNT" type="array">
-      <obj_property name="ElementShortName">FRAME_COUNT[31:0]</obj_property>
-      <obj_property name="ObjectShortName">FRAME_COUNT[31:0]</obj_property>
+   <wvobject fp_name="/xpm_tb/addrGen" type="array">
+      <obj_property name="ElementShortName">addrGen[31:0]</obj_property>
+      <obj_property name="ObjectShortName">addrGen[31:0]</obj_property>
    </wvobject>
 </wave_config>

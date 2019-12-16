@@ -530,27 +530,27 @@ mips_cpu mips_cpu_inst(
 );
 
 reg[6:0] receiver_cpu_addr;
-reg[3:0] receiver_cpu_be_n;
 reg receiver_cpu_ce_n;
-reg receiver_cpu_we_n;
+reg[3:0] receiver_cpu_we_n;
 wire[31:0] receiver_cpu_data_o;
 
 reg[6:0] sender_cpu_addr;
-reg[3:0] sender_cpu_be_n;
 reg sender_cpu_ce_n;
-reg sender_cpu_we_n;
+reg [3:0]sender_cpu_we_n;
 wire[31:0] sender_cpu_data_o;
 
 
 receiver_mem receiver_mem0(
-    .rst(~locked),
+    .cpu_rst(~locked),
+    .cpu_clk(clk_20M),
     .cpu_data_i(openmips_mem_data_o),
     .cpu_data_o(receiver_cpu_data_o),
     .cpu_addr(receiver_cpu_addr),
-    .cpu_be_n(receiver_cpu_be_n),
     .cpu_ce_n(receiver_cpu_ce_n),
     .cpu_we_n(receiver_cpu_we_n),
     
+    .router_rst(~locked),
+    .router_clk(clk_125M),
     .router_data_i(receiver_router_data_o),
     .router_data_o(receiver_router_data_i),
     .router_addr(receiver_router_addr),
@@ -559,14 +559,16 @@ receiver_mem receiver_mem0(
 );
 
 sender_mem sender_mem0(
-    .rst(~locked),
+    .cpu_rst(~locked),
+    .cpu_clk(clk_20M),
     .cpu_data_i(openmips_mem_data_o),
     .cpu_data_o(sender_cpu_data_o),
     .cpu_addr(sender_cpu_addr),
-    .cpu_be_n(sender_cpu_be_n),
     .cpu_ce_n(sender_cpu_ce_n),
     .cpu_we_n(sender_cpu_we_n),
     
+    .router_rst(~locked),
+    .router_clk(clk_125M),
     .router_data_i(sender_router_data_o),
     .router_data_o(sender_router_data_i),
     .router_addr(sender_router_addr),
@@ -605,15 +607,14 @@ always@(*)begin
         rom_addr <= 12'b0;
         openmips_if_data_i <= 32'b0;
         openmips_mem_data_i <= 32'b0;
+        
         receiver_cpu_addr <= 7'b0000000;
-        receiver_cpu_be_n <= 4'b1111;
-        receiver_cpu_ce_n <= 1'b1;
-        receiver_cpu_we_n <= 1'b1;
+        receiver_cpu_we_n <= 4'b0000;
+        receiver_cpu_ce_n <= 1'b0;
 
         sender_cpu_addr <= 7'b0000000;
-        sender_cpu_be_n <= 4'b1111;
-        sender_cpu_ce_n <= 1'b1;
-        sender_cpu_we_n <= 1'b1;
+        sender_cpu_we_n <= 4'b0000;
+        sender_cpu_ce_n <= 1'b0;
 
         router_table_os_addr <= 16'b0;
         router_table_os_we <= 8'b0;
@@ -644,16 +645,14 @@ always@(*)begin
         uart_re_o <= 1'b1;
         openmips_if_data_i <= 32'b0;
         openmips_mem_data_i <= 32'b0;
+        
         receiver_cpu_addr <= 7'b0000000;
-        receiver_cpu_be_n <= 4'b1111;
-        receiver_cpu_ce_n <= 1'b1;
-        receiver_cpu_we_n <= 1'b1;
+        receiver_cpu_we_n <= 4'b0000;
+        receiver_cpu_ce_n <= 1'b0;
 
         sender_cpu_addr <= 7'b0000000;
-        sender_cpu_be_n <= 4'b1111;
-        sender_cpu_ce_n <= 1'b1;
-        sender_cpu_we_n <= 1'b1;
-
+        sender_cpu_we_n <= 4'b0000;
+        sender_cpu_ce_n <= 1'b0;
         
         router_table_os_addr <= 16'b0;
         router_table_os_we <= 8'b0;
@@ -713,16 +712,14 @@ always@(*)begin
                 openmips_mem_data_i <= rom_data; 
             end else if(openmips_mem_receiver_mem_ce_o) begin
                 receiver_cpu_addr <= openmips_mem_addr_o[8:2];
-                receiver_cpu_be_n <= ~openmips_mem_sel_o;
-                receiver_cpu_ce_n <= 1'b0;
-                receiver_cpu_we_n <= ~openmips_mem_we_o;
+                receiver_cpu_we_n <= openmips_mem_sel_o;
+                receiver_cpu_ce_n <= 1'b1;
                 if(!openmips_mem_we_o)
                     openmips_mem_data_i<= receiver_cpu_data_o;
             end else if(openmips_mem_sender_mem_ce_o) begin
                 sender_cpu_addr <= openmips_mem_addr_o[8:2];
-                sender_cpu_be_n <= ~openmips_mem_sel_o;
-                sender_cpu_ce_n <= 1'b0;
-                sender_cpu_we_n <= ~openmips_mem_we_o;
+                sender_cpu_we_n <= openmips_mem_sel_o;
+                sender_cpu_ce_n <= 1'b1;
                 if(!openmips_mem_we_o)
                     openmips_mem_data_i<= sender_cpu_data_o;
             end else if(openmips_mem_router_table_ce_o) begin
