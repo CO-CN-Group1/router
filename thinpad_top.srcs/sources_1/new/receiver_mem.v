@@ -39,19 +39,19 @@ always @(*) begin
     end else begin
         case(router_addr[1:0])
             2'b00:begin
-                web <= 4'b0001;
+                web <= {3'b000,router_we_n};
                 router_data_o <= doutb[7:0];
             end
             2'b01:begin
-                web <= 4'b0010;
+                web <= {2'b00,router_we_n,1'b0};
                 router_data_o <= doutb[15:8];
             end
             2'b10:begin
-                web <= 4'b0100;
+                web <= {1'b00,router_we_n,2'b0};
                 router_data_o <= doutb[23:16];
             end
             2'b11:begin
-                web <= 4'b1000;
+                web <= {router_we_n,3'b0};
                 router_data_o <= doutb[31:24];
             end 
         endcase
@@ -65,12 +65,12 @@ xpm_memory_tdpram #(
     .WRITE_DATA_WIDTH_A(32),
     .BYTE_WRITE_WIDTH_A(8),
     .READ_DATA_WIDTH_A(32),
-    .READ_LATENCY_A(0),
+    .READ_LATENCY_A(1),
     .ADDR_WIDTH_B(7),
     .WRITE_DATA_WIDTH_B(32),
     .BYTE_WRITE_WIDTH_B(8),
     .READ_DATA_WIDTH_B(32),
-    .READ_LATENCY_B(0),
+    .READ_LATENCY_B(1),
     .MEMORY_SIZE(32*128),
     .CLOCKING_MODE("independent_clock")
 ) xpm_memory_tdpram0 (

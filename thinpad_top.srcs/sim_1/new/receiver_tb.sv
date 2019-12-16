@@ -98,7 +98,7 @@ localparam[1:0]
 logic[1:0] router_state = ROUTER_STATE_IDLE;
 
 integer router_length,router_current,data_gen;
-
+integer timer_cnt;
 always @(posedge clk_125M)begin
     if(rst)begin
         router_state <= ROUTER_STATE_IDLE;
@@ -108,11 +108,12 @@ always @(posedge clk_125M)begin
         router_ce_n <= 0;
         router_we_n <= 0;
         router_data_i <= 0;
+        timer_cnt <= 0;
     end else begin
         router_ce_n <= 1;
         case(router_state)
             ROUTER_STATE_IDLE:begin
-                if(router_addr == 9'b111111111 && router_data_o == 8'b00000000 && router_we_n == 1'b0) begin
+                if(router_addr == 9'b111111111 && router_data_o == 8'b00000000 && router_we_n == 1'b0 && timer_cnt >=2) begin
                     router_addr <= 0;
                     router_we_n <= 1;
                     router_data_i <= data_gen[7:0];
@@ -121,6 +122,7 @@ always @(posedge clk_125M)begin
                 end else begin
                     router_addr <= 9'b111111111;
                     router_we_n <= 0;
+                    timer_cnt <= timer_cnt + 1;
                 end
             end
             ROUTER_STATE_WRITE:begin
@@ -143,6 +145,7 @@ always @(posedge clk_125M)begin
                 router_we_n <= 1;
                 router_data_i <= 8'b11111111;
                 router_addr <= 9'b111111111;
+                timer_cnt <= 0;
             end
         endcase 
     end
