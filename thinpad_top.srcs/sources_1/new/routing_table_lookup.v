@@ -17,8 +17,8 @@ module routing_table_lookup #
     input wire [DATA_WIDTH-1:0] receiver_data_i,
     output reg [DATA_WIDTH-1:0] receiver_data_o,
     output reg [8:0] receiver_addr,
-    output reg receiver_ce,
-    output reg receiver_we,
+    output wire receiver_cen,
+    output wire receiver_wen,
 
     output wire [DATA_WIDTH-1:0]    tx_axis_tdata,
     output reg                      tx_axis_tvalid,
@@ -28,8 +28,8 @@ module routing_table_lookup #
     input wire [DATA_WIDTH-1:0] sender_data_i,
     output reg [DATA_WIDTH-1:0] sender_data_o,
     output reg [8:0] sender_addr,
-    output reg sender_ce,
-    output reg sender_we,
+    output wire sender_cen,
+    output wire sender_wen,
 
     input wire router_table_os_clk,
     input wire[15:0] router_table_os_addr,
@@ -41,7 +41,11 @@ module routing_table_lookup #
 
     output reg [15:0] led_out
 );
-
+reg sender_ce,sender_we,receiver_ce,receiver_we;
+assign receiver_cen=!receiver_ce;
+assign receiver_wen=!receiver_we;
+assign sender_cen=!sender_ce;
+assign sender_wen=!sender_we; 
 
 
 reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
