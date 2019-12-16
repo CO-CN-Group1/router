@@ -213,8 +213,7 @@ always @(posedge clk) begin
                         lookup_mac <= 48'h0800273f739f;
                         lookup_port <= 1;
                     end
-                    default:begin
-                        
+                    default:begin           
                         lookup_mac_not_found <= 1;
                         lookup_mac <= 0;
                         lookup_port <= 0;
