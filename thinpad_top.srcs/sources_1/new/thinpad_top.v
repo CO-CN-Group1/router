@@ -463,8 +463,8 @@ routing_table_lookup lookup_inst(
     .receiver_data_i(receiver_router_data_i),
     .receiver_data_o(receiver_router_data_o),
     .receiver_addr(receiver_router_addr),
-    .receiver_ce(receiver_router_ce_n),
-    .receiver_we(receiver_router_we_n),
+    .receiver_cen(receiver_router_ce_n),
+    .receiver_wen(receiver_router_we_n),
 
 
     // data to the TX data path
@@ -478,8 +478,8 @@ routing_table_lookup lookup_inst(
     .sender_data_i(sender_router_data_i),
     .sender_data_o(sender_router_data_o),
     .sender_addr(sender_router_addr),
-    .sender_ce(sender_router_ce_n),
-    .sender_we(sender_router_we_n),
+    .sender_cen(sender_router_ce_n),
+    .sender_wen(sender_router_we_n),
 
     .router_table_os_clk(clk_20M),
     .router_table_os_rst(~locked),
