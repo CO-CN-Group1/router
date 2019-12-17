@@ -51,7 +51,7 @@ xpm_memory_tdpram #(
     .WRITE_DATA_WIDTH_B(64),
     .BYTE_WRITE_WIDTH_B(64),
     .READ_DATA_WIDTH_B(64),
-    .READ_LATENCY_B(0),
+    .READ_LATENCY_B(1),
     .MEMORY_SIZE(2048*32*64),
     .CLOCKING_MODE("independent_clock")
 ) xpm_memory_tdpram_data (
