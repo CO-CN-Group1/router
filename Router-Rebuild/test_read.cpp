@@ -1,16 +1,20 @@
 #include <stdint.h>
-#include <stdio.h>
+
 
 
 void write_serial(uint8_t data){
-    auto *ptr = reinterpret_cast<volatile uint8_t *>(((void*)0xBFD003f8));
+    while(1){
+        uint8_t *pt = (uint8_t*)0xbfd003fc;
+        if((*pt))break;
+    }
+    uint8_t *ptr = (uint8_t*)0xbfd003f8;
     *ptr = data;
 }
 int putchar(int c)
 {
 	write_serial((uint8_t) c);
 	return c;
-}
+}/*
 int putstring(const char *s)
 {
     char c;
@@ -49,10 +53,11 @@ int printbase(long v,int w,int base,int sign)
 		putchar((c<=9)?c+'0':c-0xa+'a');
 	}
 	return 0;
-}
+}*/
+/*
 int printf(const char *fmt, ...)
 {
-	/*int i;
+	int i;
 	char c;
 	void **arg;
 	void *ap;
@@ -133,12 +138,16 @@ int printf(const char *fmt, ...)
 			putchar(c);
 		}
 	}
-	return 0;*/
-}
+	return 0;
+}*/
 
 
 int main(){
-    volatile uint8_t* hastoRead;
+    putchar('c');
+    /*while(1){
+        putchar('c');
+    }*/
+    /*volatile uint8_t* hastoRead;
     volatile uint8_t *c,*d,*e;
     hastoRead = (uint8_t*)0xbb0001ff;
     while(1){
@@ -150,6 +159,6 @@ int main(){
 
         (*hastoRead) = 0;
         putchar('c');
-    }
+    }*/
     return 0;
 }

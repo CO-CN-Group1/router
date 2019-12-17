@@ -1,6 +1,6 @@
 SECTIONS {
-    . = 0xbfc00000;
-    .text 0xbfc00000 : {
+    . = 0x80000000;
+    .text 0x80000000 : {
         *(.text.init)
         *(.text)
     }
