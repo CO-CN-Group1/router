@@ -77,7 +77,8 @@ reg[31:0] dest_ip_cache;
 localparam[1:0]
     STATE_IDLE = 0,
     STATE_WAIT = 1, // cpu正在修改路由�???
-    STATE_SEARCH = 2;
+    STATE_SEARCH1 = 2, // 64 个周期做查表，输出位置
+    STATE_SEARCH2 = 3; // 得到数据并找到下一个位置
 
 reg[1:0] state = STATE_IDLE;
 reg[31:0] ans;
@@ -115,7 +116,7 @@ always @(posedge clk) begin
                     if(lookup_ready && dest_ip_valid) begin
                         dest_ip_cache <= dest_ip;
                         lookup_ready <= 0;
-                        state <= STATE_SEARCH;
+                        state <= STATE_SEARCH1;
                         current <= 1;
                         ans <= 0;
                         pos <= 31;
@@ -141,7 +142,7 @@ always @(posedge clk) begin
                         nexthop_valid <= 0;
                         lookup_ready <= 1;
                     end else begin
-                        state <= STATE_SEARCH;
+                        state <= STATE_SEARCH1;
                         current <= 1;
                         ans <= 0;
                         pos <= 31;
@@ -152,7 +153,7 @@ always @(posedge clk) begin
                     end
                 end
             end
-            STATE_SEARCH:begin
+            STATE_SEARCH1:begin
                 if(locked_by_cpu) begin
                     state <= STATE_WAIT;
                     nexthop <= 0;
@@ -172,20 +173,33 @@ always @(posedge clk) begin
                         state <= STATE_IDLE;
                         dest_ip_cache <= 0;
                     end else begin
-                        if(dout[31:0]!=0)
-                            ans <= dout[31:0];
-                        if(pos!=-1)begin
-                            if(dest_ip_cache[pos] == 0)begin
-                                current <= dout[47:32];
-                                pos <= pos-1;
-                            end else begin
-                                current <= dout[63:48];
-                                pos <= pos-1;
-                            end
-                        end else begin
-                            current <= 0;
-                        end
+                        state <= STATE_SEARCH2;
                     end
+                end
+            end
+            STATE_SEARCH2:begin
+                if(locked_by_cpu) begin
+                    state <= STATE_WAIT;
+                    nexthop <= 0;
+                    nexthop_not_found <= 0;
+                    nexthop_valid <= 0;
+                    lookup_ready <= 0;
+                end else begin
+                    lookup_ready <= 0;
+                    if(dout[31:0]!=0)
+                        ans <= dout[31:0];
+                    if(pos!=-1)begin
+                        if(dest_ip_cache[pos] == 0)begin
+                            current <= dout[47:32];
+                            pos <= pos-1;
+                        end else begin
+                            current <= dout[63:48];
+                            pos <= pos-1;
+                        end
+                    end else begin
+                        current <= 0;
+                    end
+                    state <= STATE_SEARCH1;
                 end
             end
         endcase
