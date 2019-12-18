@@ -308,7 +308,7 @@ always @(posedge clk or posedge rst)begin
                 sender_addr<=9'd511;
                 sender_ce<=1'b0;
                 sender_we<=1'b1;
-                if (1==0 && data[16]==8'h08 && data[17]==8'h06) begin
+                if (data[16]==8'h08 && data[17]==8'h06) begin
                     receiver_addr<=9'd511;
                     receiver_ce<=1'b0;
                     receiver_we<=1'b1;
@@ -318,9 +318,9 @@ always @(posedge clk or posedge rst)begin
                     insert_mac<={data[6],data[7],data[8],data[9],data[10],data[11]};
                     insert_port<={data[14],data[15]};
                 end
-                else if (1==1 || data[16]==8'h08 && data[17]==8'h00) begin
-                    if (1==1 || {data[34],data[35],data[36],data[37]}==my_ip[data[15]]) begin
-                        if (1==0 && receiver_data_i!=8'b00000000) begin
+                else if (data[16]==8'h08 && data[17]==8'h00) begin
+                    if ({data[34],data[35],data[36],data[37]}==my_ip[data[15]]) begin
+                        if (receiver_data_i!=8'b00000000) begin
                             receiver_addr<=9'd511;
                             receiver_ce<=1'b0;
                             receiver_we<=1'b1;
