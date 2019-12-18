@@ -1,5 +1,29 @@
 #include <stdint.h>
-#include <stdio.h>
+void write_serial(uint8_t data){
+    while(1){
+        uint8_t *pt = (uint8_t*)0xBFD003FC;
+        if((*pt)&0x0001)break;
+    }
+    uint8_t *ptr = (uint8_t*)0xBFD003F8;
+    *ptr = data;
+}
+int putchar(int c)
+{
+	write_serial((uint8_t) c);
+	return c;
+}
+int putstring(const char *s)
+{
+    char c;
+    while ((c = *s))
+    {
+        if (c == '\n')
+            putchar('\r');
+        putchar(c);
+        s++;
+    }
+    return 0;
+}
 
 uint8_t packet[]={
     0x80,0x00,0x27,0x3f,0x73,0x9f,0x00,0xcd,0xef,0xab,0xcd,0xef,0x80,0x00,0x00,0x01,
@@ -9,6 +33,7 @@ uint8_t packet[]={
 int main(){
     volatile uint8_t* hastoWrite;
     volatile uint8_t *c,*d,*e,*f;
+    putstring("loaded write\n");
     hastoWrite = (uint8_t*)0xbc0001ff;
     while(1){
         while((*hastoWrite)==0xff){
@@ -22,7 +47,7 @@ int main(){
         f = (uint8_t*)0xbc000000;
         for(uint8_t i=0;i<42;i++,f+=1)*f=packet[i];
         (*hastoWrite) = 0xff;
-        //printf("has packet");
+        putstring("has packet\n");
     }
     return 0;
 }

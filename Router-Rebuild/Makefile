@@ -11,7 +11,7 @@ all: $(DATA)
 main.cpp.o: main.cpp
 	$(TARGET)-gcc -c $^ -EL -o $@ -ffreestanding -mips32r2
 
-main.o: main.cpp.o boot.lds
+main.o: main.cpp.o test_read.s.o boot.lds
 	$(TARGET)-ld -EL $^ -T boot.lds -o $@
 
 test_read.cpp.o: test_read.cpp
@@ -23,7 +23,7 @@ test_read.o: test_read.cpp.o test_read.s.o boot.lds
 test_write.cpp.o: test_write.cpp
 	$(TARGET)-gcc -c $^ -EL -o $@ -ffreestanding -mips32r2
 
-test_write.o: test_write.cpp.o boot.lds
+test_write.o: test_write.cpp.o test_read.s.o boot.lds
 	$(TARGET)-ld -EL $^ -T boot.lds -o $@
 
 %.s.o: %.s
