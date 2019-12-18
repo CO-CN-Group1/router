@@ -85,8 +85,7 @@ xpm_memory_tdpram #(
     .addrb(router_addr[8:2]),
     .dinb({router_data_i,router_data_i,router_data_i,router_data_i}),
     .doutb(doutb),
-    //.web(web)
-    .web(4'b0000)
+    .web(web)
 );
 
 //当data[511]不为0时表示已经有了发送帧，此时cpu不能进行写操作

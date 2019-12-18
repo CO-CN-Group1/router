@@ -727,9 +727,9 @@ always@(*)begin
                 router_table_os_addr <= openmips_mem_addr_o[16:1];
                 if(openmips_mem_we_o) begin
                     if(openmips_mem_addr_o[0])begin
-                        router_table_os_we <= 8'b11110000;
+                        router_table_os_we <= {openmips_mem_sel_o, 4'b0000};
                     end else begin
-                        router_table_os_we <= 8'b00001111;
+                        router_table_os_we <= {4'b0000,openmips_mem_sel_o;};
                     end
                 end else begin
                     if(openmips_mem_addr_o[0])begin
