@@ -119,7 +119,7 @@ always@(*)begin
                 mem_ce_o <= 1'b1;
                 case(physical_addr[1:0])
                     2'b11:begin
-                        wdata_o <= {{24{mem_data_o[31]}}, mem_data_i[31:24]};
+                        wdata_o <= {{24{mem_data_i[31]}}, mem_data_i[31:24]};
                         mem_sel_o <= 4'b1000;
                     end
                     2'b10:begin
