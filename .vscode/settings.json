@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "xstring": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "cstddef": "cpp"
     }
 }

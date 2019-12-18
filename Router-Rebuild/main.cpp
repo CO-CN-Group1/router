@@ -4,6 +4,59 @@
 #include <stdlib.h>
 #include <string.h>
 
+void write_serial(uint8_t data){
+    while(1){
+        uint8_t *pt = (uint8_t*)0xBFD003FC;
+        if((*pt)&0x0001)break;
+    }
+    uint8_t *ptr = (uint8_t*)0xBFD003F8;
+    *ptr = data;
+}
+int putchar(int c)
+{
+	write_serial((uint8_t) c);
+	return c;
+}
+int putstring(const char *s)
+{
+    char c;
+    while ((c = *s))
+    {
+        if (c == '\n')
+            putchar('\r');
+        putchar(c);
+        s++;
+    }
+    return 0;
+}
+int printbase(long v,int w,int base,int sign)
+{
+	int i,j;
+	int c;
+	char buf[64];
+	unsigned long value;
+	if(sign && v<0)
+	{
+	value = -v;
+	putchar('-');
+	}
+	else value=v;
+
+	for(i=0;value;i++)
+	{
+	buf[i]=value%base;
+	value=value/base;
+	}
+#define max(a,b) (((a)>(b))?(a):(b))
+
+	for(j=max(w,i);j>0;j--)
+	{
+		c=j>i?0:buf[j-1];
+		putchar((c<=9)?c+'0':c-0xa+'a');
+	}
+	return 0;
+}
+
 #define N_IFACE_ON_BOARD 4
 typedef uint8_t macaddr_t[6];
 typedef uint32_t in_addr_t;
@@ -160,15 +213,20 @@ void update(bool insert, RoutingTableEntry entry) {
   *(c+5) = 1;
   *(c+6) = 1;
   *(c+7) = 1;
+  putstring("Inserting ");
+  printbase(addr, 8, 16, 0);
+  putchar(' ');
+  printbase(entry.nexthop, 8, 16, 0);
+  putchar('\n');
   if(insert){
-    for (uint32_t i = 0; i < 32; i++){
-      q = (((ii>>1)&addr)>0);
+    for (int i = 0; i < 32; i++){
+      q = (((ii>>i)&addr)>0);
       if(q==0){
-        if(!routersList[p].lson){
+        if(routersList[p].lson==0){
           routersList[p].lson = ++cnt;
           c = (uint8_t*)(0xbd000000+(p<<3)+4);
-          *c = cnt&0xff;
-          *(c+1) = (cnt>>8)&0xff;
+          *c = (cnt&0xff);
+          *(c+1) = ((cnt>>8)&0xff);
           routersList[cnt].lson = 0;
           routersList[cnt].rson = 0;
           if(i == 31){
@@ -184,7 +242,7 @@ void update(bool insert, RoutingTableEntry entry) {
             *(c+3) = ((entry.nexthop>>24)&0xff);
             routersList[cnt].timer = entry.timer;
           }
-          p = cnt;
+          p = cnt;  
         }
         else{
           p = routersList[p].lson;
@@ -246,8 +304,8 @@ void update(bool insert, RoutingTableEntry entry) {
     }
   }
   else{
-    for (uint32_t i = 0; i < 32; i++){
-      q = (((ii>>1)&addr)>0);
+    for (int i = 0; i < 32; i++){
+      q = (((ii>>i)&addr)>0);
       if(q==0){
         if(!routersList[p].lson){
           break;
@@ -303,7 +361,7 @@ bool query(uint32_t addr) {
   int p = 1, q;
   uint32_t ii = 1<<31;
   uint32_t addrx = ((addr&0xff)<<24) + (((addr>>8)&0xff)<<16) + (((addr>>16)&0xff)<<8)+ ((addr>>24)&0xff);
-  for (uint32_t i = 0; i < 32; i++){
+  for (int i = 0; i < 32; i++){
       q = (((ii>>1)&addrx)>0);
       if(q==0){
         p = routersList[p].lson;
@@ -471,6 +529,7 @@ int main(int argc, char *argv[]) {
     return res;
   }
   */
+  putstring("RIP Started\n");
   int res = 1;
   cnt = 1;
   routersList[cnt].lson = 0;
@@ -481,13 +540,19 @@ int main(int argc, char *argv[]) {
   // 10.0.2.0/24 if 1
   // 10.0.3.0/24 if 2
   // 10.0.4.0/24 if 3
-  for (uint32_t i = 0; i < N_IFACE_ON_BOARD; i++) {
+  putstring("Initializing routing table\n");
+  for (int i = 0; i < N_IFACE_ON_BOARD; i++) {
     RoutingTableEntry entry;
     entry.addr = addrs[i] & 0x00FFFFFF; // big endian
     entry.mask = 0x00FFFFFF;        // small endian
     entry.if_index = i + 1;    // small endian
     entry.nexthop = 0;      // big endian, means direct
     update(true, entry);
+  }
+  putstring("Insertion done\n");
+
+  while(1){
+    int i = 1;
   }
 
   uint64_t last_time = 0;

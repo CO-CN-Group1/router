@@ -59,6 +59,7 @@ int main(){
     volatile uint8_t* hastoRead;
     volatile uint8_t *c,*d,*e;
     hastoRead = (uint8_t*)0xbb0001ff;
+    (*hastoRead) = 0xff;
     while(1){
         while((*hastoRead)==0){
         }
