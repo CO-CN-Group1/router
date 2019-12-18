@@ -100,7 +100,8 @@ assign mem_addr_o = reg1_i+{{16{inst_i[15]}}, inst_i[15:0]};
 assign reg2_o = reg2_i;
 assign inst_o = inst_i;
 assign current_inst_address_o = current_inst_address_i;
-assign is_load_o = ((aluop_i == `exe_lb_op) ||  (aluop_i == `exe_lh_op) || (aluop_i == `exe_lw_op));
+assign is_load_o = (aluop_i==`exe_lb_op)||(aluop_i==`exe_lbu_op)||(aluop_i==`exe_lh_op)||(aluop_i==`exe_lhu_op)||(aluop_i==`exe_ll_op)||(aluop_i==`exe_lw_op)||(aluop_i==`exe_lwl_op)||(aluop_i==`exe_lwr_op);
+//((aluop_i == `exe_lb_op) ||  (aluop_i == `exe_lh_op) || (aluop_i == `exe_lw_op));
 
 always@(*)begin
     if(rst == 1'b1)begin

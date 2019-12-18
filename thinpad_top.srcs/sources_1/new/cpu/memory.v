@@ -214,16 +214,16 @@ always@(*)begin
                 mem_sel_o <= 4'b1111;
                 mem_ce_o <= 1'b1;
                 case(physical_addr[1:0])
-                    2'b11:begin
+                    2'b00:begin
                         wdata_o <= mem_data_i[31:0];
                     end
-                    2'b10:begin
+                    2'b01:begin
                         wdata_o <= {mem_data_i[23:0], reg2_i[7:0]};
                     end
-                    2'b01:begin
+                    2'b10:begin
                         wdata_o <= {mem_data_i[15:0], reg2_i[15:0]};
                     end
-                    2'b00:begin
+                    2'b11:begin
                         wdata_o <= {mem_data_i[7:0], reg2_i[23:0]};
                     end
                     default:begin
@@ -237,16 +237,16 @@ always@(*)begin
                 mem_sel_o <= 4'b1111;
                 mem_ce_o <= 1'b1;
                 case(physical_addr[1:0])
-                    2'b11:begin
+                    2'b00:begin
                         wdata_o <= {reg2_i[31:8], mem_data_i[31:24]};
                     end
-                    2'b10:begin
+                    2'b01:begin
                         wdata_o <= {reg2_i[31:16], mem_data_i[31:16]};
                     end
-                    2'b01:begin
+                    2'b10:begin
                         wdata_o <= {reg2_i[31:24], mem_data_i[31:8]};
                     end
-                    2'b00:begin
+                    2'b11:begin
                         wdata_o <= mem_data_i;
                     end
                     default:begin
