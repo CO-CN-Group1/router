@@ -712,10 +712,13 @@ always@(*)begin
                 openmips_mem_data_i <= rom_data; 
             end else if(openmips_mem_receiver_mem_ce_o) begin
                 receiver_cpu_addr <= openmips_mem_addr_o[8:2];
-                receiver_cpu_we_n <= openmips_mem_sel_o;
                 receiver_cpu_ce_n <= 1'b1;
-                if(!openmips_mem_we_o)
+                if(openmips_mem_we_o) begin
+                    receiver_cpu_we_n <= openmips_mem_sel_o;
+                end else begin
                     openmips_mem_data_i<= receiver_cpu_data_o;
+                    receiver_cpu_we_n <=4'b0000;
+                end
             end else if(openmips_mem_sender_mem_ce_o) begin
                 sender_cpu_addr <= openmips_mem_addr_o[8:2];
                 sender_cpu_ce_n <= 1'b1;
