@@ -204,6 +204,7 @@ void update(bool insert, RoutingTableEntry entry) {
   int p = 1, q;
   uint32_t ii = 1<<31;
   uint32_t addr = ((entry.addr&0xff)<<24) + (((entry.addr>>8)&0xff)<<16) + (((entry.addr>>16)&0xff)<<8)+ ((entry.addr>>24)&0xff);
+  uint32_t nxth = ((entry.nexthop&0xff)<<24) + (((entry.nexthop>>8)&0xff)<<16) + (((entry.nexthop>>16)&0xff)<<8)+ ((entry.nexthop>>24)&0xff);
   uint8_t *c = (uint8_t*)(0xbd000000);
   *c = 1;
   *(c+1) = 1;
@@ -216,7 +217,7 @@ void update(bool insert, RoutingTableEntry entry) {
   putstring("Inserting ");
   printbase(addr, 8, 16, 0);
   putchar(' ');
-  printbase(entry.nexthop, 8, 16, 0);
+  printbase(nxth, 8, 16, 0);
   putchar('\n');
   if(insert){
     for (int i = 0; i < 32; i++){
@@ -225,7 +226,7 @@ void update(bool insert, RoutingTableEntry entry) {
         if(routersList[p].lson==0){
           routersList[p].lson = ++cnt;
           c = (uint8_t*)(0xbd000000+(p<<3)+4);
-          *c = (cnt&0xff);
+          *(c) = (cnt&0xff);
           *(c+1) = ((cnt>>8)&0xff);
           routersList[cnt].lson = 0;
           routersList[cnt].rson = 0;
@@ -236,10 +237,10 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].metric = entry.metric;
             routersList[cnt].nexthop = entry.nexthop;
             c = (uint8_t*)(0xbd000000+(cnt<<3));
-            *c = (entry.nexthop&0xff);
-            *(c+1) = ((entry.nexthop>>8)&0xff);
-            *(c+2) = ((entry.nexthop>>16)&0xff);
-            *(c+3) = ((entry.nexthop>>24)&0xff);
+            *c = (nxth&0xff);
+            *(c+1) = ((nxth>>8)&0xff);
+            *(c+2) = ((nxth>>16)&0xff);
+            *(c+3) = ((nxth>>24)&0xff);
             routersList[cnt].timer = entry.timer;
           }
           p = cnt;  
@@ -253,10 +254,10 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].metric = entry.metric;
             routersList[p].nexthop = entry.nexthop;
             c = (uint8_t*)(0xbd000000+(p<<3));
-            *c = (entry.nexthop&0xff);
-            *(c+1) = ((entry.nexthop>>8)&0xff);
-            *(c+2) = ((entry.nexthop>>16)&0xff);
-            *(c+3) = ((entry.nexthop>>24)&0xff);
+            *c = (nxth&0xff);
+            *(c+1) = ((nxth>>8)&0xff);
+            *(c+2) = ((nxth>>16)&0xff);
+            *(c+3) = ((nxth>>24)&0xff);
             routersList[p].timer = entry.timer;
           }
         }
@@ -276,10 +277,10 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].metric = entry.metric;
             routersList[cnt].nexthop = entry.nexthop;
             c = (uint8_t*)(0xbd000000+(cnt<<3));
-            *c = (entry.nexthop&0xff);
-            *(c+1) = ((entry.nexthop>>8)&0xff);
-            *(c+2) = ((entry.nexthop>>16)&0xff);
-            *(c+3) = ((entry.nexthop>>24)&0xff);
+            *c = (nxth&0xff);
+            *(c+1) = ((nxth>>8)&0xff);
+            *(c+2) = ((nxth>>16)&0xff);
+            *(c+3) = ((nxth>>24)&0xff);
             routersList[cnt].timer = entry.timer;
           }
           p = cnt;
@@ -293,10 +294,10 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].metric = entry.metric;
             routersList[p].nexthop = entry.nexthop;
             c = (uint8_t*)(0xbd000000+(p<<3));
-            *c = (entry.nexthop&0xff);
-            *(c+1) = ((entry.nexthop>>8)&0xff);
-            *(c+2) = ((entry.nexthop>>16)&0xff);
-            *(c+3) = ((entry.nexthop>>24)&0xff);
+            *c = (nxth&0xff);
+            *(c+1) = ((nxth>>8)&0xff);
+            *(c+2) = ((nxth>>16)&0xff);
+            *(c+3) = ((nxth>>24)&0xff);
             routersList[p].timer = entry.timer;
           }
         }
@@ -541,14 +542,25 @@ int main(int argc, char *argv[]) {
   // 10.0.3.0/24 if 2
   // 10.0.4.0/24 if 3
   putstring("Initializing routing table\n");
-  for (int i = 0; i < N_IFACE_ON_BOARD; i++) {
+  /*for (int i = 0; i < N_IFACE_ON_BOARD; i++) {
     RoutingTableEntry entry;
     entry.addr = addrs[i] & 0x00FFFFFF; // big endian
     entry.mask = 0x00FFFFFF;        // small endian
     entry.if_index = i + 1;    // small endian
     entry.nexthop = 0;      // big endian, means direct
     update(true, entry);
-  }
+  }*/
+  RoutingTableEntry entry;
+  entry.addr = 0x0001000a & 0xFFFFFFFF; // big endian
+  entry.mask = 0xFFFFFFFF;        // small endian
+  entry.if_index = 1;    // small endian
+  entry.nexthop = 0x0201000a;      // big endian, means direct
+  update(true, entry);
+  entry.addr = 0x0002000a & 0xFFFFFFFF; // big endian
+  entry.mask = 0xFFFFFFFF;        // small endian
+  entry.if_index = 2;    // small endian
+  entry.nexthop = 0x0202000a;      // big endian, means direct
+  update(true, entry);
   putstring("Insertion done\n");
 
   while(1){

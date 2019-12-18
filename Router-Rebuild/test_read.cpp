@@ -58,17 +58,51 @@ int printbase(long v,int w,int base,int sign)
 int main(){
     volatile uint8_t* hastoRead;
     volatile uint8_t *c,*d,*e;
+    putstring("test read started\n");
     hastoRead = (uint8_t*)0xbb0001ff;
-    (*hastoRead) = 0xff;
-    while(1){
-        while((*hastoRead)==0){
+    (*hastoRead) = 0x44;
+    printbase((*hastoRead), 1, 10, 0);
+    printbase((*hastoRead), 1, 10, 0);
+    /*c = (uint8_t*)0xbb000000;
+    for(int i = 0; i < 10; i++, c=c+1){
+        (*c)=(uint8_t)(10-i);
+    }
+    c = (uint8_t*)0xbb000000;
+    for(int i = 0; i < 10; i++, c=c+1){
+        printbase((*c), 1, 10, 0);
+        putchar(' ');
+    }
+    while(1){}
+    printbase((*hastoRead), 1, 10, 0);
+    putchar('\n');*/
+    
+    while(true){
+        putstring("waiting for a packet, hastoRead=");
+        uint8_t x = *hastoRead;
+        printbase(x, 1, 10, 0);
+        putstring("\n");
+        while(x==(uint8_t)0x0){
+            x = *hastoRead;
         }
+        putstring("got a packet, hastoRead=");
+        x = *hastoRead;
+        printbase(x, 1, 10, 0);
+        putstring("\n");
         c = (uint8_t*)0xbb0001fc;
         d = (uint8_t*)0xbb0001fd;
         e = (uint8_t*)0xbb0001fe;
-
+        uint32_t len = (*c)+(((uint32_t)*d)<<8)+(((uint32_t)*e)<<16);
+        c = (uint8_t*)0xbb000000;
+        for(uint32_t i = 0; i < len; i++, c+=1){
+            x = *c;
+            printbase(x, 2, 16, 0);
+            putstring(" ");
+        }
+        putstring("\nreceived length ");
+        printbase(len, 1, 10, 0);
+        putchar('\n');
         *hastoRead = 0;
-        putchar('c');
+        
     }
     return 0;
 }
