@@ -52,12 +52,12 @@ xpm_memory_tdpram #(
 always @(posedge clk_50M) begin
     if(rsta) begin
         ena <= 1'b0;
-        addra <= 0;
+        addra <= 1;
         dina <= 0;
         wea <= 4'b0;
     end else begin
         ena <= 1'b1;
-        addra <= 0;
+        addra <= 1;
         wea <= 4'b0;
     end
 end

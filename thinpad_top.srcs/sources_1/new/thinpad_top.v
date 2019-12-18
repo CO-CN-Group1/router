@@ -724,15 +724,15 @@ always@(*)begin
                     openmips_mem_data_i<= sender_cpu_data_o;
             end else if(openmips_mem_router_table_ce_o) begin
                 router_table_os_en <= 1'b1;
-                router_table_os_addr <= openmips_mem_addr_o[16:1];
+                router_table_os_addr <= openmips_mem_addr_o[18:3];
                 if(openmips_mem_we_o) begin
-                    if(openmips_mem_addr_o[0])begin
+                    if(openmips_mem_addr_o[2])begin
                         router_table_os_we <= {openmips_mem_sel_o, 4'b0000};
                     end else begin
                         router_table_os_we <= {4'b0000,openmips_mem_sel_o};
                     end
                 end else begin
-                    if(openmips_mem_addr_o[0])begin
+                    if(openmips_mem_addr_o[2])begin
                         router_table_os_we <= 8'b00000000;
                         openmips_mem_data_i <= router_table_os_dout[63:32];
                     end else begin
