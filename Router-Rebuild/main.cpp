@@ -72,10 +72,10 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
         length = *c + ((size_t)(*d)<<4) + ((size_t)(*e)<<8);
         c = (uint8_t*)0xbb000000;
         for(uint32_t i = 0; i < length; i++, c+=1) buffer[i] = *c;
-        memcpy(dst_mac, buffer, sizeof(macaddr_t));
-        memcpy(src_mac, &buffer[6], sizeof(macaddr_t));
+        //memcpy(dst_mac, buffer, sizeof(macaddr_t));
+        //memcpy(src_mac, &buffer[6], sizeof(macaddr_t));
         *if_index = buffer[15];
-        printf("has packet in");
+       // printf("has packet in");
 
         (*hastoRead) = 0;
     }
@@ -84,8 +84,8 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
 
 int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
                      macaddr_t dst_mac) {
-    memcpy(buffer, dst_mac, sizeof(macaddr_t));
-    memcpy(&buffer[6], interface_mac, sizeof(macaddr_t));
+    //memcpy(buffer, dst_mac, sizeof(macaddr_t));
+   // memcpy(&buffer[6], interface_mac, sizeof(macaddr_t));
     // VLAN
     buffer[12] = 0x81;
     buffer[13] = 0x00;
@@ -109,7 +109,7 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
         *e = (uint8_t)((length>>8)&0xff);
         c = (uint8_t*)0xbc000000;
         for (uint32_t i = 0; i < length; i++, c+=1) *c = buffer[i];
-        printf("sent packet");
+        //printf("sent packet");
         (*hastoWrite) = 0xff;
     }
     return 0;
@@ -302,9 +302,9 @@ void update(bool insert, RoutingTableEntry entry) {
 bool query(uint32_t addr) {
   int p = 1, q;
   uint32_t ii = 1<<31;
-  uint32_t addr = ((addr&0xff)<<24) + (((addr>>8)&0xff)<<16) + (((addr>>16)&0xff)<<8)+ ((addr>>24)&0xff);
+  uint32_t addrx = ((addr&0xff)<<24) + (((addr>>8)&0xff)<<16) + (((addr>>16)&0xff)<<8)+ ((addr>>24)&0xff);
   for (uint32_t i = 0; i < 32; i++){
-      q = (((ii>>1)&addr)>0);
+      q = (((ii>>1)&addrx)>0);
       if(q==0){
         p = routersList[p].lson;
         if(!p)return false;
@@ -499,7 +499,7 @@ int main(int argc, char *argv[]) {
       // send complete routing table to every interface
       // ref. RFC2453 3.8
       // multicast MAC for 224.0.0.9 is 01:00:5e:00:00:09
-      printf("30s Timer\n");
+      //printf("30s Timer\n");
       last_time = time;
       // TODO: broadcast everything
       /*
@@ -554,7 +554,7 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
 
     // 1. validate
     if (!validateIPChecksum(packet, res)) {
-      printf("Invalid IP Checksum\n");
+      //printf("Invalid IP Checksum\n");
       continue;
     }
     in_addr_t src_addr, dst_addr;
@@ -564,10 +564,10 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
     // 2. check whether dst is me
     bool dst_is_me = false;
     for (int i = 0; i < N_IFACE_ON_BOARD; i++) {
-      if (memcmp(&dst_addr, &addrs[i], sizeof(in_addr_t)) == 0) {
+      /*if (memcmp(&dst_addr, &addrs[i], sizeof(in_addr_t)) == 0) {
         dst_is_me = true;
         break;
-      }
+      }*/
     }
     // TODO: Handle rip multicast address(224.0.0.9)?
 

@@ -1,20 +1,20 @@
 #include <stdint.h>
 
 
-
+/*
 void write_serial(uint8_t data){
     while(1){
-        uint8_t *pt = (uint8_t*)0xbfd003fc;
-        if((*pt))break;
+        uint8_t *pt = (uint8_t*)0xBFD003FC;
+        if((*pt)&0x0001)break;
     }
-    uint8_t *ptr = (uint8_t*)0xbfd003f8;
+    uint8_t *ptr = (uint8_t*)0xBFD003F8;
     *ptr = data;
 }
 int putchar(int c)
 {
 	write_serial((uint8_t) c);
 	return c;
-}/*
+}*//*
 int putstring(const char *s)
 {
     char c;
@@ -143,11 +143,7 @@ int printf(const char *fmt, ...)
 
 
 int main(){
-    putchar('c');
-    /*while(1){
-        putchar('c');
-    }*/
-    /*volatile uint8_t* hastoRead;
+    volatile uint8_t* hastoRead;
     volatile uint8_t *c,*d,*e;
     hastoRead = (uint8_t*)0xbb0001ff;
     while(1){
@@ -159,6 +155,6 @@ int main(){
 
         (*hastoRead) = 0;
         putchar('c');
-    }*/
+    }
     return 0;
 }

@@ -1,5 +1,5 @@
 TARGET ?= mipsel-linux-gnu
-DATA ?= test_read.coe test_write.coe
+DATA ?= test_read.coe test_write.coe main.coe
 
 # disable builtin rules
 MAKEFLAGS += --no-builtin-rules
@@ -8,14 +8,20 @@ MAKEFLAGS += --no-builtin-rules
 .PHONY: all
 all: $(DATA)
 
-test_read.cpp.o: test_read.cpp
-	$(TARGET)-g++ -c $^ -EL -o $@ -ffreestanding -mips32r2
+main.cpp.o: main.cpp
+	$(TARGET)-gcc -c $^ -EL -o $@ -ffreestanding -mips32r2
 
-test_read.o: test_read.cpp.o boot.lds
+main.o: main.cpp.o boot.lds
+	$(TARGET)-ld -EL $^ -T boot.lds -o $@
+
+test_read.cpp.o: test_read.cpp
+	$(TARGET)-gcc -c $^ -EL -o $@ -ffreestanding -mips32r2
+
+test_read.o: test_read.cpp.o test_read.s.o boot.lds
 	$(TARGET)-ld -EL $^ -T boot.lds -o $@
 
 test_write.cpp.o: test_write.cpp
-	$(TARGET)-g++ -c $^ -EL -o $@ -ffreestanding -mips32r2
+	$(TARGET)-gcc -c $^ -EL -o $@ -ffreestanding -mips32r2
 
 test_write.o: test_write.cpp.o boot.lds
 	$(TARGET)-ld -EL $^ -T boot.lds -o $@
