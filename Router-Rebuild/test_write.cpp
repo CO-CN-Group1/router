@@ -119,16 +119,17 @@ int main(){
         putchar('\n');
         for(int i = 0;i < (int)len; i++, f+=1){
             x = packet[i];
-            *f = (uint8_t)(((uint32_t)i)&0xff);
+            *f = x;
             printbase(*f, 2, 16, 0);
             putstring(" ");
         }
+        (*hastoWrite) = 0xff;
+        /*
         printbase(*(hastoWrite-3), 2, 16, 0);
             printbase(*(hastoWrite-2), 2, 16, 0);
             printbase(*(hastoWrite-1), 2, 16, 0);
             printbase(*hastoWrite, 2, 16, 0);
             putchar('\n');
-        (*hastoWrite) = 0xff;
         printbase(*(hastoWrite-3), 2, 16, 0);
             printbase(*(hastoWrite-2), 2, 16, 0);
             printbase(*(hastoWrite-1), 2, 16, 0);
@@ -141,7 +142,7 @@ int main(){
             printbase(*(hastoWrite-1), 2, 16, 0);
             printbase(*hastoWrite, 2, 16, 0);
             putchar('\n');
-        }
+        }*/
         putstring("\nhas sent an packet\n");
     }
     return 0;
