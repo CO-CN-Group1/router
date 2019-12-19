@@ -244,6 +244,7 @@ always @(posedge clk or posedge rst)begin
             end
             STATE_CPUOUTSLEEP:begin
                 state<=STATE_CPUOUT;
+                sender_addr <= sender_addr +1;
             end
             STATE_CPUOUT:begin
                 receiver_addr<=9'd511;
