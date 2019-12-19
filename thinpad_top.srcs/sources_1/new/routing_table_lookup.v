@@ -25,11 +25,11 @@ module routing_table_lookup #
     output wire                     tx_axis_tlast,
     input  wire                     tx_axis_tready,
 
-    input wire [DATA_WIDTH-1:0] sender_data_i,
-    output reg [DATA_WIDTH-1:0] sender_data_o,
-    output reg [8:0] sender_addr,
+    input wire [DATA_WIDTH*4-1:0] sender_data_i,
+    output reg [DATA_WIDTH*4-1:0] sender_data_o,
+    output reg [6:0] sender_addr,
     output wire sender_cen,
-    output wire sender_wen,
+    output wire [3:0]sender_wen,
 
     input wire router_table_os_clk,
     input wire[15:0] router_table_os_addr,
@@ -41,7 +41,8 @@ module routing_table_lookup #
 
     output reg [15:0] led_out
 );
-reg sender_ce,sender_we,receiver_ce,receiver_we;
+reg sender_ce,receiver_ce,receiver_we;
+reg[3:0] sender_we;
 assign receiver_cen=!receiver_ce;
 assign receiver_wen=!receiver_we;
 assign sender_cen=!sender_ce;
@@ -166,9 +167,9 @@ always @(posedge clk or posedge rst)begin
         //tx_axis_tlast <= 0;
         tx_axis_tvalid <=0;
         //jrx_axis_tready_int <=0;
-        sender_addr<=9'd511;
+        sender_addr<=7'd127;
         sender_ce<=1'b0;
-        sender_we<=1'b1;
+        sender_we<=4'b1111;
         receiver_addr<=9'd511;
         receiver_ce<=1'b0;
         receiver_we<=1'b1;
@@ -182,19 +183,28 @@ always @(posedge clk or posedge rst)begin
                 data_head <= 0;
                 //led_out<=16'h0000;
                 //tx_axis_tlast <=0;
-                if (!(rx_axis_tvalid && rx_axis_tready_int) && sender_data_i!=8'b00000000)begin
-                    //sender_addr<=9'd511;
+                if (!(rx_axis_tvalid && rx_axis_tready_int) && sender_data_i[31:24]!=8'b00000000)begin
+                    //sender_addr<=7'd127;
                     rx_axis_tready_int<=0;
                     data_tail<=0;
+                    cpuoutlen[2]<=sender_data_i[23:16];
+                    cpuoutlen[1]<=sender_data_i[15:8];
+                    cpuoutlen[0]<=sender_data_i[7:0];
+                    state<=STATE_CPUOUT;
+                    /*
                     state<=STATE_CPUOUTLEN;
                     sender_addr<=9'd510;
                     sender_ce<=1'b0;
                     sender_we<=1'b1;
+                    */
+                    sender_addr<=7'd0;
+                    sender_ce<=1'b0;
+                    sender_we<=4'b1111;
                 end
                 else begin
-                    sender_addr<=9'd511;
+                    sender_addr<=7'd127;
                     sender_ce<=1'b0;
-                    sender_we<=1'b1;
+                    sender_we<=4'b1111;
                     rx_axis_tready_int <=1;
                     if(rx_axis_tvalid && rx_axis_tready_int)begin
                         state <= STATE_INPUT;
@@ -235,13 +245,18 @@ always @(posedge clk or posedge rst)begin
                 receiver_addr<=9'd511;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
-                data[data_tail]<=sender_data_i;
-                data_tail<=data_tail+1;
-                if (sender_addr=={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}-1) begin
-                    sender_addr<=9'd511;
+                data[data_tail]<=sender_data_i[7:0];
+                data[data_tail+1]<=sender_data_i[15:8];
+                data[data_tail+2]<=sender_data_i[23:16];
+                data[data_tail+3]<=sender_data_i[31:24];
+                //data_tail<=data_tail+1;
+                data_tail<=data_tail+4;
+                if (data_tail+4>={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}) begin
+                //if (sender_addr=={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}-1) begin
+                    sender_addr<=7'd127;
                     sender_ce<=1'b0;
-                    sender_we<=1'b0;
-                    sender_data_o<=8'b00000000;
+                    sender_we<=4'b0111;
+                    sender_data_o<=32'b00000000111111111111111111111111;
                     state<=STATE_OUTPUT;
                 end
                 else begin
@@ -249,9 +264,9 @@ always @(posedge clk or posedge rst)begin
                 end
             end
             STATE_CPUIN:begin
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 if (receiver_addr+1<data_tail) begin
                     receiver_data_o<=data[receiver_addr+1];
                     receiver_addr<=receiver_addr+1;
@@ -265,9 +280,9 @@ always @(posedge clk or posedge rst)begin
                 end
             end
             STATE_CPUINLEN:begin
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 if (receiver_addr==9'd510) begin
                     receiver_addr<=9'd509;
                     receiver_data_o<=data_tail[15:8];
@@ -286,9 +301,9 @@ always @(posedge clk or posedge rst)begin
                 receiver_addr<=9'd511;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 led_out<=16'h1100;
                 tx_axis_tvalid <=0;
                 if(rx_axis_tvalid && rx_axis_tready_int)begin
@@ -305,9 +320,9 @@ always @(posedge clk or posedge rst)begin
                 end
             end
             STATE_COMPUTE:begin
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 if (data[16]==8'h08 && data[17]==8'h06) begin
                     receiver_addr<=9'd511;
                     receiver_ce<=1'b0;
@@ -359,9 +374,9 @@ always @(posedge clk or posedge rst)begin
                 receiver_addr<=9'd511;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 if (insert_ready) begin
                     insert_valid<=0;
                     if (data[24]==8'h00 && data[25]==8'h01) begin
@@ -383,9 +398,9 @@ always @(posedge clk or posedge rst)begin
                 receiver_addr<=9'd511;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 data[0]<=data[6];
                 data[1]<=data[7];
                 data[2]<=data[8];
@@ -417,9 +432,9 @@ always @(posedge clk or posedge rst)begin
                 receiver_addr<=9'd511;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 if (dest_ip_valid) begin
                     if(lookup_ready)begin
                         dest_ip_valid <= 0;
@@ -439,9 +454,9 @@ always @(posedge clk or posedge rst)begin
                 receiver_addr<=9'd511;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 state<=STATE_ARPQUERY;
                 lookup_valid<=1;
             end
@@ -449,9 +464,9 @@ always @(posedge clk or posedge rst)begin
                 receiver_addr<=9'd511;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 if (lookup_valid) begin
                     if(lookup_ready_arp) begin
                         lookup_valid<=0;
@@ -512,9 +527,9 @@ always @(posedge clk or posedge rst)begin
                 receiver_addr<=9'd511;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
             
                 data[0]<=8'hff;
                 data[1]<=8'hff;
@@ -550,9 +565,9 @@ always @(posedge clk or posedge rst)begin
                 receiver_addr<=9'd511;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
-                sender_addr<=9'd511;
+                sender_addr<=7'd127;
                 sender_ce<=1'b0;
-                sender_we<=1'b1;
+                sender_we<=4'b1111;
                 tx_axis_tvalid<=1;
                 if(tx_axis_tvalid && tx_axis_tready)begin
                     data_head<=data_head+1;
