@@ -43,9 +43,9 @@ module routing_table_lookup #
 );
 reg sender_ce,receiver_ce,receiver_we;
 reg[3:0] sender_we;
-assign receiver_cen=!receiver_ce;
-assign receiver_wen=!receiver_we;
-assign sender_cen=!sender_ce;
+assign receiver_cen=~receiver_ce;
+assign receiver_wen=~receiver_we;
+assign sender_cen=~sender_ce;
 assign sender_wen=~sender_we; 
 
 
@@ -65,7 +65,8 @@ localparam[3:0]
     STATE_CPUOUTLEN=10,
     STATE_CPUOUT=11,
     STATE_CPUIN=12,
-    STATE_CPUINLEN=13;
+    STATE_CPUINLEN=13,
+    STATE_CPUOUTSLEEP=14;
 //(*mark_debug="true"*)reg[3:0] state = STATE_IDLE;
 reg[3:0] state = STATE_IDLE;
 
@@ -190,7 +191,7 @@ always @(posedge clk or posedge rst)begin
                     cpuoutlen[2]<=sender_data_i[23:16];
                     cpuoutlen[1]<=sender_data_i[15:8];
                     cpuoutlen[0]<=sender_data_i[7:0];
-                    state<=STATE_CPUOUT;
+                    state<=STATE_CPUOUTSLEEP;
                     /*
                     state<=STATE_CPUOUTLEN;
                     sender_addr<=9'd510;
@@ -240,6 +241,9 @@ always @(posedge clk or posedge rst)begin
                     data_tail<=0;
                     state<=STATE_CPUOUT;
                 end
+            end
+            STATE_CPUOUTSLEEP:begin
+                state<=STATE_CPUOUT;
             end
             STATE_CPUOUT:begin
                 receiver_addr<=9'd511;
