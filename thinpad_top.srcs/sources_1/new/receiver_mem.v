@@ -47,7 +47,7 @@ always @(*) begin
                 router_data_o <= doutb[15:8];
             end
             2'b10:begin
-                web <= {1'b00,router_we_n,2'b0};
+                web <= {1'b0,router_we_n,2'b0};
                 router_data_o <= doutb[23:16];
             end
             2'b11:begin
