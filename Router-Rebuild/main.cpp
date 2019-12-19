@@ -161,21 +161,19 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
     buffer[17] = 0x00;
     volatile uint8_t* hastoWrite;
     hastoWrite = (uint8_t*)0xbc0001ff;
-    while(1){
-        while((*hastoWrite)==0xff){
-        }
-        uint8_t *c,*d,*e;
-        c = (uint8_t*)0xbc0001fc;
-        d = (uint8_t*)0xbc0001fd;
-        e = (uint8_t*)0xbc0001fe;
-        *c = (uint8_t)(length&0xff);
-        *d = (uint8_t)((length>>4)&0xff);
-        *e = (uint8_t)((length>>8)&0xff);
-        c = (uint8_t*)0xbc000000;
-        for (uint32_t i = 0; i < length; i++, c+=1) *c = buffer[i];
-        //printf("sent packet");
-        (*hastoWrite) = 0xff;
+    while((*hastoWrite)==0xff){
     }
+    uint8_t *c,*d,*e;
+    c = (uint8_t*)0xbc0001fc;
+    d = (uint8_t*)0xbc0001fd;
+    e = (uint8_t*)0xbc0001fe;
+    *c = (uint8_t)(length&0xff);
+    *d = (uint8_t)((length>>4)&0xff);
+    *e = (uint8_t)((length>>8)&0xff);
+    c = (uint8_t*)0xbc000000;
+    for (uint32_t i = 0; i < length; i++, c+=1) *c = buffer[i];
+    //printf("sent packet");
+    (*hastoWrite) = 0xff;
     return 0;
 }
 
@@ -216,7 +214,11 @@ void update(bool insert, RoutingTableEntry entry) {
   uint32_t ii = 1<<31;
   uint32_t addr = ((entry.addr&0xff)<<24) + (((entry.addr>>8)&0xff)<<16) + (((entry.addr>>16)&0xff)<<8)+ ((entry.addr>>24)&0xff);
   uint32_t nxth = ((entry.nexthop&0xff)<<24) + (((entry.nexthop>>8)&0xff)<<16) + (((entry.nexthop>>16)&0xff)<<8)+ ((entry.nexthop>>24)&0xff);
+  uint32_t mask = ((entry.mask&0xff)<<24) + (((entry.mask>>8)&0xff)<<16) + (((entry.mask>>16)&0xff)<<8)+ ((entry.mask>>24)&0xff);
+  int len = 0;
+  for (len = 0; ((((uint32_t)1)<<(31-len))&mask);len++);
   uint8_t *c = (uint8_t*)(0xbd000000);
+  uint32_t *cc = (uint32_t*)(0xbd000000);
   *c = 1;
   *(c+1) = 1;
   *(c+2) = 1;
@@ -228,47 +230,56 @@ void update(bool insert, RoutingTableEntry entry) {
   putstring("Inserting ");
   printbase(addr, 8, 16, 0);
   putchar(' ');
+  printbase(len, 1, 10, 0);
+  putchar(' ');
   printbase(nxth, 8, 16, 0);
   putchar('\n');
   if(insert){
-    for (int i = 0; i < 32; i++){
+    for (int i = 0; i < len; i++){
       q = (((ii>>i)&addr)>0);
       if(q==0){
         if(routersList[p].lson==0){
           routersList[p].lson = ++cnt;
-          c = (uint8_t*)(0xbd000000+(p<<3)+4);
-          *(c) = (cnt&0xff);
-          *(c+1) = ((cnt>>8)&0xff);
+          cc = (uint32_t*)(0xbd000000+(p<<3)+4);
+          *cc = ((routersList[p].rson<<16)|routersList[p].lson);
           routersList[cnt].lson = 0;
           routersList[cnt].rson = 0;
-          if(i == 31){
+          if(i == len - 1){
             routersList[cnt].addr = entry.addr;
             routersList[cnt].mask = entry.mask;
             routersList[cnt].if_index = entry.if_index;
             routersList[cnt].metric = entry.metric;
             routersList[cnt].nexthop = entry.nexthop;
-            c = (uint8_t*)(0xbd000000+(cnt<<3));
-            *c = (nxth&0xff);
-            *(c+1) = ((nxth>>8)&0xff);
-            *(c+2) = ((nxth>>16)&0xff);
-            *(c+3) = ((nxth>>24)&0xff);
+            cc = (uint32_t*)(0xbd000000+(cnt<<3));
+            *cc = nxth;
+            /*putstring("new node nexthop:\n");
+            printbase((uint32_t)c, 2, 16, 0);
+            printbase(*c, 2, 16, 0);
+            printbase(*(c+1), 2, 16, 0);
+            printbase(*(c+2), 2, 16, 0);
+            printbase(*(c+3), 2, 16, 0);
+            putstring("\n");*/
             routersList[cnt].timer = entry.timer;
           }
           p = cnt;  
         }
         else{
           p = routersList[p].lson;
-          if(i == 31){
+          if(i == len - 1){
             routersList[p].addr = entry.addr;
             routersList[p].mask = entry.mask;
             routersList[p].if_index = entry.if_index;
             routersList[p].metric = entry.metric;
             routersList[p].nexthop = entry.nexthop;
-            c = (uint8_t*)(0xbd000000+(p<<3));
-            *c = (nxth&0xff);
-            *(c+1) = ((nxth>>8)&0xff);
-            *(c+2) = ((nxth>>16)&0xff);
-            *(c+3) = ((nxth>>24)&0xff);
+            cc = (uint32_t*)(0xbd000000+(cnt<<3));
+            *cc = nxth;
+            /*putstring("new node nexthop:\n");
+            printbase((uint32_t)c, 2, 16, 0);
+            printbase(*c, 2, 16, 0);
+            printbase(*(c+1), 2, 16, 0);
+            printbase(*(c+2), 2, 16, 0);
+            printbase(*(c+3), 2, 16, 0);
+            putstring("\n");*/
             routersList[p].timer = entry.timer;
           }
         }
@@ -276,39 +287,46 @@ void update(bool insert, RoutingTableEntry entry) {
       else{
         if(!routersList[p].rson){
           routersList[p].rson = ++cnt;
-          c = (uint8_t*)(0xbd000000+(p<<3)+6);
-          *c = cnt&0xff;
-          *(c+1) = (cnt>>8)&0xff;
+          cc = (uint32_t*)(0xbd000000+(p<<3)+4);
+          *cc = ((routersList[p].rson<<16)|routersList[p].lson);
           routersList[cnt].lson = 0;
           routersList[cnt].rson = 0;
-          if(i == 31){
+          if(i == len - 1){
             routersList[cnt].addr = entry.addr;
             routersList[cnt].mask = entry.mask;
             routersList[cnt].if_index = entry.if_index;
             routersList[cnt].metric = entry.metric;
             routersList[cnt].nexthop = entry.nexthop;
-            c = (uint8_t*)(0xbd000000+(cnt<<3));
-            *c = (nxth&0xff);
-            *(c+1) = ((nxth>>8)&0xff);
-            *(c+2) = ((nxth>>16)&0xff);
-            *(c+3) = ((nxth>>24)&0xff);
+            cc = (uint32_t*)(0xbd000000+(cnt<<3));
+            *cc = nxth;
+            /*putstring("new node nexthop:\n");
+            printbase((uint32_t)c, 2, 16, 0);
+            printbase(*c, 2, 16, 0);
+            printbase(*(c+1), 2, 16, 0);
+            printbase(*(c+2), 2, 16, 0);
+            printbase(*(c+3), 2, 16, 0);
+            putstring("\n");*/
             routersList[cnt].timer = entry.timer;
           }
           p = cnt;
         }
         else{
           p = routersList[p].rson;
-          if(i == 31){
+          if(i == len - 1){
             routersList[p].addr = entry.addr;
             routersList[p].mask = entry.mask;
             routersList[p].if_index = entry.if_index;
             routersList[p].metric = entry.metric;
             routersList[p].nexthop = entry.nexthop;
-            c = (uint8_t*)(0xbd000000+(p<<3));
-            *c = (nxth&0xff);
-            *(c+1) = ((nxth>>8)&0xff);
-            *(c+2) = ((nxth>>16)&0xff);
-            *(c+3) = ((nxth>>24)&0xff);
+            cc = (uint32_t*)(0xbd000000+(cnt<<3));
+            *cc = nxth;
+            /*putstring("new node nexthop:\n");
+            printbase((uint32_t)c, 2, 16, 0);
+            printbase(*c, 2, 16, 0);
+            printbase(*(c+1), 2, 16, 0);
+            printbase(*(c+2), 2, 16, 0);
+            printbase(*(c+3), 2, 16, 0);
+            putstring("\n");*/
             routersList[p].timer = entry.timer;
           }
         }
@@ -316,19 +334,18 @@ void update(bool insert, RoutingTableEntry entry) {
     }
   }
   else{
-    for (int i = 0; i < 32; i++){
+    for (int i = 0; i < len; i++){
       q = (((ii>>i)&addr)>0);
       if(q==0){
         if(!routersList[p].lson){
           break;
         }
         else{
-          if(i == 30){
+          if(i == len - 2){
             routersList[routersList[p].lson].disabled = true;
             routersList[p].lson = 0;
-            c = (uint8_t*)(0xbd000000+(p<<3)+4);
-            *c = 0;
-            *(c+1) = 0;
+            cc = (uint32_t*)(0xbd000000+(p<<3)+4);
+            *cc = ((routersList[p].rson<<16)|routersList[p].lson);
             break;
           }
           p = routersList[p].lson;
@@ -339,12 +356,11 @@ void update(bool insert, RoutingTableEntry entry) {
           break;
         }
         else{
-          if(i == 30){
+          if(i == len - 2){
             routersList[routersList[p].rson].disabled = true;
             routersList[p].rson = 0;
-            c = (uint8_t*)(0xbd000000+(p<<3)+6);
-            *c = 0;
-            *(c+1) = 0;
+            cc = (uint32_t*)(0xbd000000+(p<<3)+4);
+            *cc = ((routersList[p].rson<<16)|routersList[p].lson);
             break;
           }
           p = routersList[p].rson;
@@ -352,6 +368,7 @@ void update(bool insert, RoutingTableEntry entry) {
       }
     }
   }
+  c = (uint8_t*)(0xbd000000);
   *c = 0;
   *(c+1) = 0;
   *(c+2) = 0;
@@ -542,6 +559,14 @@ int main(int argc, char *argv[]) {
   }
   */
   putstring("RIP Started\n");
+
+  volatile uint8_t* hastoWrite;
+  volatile uint8_t* hastoRead;
+  hastoRead = (uint8_t*)0xbb0001ff;
+  (*hastoRead) = 0x0;
+  hastoWrite = (uint8_t*)0xbc0001ff;
+  (*hastoWrite) = 0x0;
+
   int res = 1;
   cnt = 1;
   routersList[cnt].lson = 0;
@@ -562,18 +587,40 @@ int main(int argc, char *argv[]) {
     update(true, entry);
   }*/
   RoutingTableEntry entry;
-  entry.addr = 0x0001000a & 0xFFFFFFFF; // big endian
-  entry.mask = 0xFFFFFFFF;        // small endian
+  entry.addr = 0x0001000a & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
   entry.if_index = 1;    // small endian
   entry.nexthop = 0x0201000a;      // big endian, means direct
   update(true, entry);
-  entry.addr = 0x0002000a & 0xFFFFFFFF; // big endian
-  entry.mask = 0xFFFFFFFF;        // small endian
+  entry.addr = 0x0002000a & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
   entry.if_index = 2;    // small endian
   entry.nexthop = 0x0202000a;      // big endian, means direct
   update(true, entry);
   putstring("Insertion done\n");
-
+  /*RoutingTableEntry entry;
+  entry.addr = 0x0102000a & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
+  entry.if_index = 2;    // small endian
+  entry.nexthop = 0x0202000a;      // big endian, means direct
+  update(true, entry);
+  entry.addr = 0x0101000a & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
+  entry.if_index = 1;    // small endian
+  entry.nexthop = 0x0201000a;      // big endian, means direct
+  update(true, entry);*/
+  volatile uint8_t *cc = (uint8_t*)0xbd000000;
+  putstring("Router size: ");
+  printbase(cnt, 2, 16, 0);
+  putchar(' ');
+  for(int i = 0; i < (int)((cnt+1)<<3); i++, cc+=1){
+    if(i%8==0){
+      putstring("\nNode: ");
+      printbase(i>>3, 2, 16, 0);
+      putchar(' ');
+    }
+    printbase(*cc, 2, 16, 0);
+  }
   while(1){
     int i = 1;
   }
