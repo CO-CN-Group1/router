@@ -63,6 +63,20 @@ typedef uint32_t in_addr_t;
 
 macaddr_t interface_mac = {0x00,0xcd,0xef,0xab,0xcd,0xef};
 
+void memcpy(uint8_t* a, uint8_t* b, unsigned int len){
+    for(int i =0; i < len; i++, a=a+1, b=b+1){
+      *a = *b;
+    }
+}
+
+int memcmp(uint32_t* a, uint32_t* b, unsigned int len){
+    for(int i =0; i < len; i++, a=a+1, b=b+1){
+      if(*a <*b)return -1;
+      else if(*a > *b)return 1;
+    }
+    return 0;
+}
+
 enum HAL_ERROR_NUMBER {
   HAL_ERR_INVALID_PARAMETER = -1000,
   HAL_ERR_IP_NOT_EXIST,
@@ -135,21 +149,23 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
     c = (uint8_t*)0xbb000000;
     for(uint32_t i = 0; i < len; i++, c+=1){
         buffer[i] = *c;
+        /*printbase(buffer[i], 2, 16, 0);
+        putstring(" ");*/
     }
-    //memcpy(dst_mac, buffer, sizeof(macaddr_t));
-    //memcpy(src_mac, &buffer[6], sizeof(macaddr_t));
+    memcpy(dst_mac, buffer, sizeof(macaddr_t));
+    memcpy(src_mac, &buffer[6], sizeof(macaddr_t));
     *if_index = buffer[15];
     putstring("\nreceived length ");
     printbase(len, 1, 10, 0);
     putchar('\n');
     *hastoRead = 0;
-    return 0;
+    return (int)len;
 }
 
 int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
                      macaddr_t dst_mac) {
-    //memcpy(buffer, dst_mac, sizeof(macaddr_t));
-   // memcpy(&buffer[6], interface_mac, sizeof(macaddr_t));
+    memcpy(buffer, dst_mac, sizeof(macaddr_t));
+    memcpy(&buffer[6], interface_mac, sizeof(macaddr_t));
     // VLAN
     buffer[12] = 0x81;
     buffer[13] = 0x00;
@@ -216,7 +232,8 @@ void update(bool insert, RoutingTableEntry entry) {
   uint32_t nxth = ((entry.nexthop&0xff)<<24) + (((entry.nexthop>>8)&0xff)<<16) + (((entry.nexthop>>16)&0xff)<<8)+ ((entry.nexthop>>24)&0xff);
   uint32_t mask = ((entry.mask&0xff)<<24) + (((entry.mask>>8)&0xff)<<16) + (((entry.mask>>16)&0xff)<<8)+ ((entry.mask>>24)&0xff);
   int len = 0;
-  for (len = 0; ((((uint32_t)1)<<(31-len))&mask);len++);
+  if(mask == 0xFFFFFFFF) len = 32;
+  else for (len = 0; ((((uint32_t)1)<<(31-len))&mask);len++);
   uint8_t *c = (uint8_t*)(0xbd000000);
   uint32_t *cc = (uint32_t*)(0xbd000000);
   *c = 1;
@@ -271,7 +288,7 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].if_index = entry.if_index;
             routersList[p].metric = entry.metric;
             routersList[p].nexthop = entry.nexthop;
-            cc = (uint32_t*)(0xbd000000+(cnt<<3));
+            cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = nxth;
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
@@ -318,7 +335,7 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].if_index = entry.if_index;
             routersList[p].metric = entry.metric;
             routersList[p].nexthop = entry.nexthop;
-            cc = (uint32_t*)(0xbd000000+(cnt<<3));
+            cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = nxth;
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
@@ -344,8 +361,8 @@ void update(bool insert, RoutingTableEntry entry) {
           if(i == len - 2){
             routersList[routersList[p].lson].disabled = true;
             routersList[p].lson = 0;
-            cc = (uint32_t*)(0xbd000000+(p<<3)+4);
-            *cc = ((routersList[p].rson<<16)|routersList[p].lson);
+            cc = (uint32_t*)(0xbd000000+(p<<3));
+            *cc = 0;
             break;
           }
           p = routersList[p].lson;
@@ -359,8 +376,8 @@ void update(bool insert, RoutingTableEntry entry) {
           if(i == len - 2){
             routersList[routersList[p].rson].disabled = true;
             routersList[p].rson = 0;
-            cc = (uint32_t*)(0xbd000000+(p<<3)+4);
-            *cc = ((routersList[p].rson<<16)|routersList[p].lson);
+            cc = (uint32_t*)(0xbd000000+(p<<3));
+            *cc = 0;
             break;
           }
           p = routersList[p].rson;
@@ -388,20 +405,20 @@ void update(bool insert, RoutingTableEntry entry) {
  */
 bool query(uint32_t addr) {
   int p = 1, q;
-  uint32_t ii = 1<<31;
+  uint32_t ii = (((uint32_t)1)<<31);
   uint32_t addrx = ((addr&0xff)<<24) + (((addr>>8)&0xff)<<16) + (((addr>>16)&0xff)<<8)+ ((addr>>24)&0xff);
   for (int i = 0; i < 32; i++){
       q = (((ii>>1)&addrx)>0);
+      if(routersList[p].nexthop!=0)goal = p;
       if(q==0){
         p = routersList[p].lson;
-        if(!p)return false;
+        if(!p)break;
       }
       else{
         p = routersList[p].rson;
-        if(!p)return false;
+        if(!p)break;
       }
   }
-  goal = p;
   return true;
 }
 
@@ -587,13 +604,13 @@ int main(int argc, char *argv[]) {
     update(true, entry);
   }*/
   RoutingTableEntry entry;
-  entry.addr = 0x0001000a & 0x00FFFFFF; // big endian
+  entry.addr = 0x0201000a & 0x00FFFFFF; // big endian
   entry.mask = 0x00FFFFFF;        // small endian
   entry.if_index = 1;    // small endian
   entry.nexthop = 0x0201000a;      // big endian, means direct
   update(true, entry);
-  entry.addr = 0x0002000a & 0x00FFFFFF; // big endian
-  entry.mask = 0x00FFFFFF;        // small endian
+  entry.addr = 0x020200aa & 0x00FEFFFF; // big endian
+  entry.mask = 0x00FEFFFF;        // small endian
   entry.if_index = 2;    // small endian
   entry.nexthop = 0x0202000a;      // big endian, means direct
   update(true, entry);
@@ -612,7 +629,8 @@ int main(int argc, char *argv[]) {
   volatile uint8_t *cc = (uint8_t*)0xbd000000;
   putstring("Router size: ");
   printbase(cnt, 2, 16, 0);
-  putchar(' ');
+  putchar('\n');
+  /*
   for(int i = 0; i < (int)((cnt+1)<<3); i++, cc+=1){
     if(i%8==0){
       putstring("\nNode: ");
@@ -620,10 +638,7 @@ int main(int argc, char *argv[]) {
       putchar(' ');
     }
     printbase(*cc, 2, 16, 0);
-  }
-  while(1){
-    int i = 1;
-  }
+  }*/
 
   uint64_t last_time = 0;
   while (1) {
@@ -688,25 +703,30 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
     }
 
     // 1. validate
-    if (!validateIPChecksum(packet, res)) {
-      //printf("Invalid IP Checksum\n");
+    if (!validateIPChecksum(&packet[18], res-18)) {
+      putstring("Invalid IP Checksum\n");
       continue;
     }
     in_addr_t src_addr, dst_addr;
     // extract src_addr and dst_addr from packet
     // big endian
-
+    // TODO
+    src_addr = packet[31]|((uint32_t)packet[32]<<8)|((uint32_t)packet[33]<<16)|((uint32_t)packet[34]<<24);
+    dst_addr = packet[35]|((uint32_t)packet[36]<<8)|((uint32_t)packet[37]<<16)|((uint32_t)packet[38]<<24);
+    printbase(dst_addr, 8, 16, 0);
+    putchar('\n');
     // 2. check whether dst is me
     bool dst_is_me = false;
     for (int i = 0; i < N_IFACE_ON_BOARD; i++) {
-      /*if (memcmp(&dst_addr, &addrs[i], sizeof(in_addr_t)) == 0) {
+      if (memcmp(&dst_addr, &addrs[i], sizeof(in_addr_t)) == 0) {
         dst_is_me = true;
         break;
-      }*/
+      }
     }
     // TODO: Handle rip multicast address(224.0.0.9)?
 
     if (dst_is_me) {
+      putstring("\nwow it's a packet for the router\n");
       // 3a.1
       RipPacket rip;
       // check and validate
