@@ -255,9 +255,10 @@ always @(posedge clk or posedge rst)begin
                 data[data_tail+2]<=sender_data_i[23:16];
                 data[data_tail+3]<=sender_data_i[31:24];
                 //data_tail<=data_tail+1;
-                data_tail<=data_tail+4;
+                //data_tail<=data_tail+4;
                 if (data_tail+4>={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}) begin
                 //if (sender_addr=={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}-1) begin
+                    data_tail<={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]};
                     sender_addr<=7'd127;
                     sender_ce<=1'b0;
                     sender_we<=4'b0000;
@@ -265,6 +266,7 @@ always @(posedge clk or posedge rst)begin
                     state<=STATE_OUTPUT;
                 end
                 else begin
+                    data_tail<=data_tail+4;
                     sender_addr<=sender_addr+1;
                 end
             end
