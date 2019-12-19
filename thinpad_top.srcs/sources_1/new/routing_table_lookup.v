@@ -46,7 +46,7 @@ reg[3:0] sender_we;
 assign receiver_cen=!receiver_ce;
 assign receiver_wen=!receiver_we;
 assign sender_cen=!sender_ce;
-assign sender_wen=!sender_we; 
+assign sender_wen=~sender_we; 
 
 
 reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
