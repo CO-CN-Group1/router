@@ -255,7 +255,7 @@ always @(posedge clk or posedge rst)begin
                 //if (sender_addr=={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}-1) begin
                     sender_addr<=7'd127;
                     sender_ce<=1'b0;
-                    sender_we<=4'b0111;
+                    sender_we<=4'b0000;
                     sender_data_o<=32'b00000000111111111111111111111111;
                     state<=STATE_OUTPUT;
                 end
