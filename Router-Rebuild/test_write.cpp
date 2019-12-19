@@ -52,36 +52,97 @@ int printbase(long v,int w,int base,int sign)
 	return 0;
 }
 
-uint8_t packet[]={
-    0x80,0x00,0x27,0x3f,0x73,0x9f,0x00,0xcd,0xef,0xab,0xcd,0xef,0x80,0x00,0x00,0x01,
-    0x45,0x00,0x54,0x19,0x61,0x40,0x00,0x40,0x01,0x0a,0x45,0x0a,0x00,0x01,0x02,0x0a,
-    0x00,0x02,0x02,0x08,0x00,0xca,0x9d,0x06,0x83,0x00,0x07};
+uint8_t packet[515], macpacket[20];
 
 int main(){
-    register uint8_t* hastoWrite;
-    //volatile uint8_t *c,*d,*e,*f;
-    putstring("loaded write\n");
+    volatile uint8_t* hastoWrite;
+    volatile uint8_t* hastoRead;
+    volatile uint8_t *c,*d,*e,*f;
+    putstring("test loopback started\n");
+    hastoRead = (uint8_t*)0xbb0001ff;
+    (*hastoRead) = 0x0;
     hastoWrite = (uint8_t*)0xbc0001ff;
-    printbase(*hastoWrite, 8, 16, 0);
-    (*hastoWrite) = 0x02;
-    printbase(*hastoWrite, 8, 16, 0);
+    (*hastoWrite) = 0x0;
    
     while(1){
-        putstring("In recursion\n");
-        while((*hastoWrite)==0x00){
-            //putchar('c');
+        putstring("waiting for a packet, hastoRead=");
+        uint8_t x = *hastoRead;
+        printbase(x, 1, 10, 0);
+        putstring("\n");
+        while(x==(uint8_t)0x0){
+            x = *hastoRead;
         }
-        putstring("Out recursion\n");
-        /*c = (uint8_t*)0xbc0001fc;
+        putstring("got a packet, hastoRead=");
+        x = *hastoRead;
+        printbase(x, 1, 10, 0);
+        putstring("\n");
+        c = (uint8_t*)0xbb0001fc;
+        d = (uint8_t*)0xbb0001fd;
+        e = (uint8_t*)0xbb0001fe;
+        uint32_t len = (*c)+(((uint32_t)*d)<<8)+(((uint32_t)*e)<<16);
+        c = (uint8_t*)0xbb000000;
+        for(int i = 0; i < (int)len; i++, c+=1){
+            packet[i] = *c;
+            printbase(packet[i], 2, 16, 0);
+            putstring(" ");
+        }
+        putstring("\nreceived length ");
+        printbase(len, 1, 10, 0);
+        putchar('\n');
+        *hastoRead = 0;
+        int j;
+        for(j = 0; j < 12; j++){
+            macpacket[j] = packet[j];
+        }
+        printbase(j, 1, 10, 0);
+        for(int i = 0; i < 6; i++){
+            packet[i] = macpacket[i+6];
+            packet[i+6] = macpacket[i];
+        }
+        putstring("\nWaiting to be able to write, hastoWrite=\n");
+        x = *hastoWrite;
+        printbase(x, 1, 10, 0);
+        putstring("\n");
+        while(x==(uint8_t)0xff){
+            x = *hastoWrite;
+        }
+        
+        c = (uint8_t*)0xbc0001fc;
         d = (uint8_t*)0xbc0001fd;
         e = (uint8_t*)0xbc0001fe;
-        *c = 42;
-        *d = 0;
-        *e = 0;
+        *c = (uint8_t)(len&0xff);
+        *d = (uint8_t)((len>>8)&0xff);
+        *e = (uint8_t)((len>>16)&0xff);
         f = (uint8_t*)0xbc000000;
-        for(uint8_t i=0;i<42;i++,f+=1)*f=packet[i];
+        putstring("okay to a packet, length=");
+        printbase(len, 1, 10, 0);
+        putchar('\n');
+        for(int i = 0;i < (int)len; i++, f+=1){
+            x = packet[i];
+            *f = (uint8_t)(((uint32_t)i)&0xff);
+            printbase(*f, 2, 16, 0);
+            putstring(" ");
+        }
+        printbase(*(hastoWrite-3), 2, 16, 0);
+            printbase(*(hastoWrite-2), 2, 16, 0);
+            printbase(*(hastoWrite-1), 2, 16, 0);
+            printbase(*hastoWrite, 2, 16, 0);
+            putchar('\n');
         (*hastoWrite) = 0xff;
-        putstring("has packet\n");*/
+        printbase(*(hastoWrite-3), 2, 16, 0);
+            printbase(*(hastoWrite-2), 2, 16, 0);
+            printbase(*(hastoWrite-1), 2, 16, 0);
+            printbase(*hastoWrite, 2, 16, 0);
+            putchar('\n');
+        while(1){
+            for(int i = 0; i<1000000;i++){}
+            printbase(*(hastoWrite-3), 2, 16, 0);
+            printbase(*(hastoWrite-2), 2, 16, 0);
+            printbase(*(hastoWrite-1), 2, 16, 0);
+            printbase(*hastoWrite, 2, 16, 0);
+            putchar('\n');
+        }
+        putstring("\nhas sent an packet\n");
     }
     return 0;
 }

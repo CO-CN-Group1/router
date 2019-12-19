@@ -114,24 +114,35 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
                         macaddr_t src_mac, macaddr_t dst_mac, int64_t timeout,
                         int *if_index){
     volatile uint8_t* hastoRead;
+    volatile uint8_t *c,*d,*e;
     hastoRead = (uint8_t*)0xbb0001ff;
-    while(1){
-        while((*hastoRead)==0){
-        }
-        uint8_t *c,*d,*e;
-        c = (uint8_t*)0xbb0001fc;
-        d = (uint8_t*)0xbb0001fd;
-        e = (uint8_t*)0xbb0001fe;
-        length = *c + ((size_t)(*d)<<4) + ((size_t)(*e)<<8);
-        c = (uint8_t*)0xbb000000;
-        for(uint32_t i = 0; i < length; i++, c+=1) buffer[i] = *c;
-        //memcpy(dst_mac, buffer, sizeof(macaddr_t));
-        //memcpy(src_mac, &buffer[6], sizeof(macaddr_t));
-        *if_index = buffer[15];
-       // printf("has packet in");
-
-        (*hastoRead) = 0;
+    (*hastoRead) = 0x00;
+    putstring("waiting for a packet, hastoRead=");
+    uint8_t x = *hastoRead;
+    printbase(x, 1, 10, 0);
+    putstring("\n");
+    while(x==(uint8_t)0x0){
+        x = *hastoRead;
     }
+    putstring("got a packet, hastoRead=");
+    x = *hastoRead;
+    printbase(x, 1, 10, 0);
+    putstring("\n");
+    c = (uint8_t*)0xbb0001fc;
+    d = (uint8_t*)0xbb0001fd;
+    e = (uint8_t*)0xbb0001fe;
+    uint32_t len = (*c)+(((uint32_t)*d)<<8)+(((uint32_t)*e)<<16);
+    c = (uint8_t*)0xbb000000;
+    for(uint32_t i = 0; i < len; i++, c+=1){
+        buffer[i] = *c;
+    }
+    //memcpy(dst_mac, buffer, sizeof(macaddr_t));
+    //memcpy(src_mac, &buffer[6], sizeof(macaddr_t));
+    *if_index = buffer[15];
+    putstring("\nreceived length ");
+    printbase(len, 1, 10, 0);
+    putchar('\n');
+    *hastoRead = 0;
     return 0;
 }
 

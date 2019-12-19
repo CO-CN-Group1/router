@@ -60,7 +60,7 @@ int main(){
     volatile uint8_t *c,*d,*e;
     putstring("test read started\n");
     hastoRead = (uint8_t*)0xbb0001ff;
-    (*hastoRead) = 0x44;
+    (*hastoRead) = 0x00;
     printbase((*hastoRead), 1, 10, 0);
     printbase((*hastoRead), 1, 10, 0);
     /*c = (uint8_t*)0xbb000000;
