@@ -451,9 +451,14 @@ always @(posedge clk or posedge rst)begin
                 end
                 else begin
                     if(nexthop_valid) begin
-                        nexthop_cache<=nexthop;
-                        state<=STATE_SLEEP;
-                        //lookup_valid<=1;
+                        if(nexthop_not_found) begin
+                            state<=STATE_IDLE;
+                        end
+                        else begin
+                            nexthop_cache<=nexthop;
+                            state<=STATE_SLEEP;
+                            //lookup_valid<=1;
+                        end
                     end
                 end
             end
