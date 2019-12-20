@@ -13,6 +13,7 @@ module routing_table
     input wire[31:0] dest_ip,
     input wire dest_ip_valid,
     output reg[31:0] nexthop,
+    output reg[7:0] port,
     output reg lookup_ready,
     output reg nexthop_valid,
     output reg nexthop_not_found,
@@ -23,7 +24,14 @@ module routing_table
     output wire[63:0] os_dout,
     input wire[7:0] os_we,
     input wire os_rst,
-    input wire os_en
+    input wire os_en,
+    
+    input wire[13:0] os_port_addr,
+    input wire[31:0] os_port_din,
+    output wire[31:0] os_port_dout,
+    input wire[3:0] os_port_we,
+    input wire os_port_en,
+
 );
 
 reg locked_by_cpu;
@@ -52,9 +60,9 @@ xpm_memory_tdpram #(
     .BYTE_WRITE_WIDTH_B(64),
     .READ_DATA_WIDTH_B(64),
     .READ_LATENCY_B(1),
-    .MEMORY_SIZE(2048*32),
+    .MEMORY_SIZE(2048*32*64),
     .CLOCKING_MODE("independent_clock")
-) xpm_memory_tdpram_data (
+) xpm_memory_tdpram_table (
     .dina(os_din),
     .addra(os_addr),
     .wea(os_we),
@@ -72,6 +80,41 @@ xpm_memory_tdpram #(
     .enb(1'b1)
 );
 
+wire[31:0] dout_port;
+
+xpm_memory_tdpram #(
+    .ADDR_WIDTH_A(14),
+    .WRITE_DATA_WIDTH_A(32),
+    .BYTE_WRITE_WIDTH_A(8),
+    .READ_DATA_WIDTH_A(32),
+    .READ_LATENCY_A(1),
+    .ADDR_WIDTH_B(14),
+    .WRITE_DATA_WIDTH_B(32),
+    .BYTE_WRITE_WIDTH_B(32),
+    .READ_DATA_WIDTH_B(32),
+    .READ_LATENCY_B(1),
+    .MEMORY_SIZE(2048*32*8),
+    .CLOCKING_MODE("independent_clock")
+) xpm_memory_tdpram_port (
+    .dina(os_port_din),
+    .addra(os_port_addr),
+    .wea(os_port_we),
+    .douta(os_port_dout),
+    .clka(os_clk),
+    .rsta(os_rst),
+    .ena(os_port_en),
+
+    .dinb(32'b0),
+    .addrb(current[15:2]),
+    .web(1'b0),
+    .doutb(dout_port),
+    .clkb(clk),
+    .rstb(rst),
+    .enb(1'b1)
+);
+
+
+
 reg[31:0] dest_ip_cache;
 
 localparam[1:0]
@@ -82,17 +125,20 @@ localparam[1:0]
 
 reg[1:0] state = STATE_IDLE;
 reg[31:0] ans;
+reg[7:0] ans_port;
 integer pos;
 
 always @(posedge clk) begin
     if(rst) begin
         nexthop <= 0;
+        port <= 8'b0;
         lookup_ready <= 0;
         state <= STATE_IDLE;
         nexthop_not_found <= 0;
         nexthop_valid <= 0;
         current <= 1;
         ans <= 32'h00000000;
+        ans_port <= 8'b0;
         dest_ip_cache <= 32'h00000000;
     end begin
         case(state)
@@ -101,6 +147,7 @@ always @(posedge clk) begin
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     nexthop <= 0;
+                    port <= 8'b0;
                     if(dest_ip_valid&&lookup_ready)begin
                         dest_ip_cache <= dest_ip;
                         lookup_ready <= 0;
@@ -111,6 +158,7 @@ always @(posedge clk) begin
                     state <= STATE_WAIT;
                 end else begin
                     nexthop <= 0;
+                    port <= 0;
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     if(lookup_ready && dest_ip_valid) begin
@@ -119,6 +167,7 @@ always @(posedge clk) begin
                         state <= STATE_SEARCH1;
                         current <= 1;
                         ans <= 0;
+                        ans_port <= 8'b0;
                         pos <= 31;
                     end else begin
                         dest_ip_cache <= 0;
@@ -131,6 +180,7 @@ always @(posedge clk) begin
                 if(locked_by_cpu) begin
                     state <= STATE_WAIT;
                     nexthop <= 0;
+                    port <= 0;
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     lookup_ready <= 0;
@@ -138,6 +188,7 @@ always @(posedge clk) begin
                     if(dest_ip_cache == 0) begin
                         state <= STATE_IDLE;
                         nexthop <= 0;
+                        port <= 0;
                         nexthop_not_found <= 0;
                         nexthop_valid <= 0;
                         lookup_ready <= 1;
@@ -145,8 +196,10 @@ always @(posedge clk) begin
                         state <= STATE_SEARCH1;
                         current <= 1;
                         ans <= 0;
+                        ans_port <= 8'b0;
                         pos <= 31;
                         nexthop <= 0;
+                        port <= 0;
                         nexthop_not_found <= 0;
                         nexthop_valid <= 0;
                         lookup_ready <= 0;
@@ -157,6 +210,7 @@ always @(posedge clk) begin
                 if(locked_by_cpu) begin
                     state <= STATE_WAIT;
                     nexthop <= 0;
+                    port <= 0;
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     lookup_ready <= 0;
@@ -164,6 +218,7 @@ always @(posedge clk) begin
                     lookup_ready <= 0;
                     if(current == 0)begin
                         nexthop <= ans;
+                        port <= ans_port;
                         if(ans == 0) begin
                             nexthop_not_found <= 1;
                         end else begin
@@ -181,13 +236,21 @@ always @(posedge clk) begin
                 if(locked_by_cpu) begin
                     state <= STATE_WAIT;
                     nexthop <= 0;
+                    port <= 0;
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     lookup_ready <= 0;
                 end else begin
                     lookup_ready <= 0;
-                    if(dout[31:0]!=0)
+                    if(dout[31:0]!=0)begin
                         ans <= dout[31:0];
+                        case(current[1:0])
+                            2'b00:ans_port <= dout_port[7:0];
+                            2'b01:ans_port <= dout_port[15:8];
+                            2'b10:ans_port <= dout_port[23:16];
+                            2'b11:ans_port <= dout_port[31:24];
+                        endcase
+                    end
                     if(pos!=-1)begin
                         if(dest_ip_cache[pos] == 0)begin
                             current <= dout[47:32];
