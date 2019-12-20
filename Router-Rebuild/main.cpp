@@ -130,15 +130,11 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
     volatile uint8_t* hastoRead;
     volatile uint8_t *c,*d,*e;
     hastoRead = (uint8_t*)0xbb0001ff;
-    (*hastoRead) = 0x00;
-    putstring("waiting for a packet, hastoRead=");
     uint8_t x = *hastoRead;
-    printbase(x, 1, 10, 0);
-    putstring("\n");
-    while(x==(uint8_t)0x0){
-        x = *hastoRead;
+    if(x==(uint8_t)0x0){
+        return 0;
     }
-    putstring("got a packet, hastoRead=");
+    putstring("\ngot a packet, hastoRead=");
     x = *hastoRead;
     printbase(x, 1, 10, 0);
     putstring("\n");
@@ -200,21 +196,37 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
  * @return 校验和无误则返回 true ，有误则返回 false
  */
 bool validateIPChecksum(uint8_t *packet, size_t len) {
-  
-  uint16_t fcsm = ((uint16_t)packet[10] << 8) + packet[11];
+  /*for(int i = 0; i < (int)len; i++){
+    printbase(packet[i], 2, 16, 0);
+    putchar(' ');
+  }putchar('\n');*/
+  uint16_t fcsm = (uint16_t)(((uint32_t)packet[10] << 8) | (uint32_t)packet[11]);
   int length = ((int)packet[0] & ((1 << 4) - 1)) * 4;
   packet[10] = 0;
   packet[11] = 0;
   uint32_t checksum = 0, cur, filter = (1 << 16) - 1;
   for (int i = 0; i < length; i += 2){
-      cur = ((uint16_t)packet[i] << 8) + packet[i + 1];
+      cur = (((uint16_t)packet[i] << 8) | (uint16_t)packet[i + 1]);
       checksum += cur;
   }
-  for (;(checksum >> 16); checksum = (checksum & filter) + (checksum >> 16));
+  /*printbase(checksum, 8, 16, 0);
+  putchar('\n');*/
+  for (;(checksum >> 16) > 0; checksum = ((checksum & filter) + (checksum >> 16)));
   uint16_t csm = ~(uint16_t)(checksum & filter);
   packet[10] = csm >> 8;
   packet[11] = csm & ((1 << 8) - 1);
-  return fcsm == csm;
+ /*printbase(csm, 2, 16, 0);
+  putchar(' ');
+  printbase(fcsm, 2, 16, 0);
+  putchar(' '); */
+  if(fcsm == csm){
+    //putstring(" wow ");
+    return true;
+  }
+  else {
+    //putstring(" gg ");
+    return false;
+  }
 }
 
 /**
@@ -431,6 +443,7 @@ bool query(uint32_t addr) {
  * @param len 即 packet 的长度，单位为字节
  * @return 校验和无误则返回 true ，有误则返回 false
  */
+/*
 bool forward(uint8_t *packet, size_t len) {
   uint16_t fcsm = ((uint16_t)packet[10] << 8) + packet[11];
   int length = ((int)packet[0] & ((1 << 4) - 1)) * 4;
@@ -456,6 +469,7 @@ bool forward(uint8_t *packet, size_t len) {
   packet[11] = csm & ((1 << 8) - 1);
   return true;
 }
+*/
 
 /**
  * @brief 从接受到的 IP 包解析出 Rip 协议的数据
@@ -609,7 +623,7 @@ int main(int argc, char *argv[]) {
   entry.if_index = 1;    // small endian
   entry.nexthop = 0x0201000a;      // big endian, means direct
   update(true, entry);
-  entry.addr = 0x020200aa & 0x00FEFFFF; // big endian
+  entry.addr = 0x0202000a & 0x00FEFFFF; // big endian
   entry.mask = 0x00FEFFFF;        // small endian
   entry.if_index = 2;    // small endian
   entry.nexthop = 0x0202000a;      // big endian, means direct
@@ -701,7 +715,8 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
       // packet is truncated, ignore it
       continue;
     }
-
+    printbase(res, 1, 10, 0);
+    putchar('\n');
     // 1. validate
     if (!validateIPChecksum(&packet[18], res-18)) {
       putstring("Invalid IP Checksum\n");
@@ -711,14 +726,14 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
     // extract src_addr and dst_addr from packet
     // big endian
     // TODO
-    src_addr = packet[31]|((uint32_t)packet[32]<<8)|((uint32_t)packet[33]<<16)|((uint32_t)packet[34]<<24);
-    dst_addr = packet[35]|((uint32_t)packet[36]<<8)|((uint32_t)packet[37]<<16)|((uint32_t)packet[38]<<24);
+    src_addr = packet[30]|((uint32_t)packet[31]<<8)|((uint32_t)packet[32]<<16)|((uint32_t)packet[33]<<24);
+    dst_addr = packet[34]|((uint32_t)packet[35]<<8)|((uint32_t)packet[36]<<16)|((uint32_t)packet[37]<<24);
     printbase(dst_addr, 8, 16, 0);
     putchar('\n');
     // 2. check whether dst is me
     bool dst_is_me = false;
     for (int i = 0; i < N_IFACE_ON_BOARD; i++) {
-      if (memcmp(&dst_addr, &addrs[i], sizeof(in_addr_t)) == 0) {
+      if (dst_addr == addrs[i]) {
         dst_is_me = true;
         break;
       }
