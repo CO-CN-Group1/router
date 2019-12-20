@@ -120,7 +120,7 @@ typedef struct {
     uint32_t mask;
     uint32_t timer;
     uint32_t lson, rson;
-    bool disabled;
+    //bool disabled;
     // 为了实现 RIP 协议，需要在这里添加额外的字段
 } RoutingTableEntry;
 
@@ -172,33 +172,45 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
     return (int)len - 18;
 }
 
+
+uint8_t bufferh[25];
 int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
                      macaddr_t dst_mac) {
-    memcpy(buffer, dst_mac, sizeof(macaddr_t));
-    memcpy(&buffer[6], interface_mac, sizeof(macaddr_t));
+    
+    memcpy(bufferh, dst_mac, sizeof(macaddr_t));
+    memcpy(&bufferh[6], interface_mac, sizeof(macaddr_t));
     // VLAN
-    buffer[12] = 0x81;
-    buffer[13] = 0x00;
+    bufferh[12] = 0x81;
+    bufferh[13] = 0x00;
     // PID
-    buffer[14] = 0x00;
-    buffer[15] = if_index + 1;
+    bufferh[14] = 0x00;
+    bufferh[15] = if_index;
     // IPv4
-    buffer[16] = 0x08;
-    buffer[17] = 0x00;
+    bufferh[16] = 0x08;
+    bufferh[17] = 0x00;
     volatile uint8_t* hastoWrite;
     hastoWrite = (uint8_t*)0xbc0001ff;
-    while((*hastoWrite)==0xff){
+    uint8_t x = *hastoWrite;
+    while(x==(uint8_t)0xff){
+      x = *hastoWrite;
     }
     uint8_t *c,*d,*e;
+    size_t legth = length + 18;
     c = (uint8_t*)0xbc0001fc;
     d = (uint8_t*)0xbc0001fd;
     e = (uint8_t*)0xbc0001fe;
-    *c = (uint8_t)(length&0xff);
-    *d = (uint8_t)((length>>4)&0xff);
-    *e = (uint8_t)((length>>8)&0xff);
+    *c = (uint8_t)(legth&0xff);
+    *d = (uint8_t)((legth>>8)&0xff);
+    *e = (uint8_t)((legth>>16)&0xff);
     c = (uint8_t*)0xbc000000;
-    for (uint32_t i = 0; i < length; i++, c+=1) *c = buffer[i];
-    //printf("sent packet");
+    for (int i = 0; i < 18; i++, c+=1) *c = bufferh[i];
+    for (int i = 0; i < (int)length; i++, c+=1) *c = buffer[i];
+    c = (uint8_t*)0xbc000000;
+    for (int i = 0; i < (int)legth; i++, c+=1){
+      printbase(*c, 2, 16, 0);
+      putchar(' ');
+    }
+    putstring("\nsent an packet\n");
     (*hastoWrite) = 0xff;
     return 0;
 }
@@ -304,6 +316,14 @@ void update(bool insert, RoutingTableEntry entry) {
             putstring("\n");*/
             routersList[cnt].timer = entry.timer;
           }
+          else{
+            routersList[cnt].addr = 0;
+            routersList[cnt].mask = 0;
+            routersList[cnt].if_index = 0;
+            routersList[cnt].metric = 0;
+            routersList[cnt].nexthop = 0;
+            routersList[cnt].timer = 0;
+          }
           p = cnt;  
         }
         else{
@@ -351,6 +371,14 @@ void update(bool insert, RoutingTableEntry entry) {
             putstring("\n");*/
             routersList[cnt].timer = entry.timer;
           }
+          else{
+            routersList[cnt].addr = 0;
+            routersList[cnt].mask = 0;
+            routersList[cnt].if_index = 0;
+            routersList[cnt].metric = 0;
+            routersList[cnt].nexthop = 0;
+            routersList[cnt].timer = 0;
+          }
           p = cnt;
         }
         else{
@@ -385,7 +413,8 @@ void update(bool insert, RoutingTableEntry entry) {
         }
         else{
           if(i == len - 2){
-            routersList[routersList[p].lson].disabled = true;
+            //routersList[routersList[p].lson].disabled = true;
+            routersList[routersList[p].lson].nexthop = 0;
             routersList[p].lson = 0;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = 0;
@@ -400,7 +429,8 @@ void update(bool insert, RoutingTableEntry entry) {
         }
         else{
           if(i == len - 2){
-            routersList[routersList[p].rson].disabled = true;
+            //routersList[routersList[p].rson].disabled = true;
+            routersList[routersList[p].rson].nexthop = 0;
             routersList[p].rson = 0;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = 0;
@@ -540,7 +570,7 @@ uint32_t assemble(const RipPacket *rip, uint8_t *buffer) {
   buffer[1] = 2;
   buffer[2] = 0;
   buffer[3] = 0;
-  for(int i = 0, offset = 0; i < rip->numEntries; i++, offset += 20){
+  for(int i = 0, offset = 0; i < (int)rip->numEntries; i++, offset += 20){
     buffer[4+offset] = 0;
     buffer[5+offset] = (rip->command-1)<<1;
     buffer[6+offset] = 0;
@@ -669,46 +699,76 @@ int main(int argc, char *argv[]) {
   }*/
 
   uint64_t last_time = 0;
+  uint64_t time = 0;
   while (1) {
     // TODO: fix hardware timer suitcase
-    uint64_t time = 0;//HAL_GetTicks();
-    if (time > last_time + 30 * 1000) {
+    time++;//HAL_GetTicks();
+    if (time == 1 || time > last_time + 30 * 50000) {
       // What to do?
       // send complete routing table to every interface
       // ref. RFC2453 3.8
       // multicast MAC for 224.0.0.9 is 01:00:5e:00:00:09
       //printf("30s Timer\n");
       last_time = time;
+      putstring("\nmulticasting routing table\n");
       // TODO: broadcast everything
-      /*
+      
             RipPacket resp;
             resp.command = 2;
             resp.numEntries = 0;
-            for(int i = 0; i < cnt; i++)
-              if(!isDisable[i]){
+            putchar('\n');
+            for(int i = 1; i <= (int)cnt; i++)
+              if(routersList[i].nexthop!=0){
                 resp.entries[resp.numEntries].addr = routersList[i].addr;
                 resp.entries[resp.numEntries].mask = routersList[i].mask;
                 resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
                 resp.entries[resp.numEntries].metric = routersList[i].metric;
                 resp.numEntries++;
+                printbase(routersList[i].nexthop, 8, 16, 0);
+                putchar(' ');
               }
+            putchar('\n');
+          uint32_t rip_len = assemble(&resp, &output[20 + 8]);
           // assemble
           // IP
           output[0] = 0x45;
+          output[1] = 0x00;
+          output[2] = ((rip_len + 28)>>8)&0xff;
+          output[3] = (rip_len + 28)&0xff;
+
+          output[6] = 0x40;
+          output[7] = 0x00;
+          output[8] = 0x40;
+          output[9] = 0x01;
           // ...
           // UDP
           // port = 520
+          output[16] = 224;
+          output[17] = 0;
+          output[18] = 0;
+          output[19] = 9;
+
           output[20] = 0x02;
           output[21] = 0x08;
           // ...
           // RIP
-          uint32_t rip_len = assemble(&resp, &output[20 + 8]);
+          
           // checksum calculation for ip and udp
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
+          putchar('\n');
+        printbase(resp.numEntries, 1, 10, 0);
+        putstring("\nassembled, sending\n");
+        macaddr_t src_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
+        for(int j = 0; j < 4; j++){
+          output[15] = ((addrs[j]>>24)&0xff);
+          output[14] = ((addrs[j]>>16)&0xff);
+          output[13] = ((addrs[j]>>8)&0xff);
+          output[12] = (addrs[j]&0xff);
+          validateIPChecksum(output, rip_len+20+8);
+          HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, src_mac);
+        }
           
-for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac);
-          */
     }
 
     int mask = (1 << N_IFACE_ON_BOARD) - 1;
@@ -747,11 +807,11 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
     in_addr_t src_addr, dst_addr;
     // extract src_addr and dst_addr from packet
     // big endian
-    // TODO
     src_addr = packet[12]|((uint32_t)packet[13]<<8)|((uint32_t)packet[14]<<16)|((uint32_t)packet[15]<<24);
     dst_addr = packet[16]|((uint32_t)packet[17]<<8)|((uint32_t)packet[18]<<16)|((uint32_t)packet[19]<<24);
-    printbase(dst_addr, 8, 16, 0);
-    putchar('\n');
+    /*printbase(dst_addr, 8, 16, 0);
+    putchar('\n');*/
+
     // 2. check whether dst is me
     bool dst_is_me = false;
     for (int i = 0; i < N_IFACE_ON_BOARD; i++) {
@@ -777,8 +837,8 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
           if(rip.numEntries == 1 && rip.entries[0].metric == 16){
             resp.command = 2;
             resp.numEntries = 0;
-            for(int i = 0; i < cnt; i++)
-              if(!routersList[i].disabled){
+            for(int i = 1; i <= cnt; i++)
+              if(routersList[i].nexthop != 0){
                 resp.entries[resp.numEntries].addr = routersList[i].addr;
                 resp.entries[resp.numEntries].mask = routersList[i].mask;
                 resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
