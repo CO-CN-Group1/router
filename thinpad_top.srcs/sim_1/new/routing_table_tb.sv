@@ -14,6 +14,7 @@ clock osc(
 logic[31:0] dest_ip;
 logic dest_ip_valid;
 logic[31:0] nexthop;
+logic [7:0] port;
 logic lookup_ready;
 logic nexthop_valid;
 logic nexthop_not_found;
@@ -24,6 +25,12 @@ logic[63:0] os_dout;
 logic[7:0] os_wea;
 logic os_rst;
 
+logic[13:0] os_port_addr;
+logic[31:0] os_port_din;
+logic[31:0] os_port_dout;
+logic[3:0] os_port_wea;
+
+
 routing_table routing_table0(
     .clk(clk_125M),
     .rst(rst),
@@ -33,6 +40,7 @@ routing_table routing_table0(
     .lookup_ready(lookup_ready),
     .nexthop_valid(nexthop_valid),
     .nexthop_not_found(nexthop_not_found),
+    .port(port),
 
     .os_clk(clk_50M),
     .os_addr(os_addr),
@@ -40,7 +48,13 @@ routing_table routing_table0(
     .os_dout(os_dout),
     .os_we(os_wea),
     .os_rst(os_rst),
-    .os_en(1'b1)
+    .os_en(1'b1),
+    
+    .os_port_addr(os_port_addr),
+    .os_port_din(os_port_din),
+    .os_port_dout(os_port_dout),
+    .os_port_we(os_port_wea),
+    .os_port_en(1'b1)
 );
 
 
@@ -51,9 +65,11 @@ routing_table routing_table0(
 */
 
 logic[63:0] trie1[0:256],trie2[0:256];
+logic[31:0] ports1[0:63],ports2[0:63];
 logic[15:0] total1=1,total2=1;
 integer route_table_fd,route_sample_in_fd,route_sample_out_fd,count_ip=0;
 logic[31:0] ip = 0,mask = 0,dip = 0;
+logic[7:0] tmp_port;
 logic[15:0] current;
 logic[31:0] ip_data[0:20];
 
@@ -63,10 +79,11 @@ logic router_init = 0;
 initial begin
     trie1[0] = 64'h0000000000000001;
     trie1[1] = 64'b0;
+    ports1[0] = 32'b0;
     route_table_fd = $fopen("route_table_file1.mem","r");
     while(!$feof(route_table_fd))begin
-        $fscanf(route_table_fd,"%24h",{ip,mask,dip});
-        $display("table1 ip:%8h mask:%8h nexthop:%8h",ip,mask,dip);
+        $fscanf(route_table_fd,"%26h",{ip,mask,dip,tmp_port});
+        $display("table1 ip:%8h mask:%8h nexthop:%8h port:%2h",ip,mask,dip,tmp_port);
         current = 1;
         for(integer pos = 31;pos>=0;pos--)begin
             if(mask[pos]==1)begin
@@ -74,6 +91,12 @@ initial begin
                     if(trie1[current][47:32] == 0)begin
                         total1 ++ ;
                         trie1[total1] = 0;
+                        case(total1[1:0])
+                            2'b00: ports1[total1>>2][7:0] <= 8'b00000000;
+                            2'b01: ports1[total1>>2][15:8] <= 8'b00000000;
+                            2'b10: ports1[total1>>2][23:16] <= 8'b00000000;
+                            2'b11: ports1[total1>>2][31:24] <= 8'b00000000;
+                        endcase   
                         trie1[current][47:32] = total1;
                         current = total1;
                     end else begin
@@ -83,6 +106,12 @@ initial begin
                     if(trie1[current][63:48] == 0)begin
                         total1 ++ ;
                         trie1[total1] = 0;
+                        case(total1[1:0])
+                            2'b00: ports1[total1>>2][7:0] <= 8'b00000000;
+                            2'b01: ports1[total1>>2][15:8] <= 8'b00000000;
+                            2'b10: ports1[total1>>2][23:16] <= 8'b00000000;
+                            2'b11: ports1[total1>>2][31:24] <= 8'b00000000;
+                        endcase
                         trie1[current][63:48] = total1;
                         current = total1;
                     end else begin
@@ -94,15 +123,22 @@ initial begin
             end
         end
         trie1[current][31:0] = dip;
+        case(current[1:0])
+            2'b00: ports1[current>>2][7:0] <= tmp_port;
+            2'b01: ports1[current>>2][15:8] <= tmp_port;
+            2'b10: ports1[current>>2][23:16] <= tmp_port;
+            2'b11: ports1[current>>2][31:24] <= tmp_port;
+        endcase
     end    
     $display("table1 total = %d",total1);
     $fclose(route_table_fd);
     trie2[0] = 64'h0000000000000002;
     trie2[1] = 64'b0;
+    ports2[0] = 32'b0;
     route_table_fd = $fopen("route_table_file2.mem","r");
     while(!$feof(route_table_fd))begin
-        $fscanf(route_table_fd,"%24h",{ip,mask,dip});
-        $display("table1 ip:%8h mask:%8h nexthop:%8h",ip,mask,dip);
+        $fscanf(route_table_fd,"%26h",{ip,mask,dip,tmp_port});
+        $display("table2 ip:%8h mask:%8h nexthop:%8h port:%2h",ip,mask,dip,tmp_port);
         current = 1;
         for(integer pos = 31;pos>=0;pos--)begin
             if(mask[pos]==1)begin
@@ -110,6 +146,12 @@ initial begin
                     if(trie2[current][47:32] == 0)begin
                         total2 ++ ;
                         trie2[total2] = 0;
+                        case(total2[1:0])
+                            2'b00: ports2[total2>>2][7:0] <= 8'b00000000;
+                            2'b01: ports2[total2>>2][15:8] <= 8'b00000000;
+                            2'b10: ports2[total2>>2][23:16] <= 8'b00000000;
+                            2'b11: ports2[total2>>2][31:24] <= 8'b00000000;
+                        endcase
                         trie2[current][47:32] = total2;
                         current = total2;
                     end else begin
@@ -119,6 +161,12 @@ initial begin
                     if(trie2[current][63:48] == 0)begin
                         total2 ++ ;
                         trie2[total2] = 0;
+                        case(total2[1:0])
+                            2'b00: ports2[total2>>2][7:0] <= 8'b00000000;
+                            2'b01: ports2[total2>>2][15:8] <= 8'b00000000;
+                            2'b10: ports2[total2>>2][23:16] <= 8'b00000000;
+                            2'b11: ports2[total2>>2][31:24] <= 8'b00000000;
+                        endcase
                         trie2[current][63:48] = total2;
                         current = total2;
                     end else begin
@@ -130,6 +178,12 @@ initial begin
             end
         end
         trie2[current][31:0] = dip;
+        case(current[1:0])
+            2'b00: ports2[current>>2][7:0] <= tmp_port;
+            2'b01: ports2[current>>2][15:8] <= tmp_port;
+            2'b10: ports2[current>>2][23:16] <= tmp_port;
+            2'b11: ports2[current>>2][31:24] <= tmp_port;
+        endcase
     end    
     $display("table1 total = %d",total2);
     $fclose(route_table_fd);
@@ -167,8 +221,11 @@ always @(posedge clk_50M)begin
         case(cpu_state)
             CPU_STATE_IDLE1:begin
                 os_addr <= 0;
+                os_port_addr <= 0;
                 os_din <= 0;
+                os_port_din <= 0;
                 os_wea <= 0;
+                os_port_wea <= 0;
                 if(timer>=20) begin
                     cpu_state <= CPU_STATE_WRITE1;
                     cpu_cnt <= 0;
@@ -178,8 +235,11 @@ always @(posedge clk_50M)begin
             end
             CPU_STATE_IDLE2:begin
                 os_addr <= 0;
+                os_port_addr <= 0;
                 os_din <= 0;
+                os_port_din <= 0;
                 os_wea <= 0;
+                os_port_wea <= 0;
                 if(timer>=30) begin
                     cpu_state <= CPU_STATE_WRITE2;
                     cpu_cnt <= 0;
@@ -190,11 +250,17 @@ always @(posedge clk_50M)begin
             CPU_STATE_WRITE1:begin
                 if(cpu_cnt <= total1)begin
                     os_addr <= cpu_cnt;
+                    os_port_addr <= cpu_cnt>>2;
                     os_din <= trie1[cpu_cnt];
+                    os_port_din <= ports1[cpu_cnt>>2];
                     os_wea <= 8'b11111111;
+                    os_port_wea <= 4'b1111;
                     cpu_cnt <= cpu_cnt+1;
                 end else begin
                     os_wea <= 8'b11111111;
+                    os_port_wea <= 4'b0000;
+                    os_port_din <= 0;
+                    os_port_addr <= 0;
                     os_din <= 0;
                     os_addr <= 0;
                     cpu_cnt <= 0;
@@ -204,11 +270,17 @@ always @(posedge clk_50M)begin
             CPU_STATE_WRITE2:begin
                 if(cpu_cnt <= total2)begin
                     os_addr <= cpu_cnt;
+                    os_port_addr <= cpu_cnt>>2;
                     os_din <= trie2[cpu_cnt];
+                    os_port_din <= ports2[cpu_cnt>>2];
                     os_wea <= 8'b11111111;
+                    os_port_wea <= 4'b1111;
                     cpu_cnt <= cpu_cnt+1;
                 end else begin
                     os_wea <= 8'b11111111;
+                    os_port_wea <= 4'b0000;
+                    os_port_din <= 0;
+                    os_port_addr <= 0;
                     os_din <= 0;
                     os_addr <= 0;
                     cpu_cnt <= 0;
@@ -248,11 +320,11 @@ always @(posedge clk_125M)begin
             end
             ROUTER_STATE_SEARCH:begin
                 if(nexthop_valid)begin
-                    $fwrite(route_sample_out_fd,"%08h ",dest_ip);
+                    $display("%08h",dest_ip);
                     if(nexthop_not_found)begin
-                        $fwrite(route_sample_out_fd,"not found\n");
+                        $display("not found\n");
                     end else begin
-                        $fwrite(route_sample_out_fd,"%8h\n",nexthop);
+                        $display("%8h %2h\n",nexthop,port);
                     end
                     router_state <= ROUTER_STATE_IDLE;
                     dest_ip_valid <= 0;
