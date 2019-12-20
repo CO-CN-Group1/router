@@ -69,6 +69,8 @@ void memcpy(uint8_t* a, uint8_t* b, unsigned int len){
     }
 }
 
+
+/*
 int memcmp(uint32_t* a, uint32_t* b, unsigned int len){
     for(int i =0; i < len; i++, a=a+1, b=b+1){
       if(*a <*b)return -1;
@@ -76,6 +78,7 @@ int memcmp(uint32_t* a, uint32_t* b, unsigned int len){
     }
     return 0;
 }
+*/
 
 enum HAL_ERROR_NUMBER {
   HAL_ERR_INVALID_PARAMETER = -1000,
@@ -154,8 +157,19 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
     putstring("\nreceived length ");
     printbase(len, 1, 10, 0);
     putchar('\n');
+    c = &buffer[18];
+    for(uint32_t i = 0; i < len - 18; i++, c+=1){
+        buffer[i] = *c;
+        /*printbase(buffer[i], 2, 16, 0);
+        putstring(" ");*/
+    }
+    for(uint32_t i = len - 18; i < len; i++, c+=1){
+        buffer[i] = *c;
+        /*printbase(buffer[i], 2, 16, 0);
+        putstring(" ");*/
+    }
     *hastoRead = 0;
-    return (int)len;
+    return (int)len - 18;
 }
 
 int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
@@ -716,9 +730,17 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
       continue;
     }
     printbase(res, 1, 10, 0);
+    putchar(' ');
+    for(int i = 0; i < 6; i++)
+      printbase(src_mac[i], 2, 16, 0);
+    putchar(' ');
+    for(int i = 0; i < 6; i++)
+      printbase(dst_mac[i], 2, 16, 0);
+    putchar(' ');
+    printbase(if_index, 1, 10, 0);
     putchar('\n');
     // 1. validate
-    if (!validateIPChecksum(&packet[18], res-18)) {
+    if (!validateIPChecksum(&packet[0], res)) {
       putstring("Invalid IP Checksum\n");
       continue;
     }
@@ -726,8 +748,8 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
     // extract src_addr and dst_addr from packet
     // big endian
     // TODO
-    src_addr = packet[30]|((uint32_t)packet[31]<<8)|((uint32_t)packet[32]<<16)|((uint32_t)packet[33]<<24);
-    dst_addr = packet[34]|((uint32_t)packet[35]<<8)|((uint32_t)packet[36]<<16)|((uint32_t)packet[37]<<24);
+    src_addr = packet[12]|((uint32_t)packet[13]<<8)|((uint32_t)packet[14]<<16)|((uint32_t)packet[15]<<24);
+    dst_addr = packet[16]|((uint32_t)packet[17]<<8)|((uint32_t)packet[18]<<16)|((uint32_t)packet[19]<<24);
     printbase(dst_addr, 8, 16, 0);
     putchar('\n');
     // 2. check whether dst is me
@@ -746,6 +768,7 @@ for(int j = 0; j < 4; j++)HAL_SendIPPacket(j, output, rip_len + 20 + 8, src_mac)
       RipPacket rip;
       // check and validate
       if (disassemble(packet, res, &rip)) {
+        putstring("\nomg it's rip\n");
         if (rip.command == 1) {
           // 3a.3 request, ref. RFC2453 3.9.1
           // only need to respond to whole table requests in the lab
