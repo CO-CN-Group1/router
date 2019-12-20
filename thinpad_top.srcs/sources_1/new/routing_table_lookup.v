@@ -66,7 +66,8 @@ localparam[3:0]
     STATE_CPUOUT=11,
     STATE_CPUIN=12,
     STATE_CPUINLEN=13,
-    STATE_CPUOUTSLEEP=14;
+    STATE_CPUOUTSLEEP=14,
+    STATE_OUTPUT_CRAZY=15;
 //(*mark_debug="true"*)reg[3:0] state = STATE_IDLE;
 reg[3:0] state = STATE_IDLE;
 
@@ -341,7 +342,7 @@ always @(posedge clk or posedge rst)begin
                     insert_port<={data[14],data[15]};
                 end
                 else if (data[16]==8'h08 && data[17]==8'h00) begin
-                    if ({data[34],data[35],data[36],data[37]}==my_ip[data[15]]) begin
+                    if ({data[34],data[35],data[36],data[37]}==my_ip[data[15]] || {data[34],data[35],data[36],data[37]}==32'he0000009) begin
                         if (receiver_data_i!=8'b00000000) begin
                             receiver_addr<=9'd511;
                             receiver_ce<=1'b0;
@@ -516,7 +517,8 @@ always @(posedge clk or posedge rst)begin
                             {data[42],data[43],data[44],data[45]}<=nexthop_cache;//{data[34],data[35],data[36],data[37]};
                             {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
                             data_tail<=60;
-                            state <= STATE_OUTPUT;
+                            data[15]<=8'h01;
+                            state <= STATE_OUTPUT_CRAZY;
                         end
                         else begin
                             {data[14],data[15]}<=lookup_port;
@@ -588,6 +590,32 @@ always @(posedge clk or posedge rst)begin
                         //tx_axis_tlast <= 1;
                         state <= STATE_IDLE;
                         tx_axis_tvalid<=0;
+                    end else begin
+                        //data_head <= data_head + 1;
+                    end
+                end
+            end
+            STATE_OUTPUT_CRAZY:begin
+                receiver_addr<=9'd511;
+                receiver_ce<=1'b0;
+                receiver_we<=1'b1;
+                sender_addr<=7'd127;
+                sender_ce<=1'b0;
+                sender_we<=4'b1111;
+                tx_axis_tvalid<=1;
+                if(tx_axis_tvalid && tx_axis_tready)begin
+                    data_head<=data_head+1;
+                    if(tx_axis_tlast)begin
+                        //data_head <= data_head + 1;
+                        //tx_axis_tlast <= 1;
+                        if (data[15]!=8'h04) begin
+                            data_head<=0;
+                            data[15]<=data[15]+1;
+                        end
+                        else begin
+                            state <= STATE_IDLE;
+                            tx_axis_tvalid<=0;
+                        end
                     end else begin
                         //data_head <= data_head + 1;
                     end
