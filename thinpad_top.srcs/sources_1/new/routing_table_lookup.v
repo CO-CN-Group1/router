@@ -518,7 +518,8 @@ always @(posedge clk or posedge rst)begin
                             {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
                             data_tail<=60;
                             data[15]<=8'h01;
-                            state <= STATE_OUTPUT_CRAZY;
+                            state <= STATE_OUTPUT;
+                            //state <= STATE_OUTPUT_CRAZY;
                         end
                         else begin
                             {data[14],data[15]}<=lookup_port;
