@@ -100,6 +100,8 @@ initial begin
 
 end
 
+wire[7:0] porttt;
+reg[7:0] porttt_cache;
 routing_table #(
     //.IP_LENGTH(IP_LENGTH)
 ) routing_table_inst(
@@ -109,6 +111,7 @@ routing_table #(
     .dest_ip(dest_ip),
     .dest_ip_valid(dest_ip_valid),
     .nexthop(nexthop),
+    .port(porttt),
     .lookup_ready(lookup_ready),
     .nexthop_valid(nexthop_valid),
     .nexthop_not_found(nexthop_not_found),
@@ -469,6 +472,7 @@ always @(posedge clk or posedge rst)begin
                         end
                         else begin
                             nexthop_cache<=nexthop;
+                            porttt_cache<=porttt;
                             state<=STATE_SLEEP;
                             //lookup_valid<=1;
                         end
@@ -529,7 +533,8 @@ always @(posedge clk or posedge rst)begin
                             {data[42],data[43],data[44],data[45]}<=nexthop_cache;//{data[34],data[35],data[36],data[37]};
                             {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
                             data_tail<=60;
-                            data[15]<=8'h01;
+                            data[15]<=porttt_cache;
+                            
                             state <= STATE_OUTPUT;
                             //state <= STATE_OUTPUT_CRAZY;
                         end
