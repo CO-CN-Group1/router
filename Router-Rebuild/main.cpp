@@ -210,7 +210,39 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
       printbase(*c, 2, 16, 0);
       putchar(' ');
     }*/
-    putstring("\nsent an packet\n");
+    putstring("sent an packet\n");
+    (*hastoWrite) = 0xff;
+    return 0;
+}
+
+uint8_t bufferu[]={
+  0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0xCC,0xEF,0xAB,0xCD,0xEF,0x81,0x00,0x00,0x02,0x08,0x06,0x00,
+  0x01,0x08,0x00,0x06,0x04,0x00,0x01,0x00,0xCC,0xEF,0xAB,0xCD,0xEF,0x0A,0xA0,0x01,0x01,0x00,0x00,
+  0x00,0x00,0x00,0x00,0xAA,0x00,0x02,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+  0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+int HAL_DEBUG_ARP_SendIPPacket() {
+    
+    volatile uint8_t* hastoWrite;
+    hastoWrite = (uint8_t*)0xbc0001ff;
+    uint8_t x = *hastoWrite;
+    while(x==(uint8_t)0xff){
+      x = *hastoWrite;
+    }
+    uint8_t *c,*d,*e;
+    size_t legth = 64;
+    c = (uint8_t*)0xbc0001fc;
+    d = (uint8_t*)0xbc0001fd;
+    e = (uint8_t*)0xbc0001fe;
+    *c = (uint8_t)(legth&0xff);
+    *d = (uint8_t)((legth>>8)&0xff);
+    *e = (uint8_t)((legth>>16)&0xff);
+    c = (uint8_t*)0xbc000000;
+    for (int i = 0; i < (int)legth; i++, c+=1){
+      *c = bufferu[i];
+      //printbase(*c, 2, 16, 0);
+      //putchar(' ');
+    }
+    //putchar('\n');
     (*hastoWrite) = 0xff;
     return 0;
 }
@@ -565,8 +597,13 @@ bool forward(uint8_t *packet, size_t len) {
 bool disassemble(const uint8_t *packet, uint32_t len, RipPacket *output) {
   output->numEntries = 0;
   output->command = packet[28];
+  
+  // RIP version
   if(packet[29]!=2)return false;
+
+  // check command
   if(output->command < 1 || output->command > 2)return false;
+
   int offset, j;
   for (offset = 0, j = 0; offset + 52 <= len; j++, offset += 20){
     output->numEntries++;
@@ -636,13 +673,13 @@ uint32_t assemble(const RipPacket *rip, uint8_t *buffer) {
     buffer[19+offset] = des & ((1<<8)-1);
     des >>= 8;
     des = rip->entries[i].metric;
-    buffer[20+offset] = des & ((1<<8)-1);
-    des >>= 8;
-    buffer[21+offset] = des & ((1<<8)-1);
+    buffer[23+offset] = des & ((1<<8)-1);
     des >>= 8;
     buffer[22+offset] = des & ((1<<8)-1);
     des >>= 8;
-    buffer[23+offset] = des & ((1<<8)-1);
+    buffer[21+offset] = des & ((1<<8)-1);
+    des >>= 8;
+    buffer[20+offset] = des & ((1<<8)-1);
     des >>= 8;
   }
   return 4 + rip->numEntries * 20;
@@ -679,6 +716,12 @@ int main(int argc, char *argv[]) {
   cnt = 1;
   routersList[cnt].lson = 0;
   routersList[cnt].rson = 0;
+  routersList[cnt].addr = 0;
+  routersList[cnt].mask = 0;
+  routersList[cnt].if_index = 0;
+  routersList[cnt].metric = 0;
+  routersList[cnt].nexthop = 0;
+  routersList[cnt].timer = 0;
   // 0b. Add direct routes
   // For example:
   // 10.0.1.0/24 if 0
@@ -699,11 +742,13 @@ int main(int argc, char *argv[]) {
   entry.mask = 0x00FFFFFF;        // small endian
   entry.if_index = 1;    // small endian
   entry.nexthop = 0x0201000a;      // big endian, means direct
+  entry.metric = 1;
   update(true, entry);
   entry.addr = 0x0202000a & 0x00FEFFFF; // big endian
   entry.mask = 0x00FEFFFF;        // small endian
   entry.if_index = 2;    // small endian
   entry.nexthop = 0x0202000a;      // big endian, means direct
+  entry.metric = 2;
   update(true, entry);
   putstring("Insertion done\n");
   /*RoutingTableEntry entry;
@@ -730,37 +775,43 @@ int main(int argc, char *argv[]) {
     }
     printbase(*cc, 2, 16, 0);
   }*/
-
+  //HAL_DEBUG_ARP_SendIPPacket();
   uint64_t last_time = 0;
   uint64_t time = 0;
+  uint64_t ptime = 0;
   while (1) {
     // TODO: fix hardware timer suitcase
-    time++;//HAL_GetTicks();
-    if (time == 1 || time > last_time + 30 * 50000) {
+    last_time++;//HAL_GetTicks();
+    if(last_time == 140000){
+      last_time = 0;
+      time++;
+      ptime++;
+    }
+    if (ptime == 5) {
+      ptime = 0; 
       // What to do?
       // send complete routing table to every interface
       // ref. RFC2453 3.8
       // multicast MAC for 224.0.0.9 is 01:00:5e:00:00:09
       //printf("30s Timer\n");
-      last_time = time;
-      putstring("\nmulticasting routing table\n");
+      putstring("\nmulticasting routing table with ");
       // TODO: broadcast everything
       
-            RipPacket resp;
-            resp.command = 2;
-            resp.numEntries = 0;
-            putchar('\n');
-            for(int i = 1; i <= (int)cnt; i++)
-              if(routersList[i].nexthop!=0){
-                resp.entries[resp.numEntries].addr = routersList[i].addr;
-                resp.entries[resp.numEntries].mask = routersList[i].mask;
-                resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
-                resp.entries[resp.numEntries].metric = routersList[i].metric;
-                resp.numEntries++;
-                printbase(routersList[i].nexthop, 8, 16, 0);
-                putchar(' ');
-              }
-            putchar('\n');
+          RipPacket resp;
+          resp.command = 2;
+          resp.numEntries = 0;
+          putchar('\n');
+          for(int i = 1; i <= (int)cnt; i++)
+            if(routersList[i].nexthop!=0){
+              resp.entries[resp.numEntries].addr = routersList[i].addr;
+              resp.entries[resp.numEntries].mask = routersList[i].mask;
+              resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
+              resp.entries[resp.numEntries].metric = routersList[i].metric;
+              resp.numEntries++;
+              /*printbase(routersList[i].nexthop, 8, 16, 0);
+              putchar(' ');*/
+            }
+          //putchar('\n');
           uint32_t rip_len = assemble(&resp, &output[20 + 8]);
           // assemble
           // IP
@@ -795,17 +846,17 @@ int main(int argc, char *argv[]) {
           // checksum calculation for ip and udp
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
-          putchar('\n');
+          //putchar('\n');
         printbase(resp.numEntries, 1, 10, 0);
-        putstring("\nassembled, sending\n");
-        macaddr_t src_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
+        putstring(" rules...\n");
+        macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
         for(int j = 0; j < 4; j++){
           output[15] = ((addrs[j]>>24)&0xff);
           output[14] = ((addrs[j]>>16)&0xff);
           output[13] = ((addrs[j]>>8)&0xff);
           output[12] = (addrs[j]&0xff);
           validateIPChecksum(output, rip_len+20+8);
-          HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, src_mac);
+          HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, bro_mac);
         }
           
     }
@@ -860,7 +911,9 @@ int main(int argc, char *argv[]) {
       }
     }
     // TODO: Handle rip multicast address(224.0.0.9)?
-
+    if (dst_addr == 0x090000e0){
+      dst_is_me = true;
+    }
     if (dst_is_me) {
       putstring("\nwow it's a packet for the router\n");
       // 3a.1
@@ -892,31 +945,57 @@ int main(int argc, char *argv[]) {
               resp.entries[resp.numEntries].addr = rip.entries[i].addr;
               resp.entries[resp.numEntries].mask = rip.entries[i].mask;
               if(query(rip.entries[i].addr)){
-                resp.entries[resp.numEntries].nexthop = routersList[goal].nexthop;
+                resp.entries[resp.numEntries].nexthop = rip.entries[i].nexthop;
+                //resp.entries[resp.numEntries].metric = routersList[goal].nexthop;
                 resp.entries[resp.numEntries].metric = routersList[goal].metric;
               }
               else{
-                resp.entries[resp.numEntries].nexthop = 0;
+                resp.entries[resp.numEntries].nexthop = rip.entries[i].nexthop;
+                //resp.entries[resp.numEntries].metric = 0;
                 resp.entries[resp.numEntries].metric = 16;
               }
               resp.numEntries++;
             }
           }
-          // assemble
-          // IP
+
+          uint32_t rip_len = assemble(&resp, &output[20 + 8]);
           output[0] = 0x45;
+          output[1] = 0xc0;
+          output[2] = ((rip_len + 28)>>8)&0xff;
+          output[3] = (rip_len + 28)&0xff;
+
+          output[6] = 0x40;
+          output[7] = 0x00;
+          output[8] = 0x01;
+          output[9] = 0x11;
           // ...
           // UDP
           // port = 520
+          output[16] = src_addr&0xff;
+          output[17] = (src_addr>>8)&0xff;
+          output[18] = (src_addr>>16)&0xff;
+          output[19] = (src_addr>>24)&0xff;
+
           output[20] = 0x02;
           output[21] = 0x08;
+          output[22] = 0x02;
+          output[23] = 0x08;
+          output[24] = ((rip_len + 8)>>8)&0xff;
+          output[25] = (rip_len + 8)&0xff;
+
+          calculateIPChecksum(&output[20], rip_len+8);
           // ...
           // RIP
-          uint32_t rip_len = assemble(&resp, &output[20 + 8]);
+          
           // checksum calculation for ip and udp
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
-          // TODO: put the package in the proper position
+          //putchar('\n');
+          output[15] = ((addrs[if_index]>>24)&0xff);
+          output[14] = ((addrs[if_index]>>16)&0xff);
+          output[13] = ((addrs[if_index]>>8)&0xff);
+          output[12] = (addrs[if_index]&0xff);
+          validateIPChecksum(output, rip_len+20+8);
           HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
         } else {
           // 3a.2 response, ref. RFC2453 3.9.2
@@ -972,21 +1051,53 @@ int main(int argc, char *argv[]) {
           }
           // triggered updates? ref. RFC2453 3.10.1
           resp.command = 2;
+          if(resp.numEntries == 0) continue;
+          uint32_t rip_len = assemble(&resp, &output[20 + 8]);
           // assemble
           // IP
           output[0] = 0x45;
+          output[1] = 0xc0;
+          output[2] = ((rip_len + 28)>>8)&0xff;
+          output[3] = (rip_len + 28)&0xff;
+
+          output[6] = 0x40;
+          output[7] = 0x00;
+          output[8] = 0x01;
+          output[9] = 0x11;
           // ...
           // UDP
           // port = 520
+          output[16] = 224;
+          output[17] = 0;
+          output[18] = 0;
+          output[19] = 9;
+
           output[20] = 0x02;
           output[21] = 0x08;
+          output[22] = 0x02;
+          output[23] = 0x08;
+          output[24] = ((rip_len + 8)>>8)&0xff;
+          output[25] = (rip_len + 8)&0xff;
+
+          calculateIPChecksum(&output[20], rip_len+8);
           // ...
           // RIP
-          uint32_t rip_len = assemble(&resp, &output[20 + 8]);
+          
           // checksum calculation for ip and udp
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
-          for(int i = 0; i < 4; i++)HAL_SendIPPacket(i, output, rip_len + 20 + 8, src_mac);
+          //putchar('\n');
+          printbase(resp.numEntries, 1, 10, 0);
+          putstring(" rules...\n");
+          macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
+          for(int j = 0; j < 4; j++){
+            output[15] = ((addrs[j]>>24)&0xff);
+            output[14] = ((addrs[j]>>16)&0xff);
+            output[13] = ((addrs[j]>>8)&0xff);
+            output[12] = (addrs[j]&0xff);
+            validateIPChecksum(output, rip_len+20+8);
+            HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, bro_mac);
+          }
         }
       }
     } 
