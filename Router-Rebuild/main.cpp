@@ -206,10 +206,10 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
     for (int i = 0; i < 18; i++, c+=1) *c = bufferh[i];
     for (int i = 0; i < (int)length; i++, c+=1) *c = buffer[i];
     c = (uint8_t*)0xbc000000;
-    for (int i = 0; i < (int)legth; i++, c+=1){
+    /*for (int i = 0; i < (int)legth; i++, c+=1){
       printbase(*c, 2, 16, 0);
       putchar(' ');
-    }
+    }*/
     putstring("\nsent an packet\n");
     (*hastoWrite) = 0xff;
     return 0;
@@ -241,6 +241,39 @@ bool validateIPChecksum(uint8_t *packet, size_t len) {
   uint16_t csm = ~(uint16_t)(checksum & filter);
   packet[10] = csm >> 8;
   packet[11] = csm & ((1 << 8) - 1);
+ /*printbase(csm, 2, 16, 0);
+  putchar(' ');
+  printbase(fcsm, 2, 16, 0);
+  putchar(' '); */
+  if(fcsm == csm){
+    //putstring(" wow ");
+    return true;
+  }
+  else {
+    //putstring(" gg ");
+    return false;
+  }
+}
+bool calculateIPChecksum(uint8_t *packet, size_t len) {
+  /*for(int i = 0; i < (int)len; i++){
+    printbase(packet[i], 2, 16, 0);
+    putchar(' ');
+  }putchar('\n');*/
+  uint16_t fcsm = (uint16_t)(((uint32_t)packet[6] << 8) | (uint32_t)packet[7]);
+  int length = (int)len;
+  packet[6] = 0;
+  packet[7] = 0;
+  uint32_t checksum = 0, cur, filter = (1 << 16) - 1;
+  for (int i = 0; i < length; i += 2){
+      cur = (((uint16_t)packet[i] << 8) | (uint16_t)packet[i + 1]);
+      checksum += cur;
+  }
+  /*printbase(checksum, 8, 16, 0);
+  putchar('\n');*/
+  for (;(checksum >> 16) > 0; checksum = ((checksum & filter) + (checksum >> 16)));
+  uint16_t csm = ~(uint16_t)(checksum & filter);
+  packet[6] = csm >> 8;
+  packet[7] = csm & ((1 << 8) - 1);
  /*printbase(csm, 2, 16, 0);
   putchar(' ');
   printbase(fcsm, 2, 16, 0);
@@ -732,14 +765,14 @@ int main(int argc, char *argv[]) {
           // assemble
           // IP
           output[0] = 0x45;
-          output[1] = 0x00;
+          output[1] = 0xc0;
           output[2] = ((rip_len + 28)>>8)&0xff;
           output[3] = (rip_len + 28)&0xff;
 
           output[6] = 0x40;
           output[7] = 0x00;
-          output[8] = 0x40;
-          output[9] = 0x01;
+          output[8] = 0x01;
+          output[9] = 0x11;
           // ...
           // UDP
           // port = 520
@@ -750,6 +783,12 @@ int main(int argc, char *argv[]) {
 
           output[20] = 0x02;
           output[21] = 0x08;
+          output[22] = 0x02;
+          output[23] = 0x08;
+          output[24] = ((rip_len + 8)>>8)&0xff;
+          output[25] = (rip_len + 8)&0xff;
+
+          calculateIPChecksum(&output[20], rip_len+8);
           // ...
           // RIP
           
