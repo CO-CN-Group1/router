@@ -30,7 +30,7 @@ module routing_table
     input wire[31:0] os_port_din,
     output wire[31:0] os_port_dout,
     input wire[3:0] os_port_we,
-    input wire os_port_en,
+    input wire os_port_en
 
 );
 

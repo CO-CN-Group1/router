@@ -39,6 +39,12 @@ module routing_table_lookup #
     input wire[7:0] router_table_os_rst,
     input wire router_table_os_en,
 
+    input wire[13:0] router_table_os_port_addr,
+    input wire[31:0] router_table_os_port_din,
+    output wire[31:0] router_table_os_port_dout,
+    input wire[3:0] router_table_os_port_we,
+    input wire router_table_os_port_en,
+
     output reg [15:0] led_out
 );
 reg sender_ce,receiver_ce,receiver_we;
@@ -113,7 +119,13 @@ routing_table #(
     .os_dout(router_table_os_dout),
     .os_we(router_table_os_we),
     .os_rst(router_table_os_rst),
-    .os_en(router_table_os_en)
+    .os_en(router_table_os_en),
+
+    .os_port_addr(router_table_os_port_addr),
+    .os_port_din(router_table_os_port_din),
+    .os_port_dout(router_table_os_port_dout),
+    .os_port_we(router_table_os_port_we),
+    .os_port_en(router_table_os_port_en)
 );
 
 wire[MAC_LENGTH-1:0] lookup_mac;
