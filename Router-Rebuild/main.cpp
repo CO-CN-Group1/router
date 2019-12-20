@@ -372,6 +372,9 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].nexthop = entry.nexthop;
             cc = (uint32_t*)(0xbd000000+(cnt<<3));
             *cc = nxth;
+            c = (uint8_t*)(0xbf000000+cnt);
+            *c = (uint8_t)entry.if_index;
+            //printbase(*c, 2, 16, 0);
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -401,6 +404,8 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].nexthop = entry.nexthop;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = nxth;
+            c = (uint8_t*)(0xbf000000+p);
+            *c = (uint8_t)entry.if_index;
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -427,6 +432,9 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].nexthop = entry.nexthop;
             cc = (uint32_t*)(0xbd000000+(cnt<<3));
             *cc = nxth;
+            c = (uint8_t*)(0xbf000000+cnt);
+            *c = (uint8_t)entry.if_index;
+            //printbase(*c, 2, 16, 0);
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -456,6 +464,8 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].nexthop = entry.nexthop;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = nxth;
+            c = (uint8_t*)(0xbf000000+p);
+            *c = (uint8_t)entry.if_index;
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -483,6 +493,8 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].lson = 0;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = 0;
+            c = (uint8_t*)(0xbf000000+p);
+            *c = (uint8_t)entry.if_index;
             break;
           }
           p = routersList[p].lson;
@@ -499,6 +511,8 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].rson = 0;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = 0;
+            c = (uint8_t*)(0xbf000000+p);
+            *c = (uint8_t)entry.if_index;
             break;
           }
           p = routersList[p].rson;
@@ -762,16 +776,19 @@ int main(int argc, char *argv[]) {
   entry.if_index = 1;    // small endian
   entry.nexthop = 0x0201000a;      // big endian, means direct
   update(true, entry);*/
-  volatile uint8_t *cc = (uint8_t*)0xbd000000;
+  volatile uint8_t *cc = (uint8_t*)0xbd000000, *ccc = (uint8_t*)0xbf000000;
   putstring("Router size: ");
   printbase(cnt, 2, 16, 0);
   putchar('\n');
-  /*
-  for(int i = 0; i < (int)((cnt+1)<<3); i++, cc+=1){
+  
+  /*for(int i = 0; i < (int)((cnt+1)<<3); i++, cc+=1){
     if(i%8==0){
       putstring("\nNode: ");
       printbase(i>>3, 2, 16, 0);
       putchar(' ');
+      printbase(*ccc, 2, 16, 0);
+      putchar(' ');
+      ccc+=1;
     }
     printbase(*cc, 2, 16, 0);
   }*/
@@ -787,7 +804,7 @@ int main(int argc, char *argv[]) {
       time++;
       ptime++;
     }
-    if (ptime == 5) {
+    if (ptime == 30) {
       ptime = 0; 
       // What to do?
       // send complete routing table to every interface

@@ -27,6 +27,7 @@ write all at same time
 Trie format:
 root: 1
 each vertex: 64 bits-> 2 int (nexthop?0, leftson, rightson)
+port bf000000~bf00ffff
 
 a tag: 
 if writing, set bd000000~bd000007 to all '1'.
