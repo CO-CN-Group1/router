@@ -143,11 +143,7 @@ reg [PORT_LENGTH-1:0] insert_port;
 reg insert_valid=0;
 reg [32:0] checksum;
 wire insert_ready;
-arp_table #(
-    .IP_LENGTH(IP_LENGTH),
-    .PORT_LENGTH(PORT_LENGTH),
-    .MAC_LENGTH(MAC_LENGTH)
-) arp_table_inst(
+arp_table arp_table_inst(
     .clk(clk),
     .rst(rst),
     
