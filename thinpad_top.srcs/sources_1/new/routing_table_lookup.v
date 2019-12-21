@@ -1,7 +1,7 @@
 module routing_table_lookup #
 (
     parameter DATA_WIDTH = 8,
-    parameter FRAME_LENGTH = 2048*8,
+    parameter FRAME_LENGTH = 1536*8,
     parameter IP_LENGTH = 32,
     parameter PORT_LENGTH = 8,
     parameter MAC_LENGTH = 48
