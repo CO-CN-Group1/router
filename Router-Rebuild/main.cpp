@@ -744,8 +744,8 @@ uint8_t output[2048];
 // 2: 10.0.3.1
 // 3: 10.0.4.1
 // 你可以按需进行修改，注意端序
-uint32_t addrs[N_IFACE_ON_BOARD] = {0x0101000a, 0x0102000a, 0x0103000a,
-                                     0x0104000a};
+uint32_t addrs[N_IFACE_ON_BOARD] = {0x0100a8c0, 0x0101a8c0, 0x0102a8c0,
+                                     0x0103a8c0};
 
 int main(int argc, char *argv[]) {
   // 0a. not sure whether needed
@@ -792,7 +792,7 @@ int main(int argc, char *argv[]) {
   volatile uint8_t *cc = (uint8_t*)0xbd000000, *ccc = (uint8_t*)0xbf000000;
   for(int i = 0; i < 2048; i++, ccc+=1) *ccc = 0;
 
-  RoutingTableEntry entry;
+  /*RoutingTableEntry entry;
   entry.addr = 0x0201000a & 0x00FFFFFF; // big endian
   entry.mask = 0x00FFFFFF;        // small endian
   entry.if_index = 1;    // small endian
@@ -811,7 +811,7 @@ int main(int argc, char *argv[]) {
   entry.nexthop = 0x0302000a;      // big endian, means direct
   entry.metric = 2;
   update(true, entry);
-  putstring("Insertion done\n");
+  putstring("Insertion done\n");*/
   /*RoutingTableEntry entry;
   entry.addr = 0x0102000a & 0x00FFFFFF; // big endian
   entry.mask = 0x00FFFFFF;        // small endian
