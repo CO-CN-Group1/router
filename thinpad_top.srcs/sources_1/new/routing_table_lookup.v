@@ -169,8 +169,6 @@ assign rx_axis_tready = rx_axis_tready_int;
 
 assign tx_axis_tdata = data[data_head];
 assign tx_axis_tlast = (data_head+1==data_tail);
-reg waittable=0;
-reg nexthopnotnot;
 
 reg[7:0] cpuoutlen[2:0];
 always @(posedge clk or posedge rst)begin
@@ -188,10 +186,7 @@ always @(posedge clk or posedge rst)begin
         receiver_addr<=9'd511;
         receiver_ce<=1'b0;
         receiver_we<=1'b1;
-        waittable<=1'b0;
     end else begin
-        if (waittable==1'b1) begin
-        end
         case(state)
             STATE_IDLE:begin
                 receiver_addr<=9'd511;
@@ -332,12 +327,7 @@ always @(posedge clk or posedge rst)begin
                 tx_axis_tvalid <=0;
                 if(rx_axis_tvalid && rx_axis_tready_int)begin
                     if(rx_axis_tlast) begin
-                        if (waittable || (data_tail>=38 && (data[16]==8'h08 && data[17]==8'h00) && !({data[34],data[35],data[36],data[37]}==my_ip[data[15]] || {data[34],data[35],data[36],data[37]}==32'he0000009) && data[26]!=0)) begin
-                            state<=STATE_ROUTING;
-                        end
-                        else begin
-                            state <= STATE_COMPUTE;
-                        end
+                        state <= STATE_COMPUTE;
                         rx_axis_tready_int <=0;
                     end else begin
                         rx_axis_tready_int <=1;
@@ -346,35 +336,6 @@ always @(posedge clk or posedge rst)begin
                     data_tail <= data_tail+1;
                 end else begin
                     rx_axis_tready_int <=1;
-                end
-                if (data_tail>=38 && (data[16]==8'h08 && data[17]==8'h00) && !({data[34],data[35],data[36],data[37]}==my_ip[data[15]] || {data[34],data[35],data[36],data[37]}==32'he0000009) && data[26]!=0) begin
-                    waittable<=1'b1;
-                            dest_ip_valid<=1;
-                            dest_ip <= {data[34],data[35],data[36],data[37]};
-                end
-                if (dest_ip_valid) begin
-                    if(lookup_ready)begin
-                        dest_ip_valid <= 0;
-                    end else begin 
-                        //dest_ip_valid <= 0;
-                    end
-                end
-                else begin
-                    if(waittable && nexthop_valid) begin
-                    waittable<=1'b0;
-                        nexthopnotnot<=nexthop_not_found;
-                            nexthop_cache<=nexthop;
-                            porttt_cache<=porttt;
-                        if(nexthop_not_found) begin
-                            state<=STATE_IDLE;
-                        end
-                        else begin
-                            nexthop_cache<=nexthop;
-                            porttt_cache<=porttt;
-                            state<=STATE_SLEEP;
-                            //lookup_valid<=1;
-                        end
-                    end
                 end
             end
             STATE_COMPUTE:begin
@@ -416,7 +377,6 @@ always @(posedge clk or posedge rst)begin
                         end
                         else begin
                             state<=STATE_ROUTING;
-                            waittable<=1'b1;
                             dest_ip_valid<=1;
                             dest_ip <= {data[34],data[35],data[36],data[37]};
                         end
@@ -502,19 +462,7 @@ always @(posedge clk or posedge rst)begin
                     end
                 end
                 else begin
-                    if (!waittable) begin
-                        if(nexthopnotnot) begin
-                            state<=STATE_IDLE;
-                        end
-                        else begin
-                            //nexthop_cache<=nexthop;
-                            //porttt_cache<=porttt;
-                            state<=STATE_SLEEP;
-                            //lookup_valid<=1;
-                        end
-                    end
-                    else if(nexthop_valid) begin
-                    waittable<=1'b0;
+                    if(nexthop_valid) begin
                         if(nexthop_not_found) begin
                             state<=STATE_IDLE;
                         end
