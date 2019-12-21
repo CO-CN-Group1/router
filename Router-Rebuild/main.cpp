@@ -851,20 +851,20 @@ int main(int argc, char *argv[]) {
   volatile uint8_t *cc = (uint8_t*)0xbd000000, *ccc = (uint8_t*)0xbf000000;
   for(int i = 0; i < 2048*32; i++, ccc+=1) *ccc = 0;
 
-  /*RoutingTableEntry entry;
+  RoutingTableEntry entry;
   entry.addr = 0x0100a8c0 & 0x00FFFFFF; // big endian
   entry.mask = 0x00FFFFFF;        // small endian
   entry.if_index = 1;    // small endian
   entry.nexthop = 0x0200a8c0;      // big endian, means direct
   entry.metric = 1;
   update(true, entry);
-  entry.addr = 0x0101a8c0 & 0x00FEFFFF; // big endian
-  entry.mask = 0x00FEFFFF;        // small endian
+  entry.addr = 0x0101a8c0 & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
   entry.if_index = 2;    // small endian
   entry.nexthop = 0x0201a8c0;      // big endian, means direct
   entry.metric = 2;
   update(true, entry);
-  putstring("Insertion done\n");*/
+  putstring("Insertion done\n");/**/
   /*RoutingTableEntry entry;
   entry.addr = 0x0102000a & 0x00FFFFFF; // big endian
   entry.mask = 0x00FFFFFF;        // small endian
