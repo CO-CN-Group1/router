@@ -5,9 +5,10 @@
 #include <string.h>
 
 void write_serial(uint8_t data){
-    while(1){
-        uint8_t *pt = (uint8_t*)0xBFD003FC;
-        if((*pt)&0x0001)break;
+    uint8_t *pt = (uint8_t*)0xBFD003FC;
+    uint8_t x = *pt;
+    while((x&0x0001)==0x0){
+        x = *pt;
     }
     uint8_t *ptr = (uint8_t*)0xBFD003F8;
     *ptr = data;
@@ -328,6 +329,7 @@ bool calculateIPChecksum(uint8_t *packet, size_t len) {
  * 插入时如果已经存在一条 addr 和 len 都相同的表项，则替换掉原有的。
  * 删除时按照 addr 和 len 匹配。
  */
+uint8_t makethzero[]={0x0, 0xfc, 0xf4, 0xcf, 0x4f};
 void update(bool insert, RoutingTableEntry entry) {
   int p = 1, q;
   uint32_t ii = 1<<31;
@@ -337,7 +339,7 @@ void update(bool insert, RoutingTableEntry entry) {
   int len = 0;
   if(mask == 0xFFFFFFFF) len = 32;
   else for (len = 0; ((((uint32_t)1)<<(31-len))&mask);len++);
-  uint8_t x, y;
+  uint8_t x, y, z, xx, yy;
   uint8_t *c = (uint8_t*)(0xbd000000);
   uint32_t *cc = (uint32_t*)(0xbd000000);
   *c = 1;
@@ -378,13 +380,13 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(cnt>>2));
             x = *c;
             y = ((cnt&3)<<1);
-            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
-            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
+            z = x&makethzero[entry.if_index];
+            *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             /*printbase(*c, 4, 4, 0);
-            printbase(x, 4, 4, 0);
+            printbase(z, 4, 4, 0);
             printbase(y, 4, 4, 0);
             printbase((uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);
-            printbase(x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
+            printbase(z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -417,8 +419,8 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(p>>2));
             x = *c;
             y = ((p&3)<<1);
-            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
-            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
+            z = x&makethzero[entry.if_index];
+            *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -448,13 +450,13 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(cnt>>2));
             x = *c;
             y = ((cnt&3)<<1);
-            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
-            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
+            z = x&makethzero[entry.if_index];
+            *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             /*printbase(*c, 4, 4, 0);
-            printbase(x, 4, 4, 0);
+            printbase(z, 4, 4, 0);
             printbase(y, 4, 4, 0);
             printbase((uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);
-            printbase(x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
+            printbase(z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -487,8 +489,8 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(p>>2));
             x = *c;
             y = ((p&3)<<1);
-            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
-            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
+            z = x&makethzero[entry.if_index];
+            *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -519,8 +521,8 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(p>>2));
             x = *c;
             y = ((p&3)<<1);
-            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
-            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
+            z = x&makethzero[entry.if_index];
+            *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             break;
           }
           p = routersList[p].lson;
@@ -540,8 +542,8 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(p>>2));
             x = *c;
             y = ((p&3)<<1);
-            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
-            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
+            z = x&makethzero[entry.if_index];
+            *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             break;
           }
           p = routersList[p].rson;
@@ -780,6 +782,9 @@ int main(int argc, char *argv[]) {
     entry.nexthop = 0;      // big endian, means direct
     update(true, entry);
   }*/
+  volatile uint8_t *cc = (uint8_t*)0xbd000000, *ccc = (uint8_t*)0xbf000000;
+  for(int i = 0; i < 2048; i++, ccc+=1) *ccc = 0;
+
   RoutingTableEntry entry;
   entry.addr = 0x0201000a & 0x00FFFFFF; // big endian
   entry.mask = 0x00FFFFFF;        // small endian
@@ -805,12 +810,14 @@ int main(int argc, char *argv[]) {
   entry.if_index = 1;    // small endian
   entry.nexthop = 0x0201000a;      // big endian, means direct
   update(true, entry);*/
-  volatile uint8_t *cc = (uint8_t*)0xbd000000, *ccc = (uint8_t*)0xbf000000;
+  
   putstring("Router size: ");
   printbase(cnt, 2, 16, 0);
   putchar('\n');
+
   
-  /*for(int i = 0; i < (int)((cnt+1)<<3); i++, cc+=1){
+  
+  for(int i = 0; i < (int)((cnt+1)<<3); i++, cc+=1){
     if(i%8==0){
       putstring("\nNode: ");
       printbase(i>>3, 2, 16, 0);
@@ -822,7 +829,7 @@ int main(int argc, char *argv[]) {
       putchar(' ');
     }
     printbase(*cc, 2, 16, 0);
-  }*/
+  }
   //HAL_DEBUG_ARP_SendIPPacket();
   uint64_t last_time = 0;
   uint64_t time = 0;
