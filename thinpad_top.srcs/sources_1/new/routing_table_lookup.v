@@ -1,7 +1,7 @@
 module routing_table_lookup #
 (
     parameter DATA_WIDTH = 8,
-    parameter FRAME_LENGTH = 1524*8,
+    parameter FRAME_LENGTH = 576*8,
     parameter IP_LENGTH = 32,
     parameter PORT_LENGTH = 8,
     parameter MAC_LENGTH = 48
@@ -16,7 +16,7 @@ module routing_table_lookup #
 
     input wire [DATA_WIDTH-1:0] receiver_data_i,
     output reg [DATA_WIDTH-1:0] receiver_data_o,
-    output reg [10:0] receiver_addr,
+    output reg [8:0] receiver_addr,
     output wire receiver_cen,
     output wire receiver_wen,
 
@@ -27,7 +27,7 @@ module routing_table_lookup #
 
     input wire [DATA_WIDTH*4-1:0] sender_data_i,
     output reg [DATA_WIDTH*4-1:0] sender_data_o,
-    output reg [8:0] sender_addr,
+    output reg [6:0] sender_addr,
     output wire sender_cen,
     output wire [3:0]sender_wen,
 
@@ -98,6 +98,7 @@ initial begin
     my_ip[3] <= 32'hc0a80201;
     my_ip[4] <= 32'hc0a80301;
 
+
 end
 
 wire[7:0] porttt;
@@ -143,7 +144,11 @@ reg [PORT_LENGTH-1:0] insert_port;
 reg insert_valid=0;
 reg [32:0] checksum;
 wire insert_ready;
-arp_table arp_table_inst(
+arp_table #(
+    .IP_LENGTH(IP_LENGTH),
+    .PORT_LENGTH(PORT_LENGTH),
+    .MAC_LENGTH(MAC_LENGTH)
+) arp_table_inst(
     .clk(clk),
     .rst(rst),
     
@@ -169,6 +174,8 @@ assign rx_axis_tready = rx_axis_tready_int;
 
 assign tx_axis_tdata = data[data_head];
 assign tx_axis_tlast = (data_head+1==data_tail);
+reg waittable=0;
+reg nexthopnotnot;
 
 reg[7:0] cpuoutlen[2:0];
 always @(posedge clk or posedge rst)begin
@@ -186,7 +193,10 @@ always @(posedge clk or posedge rst)begin
         receiver_addr<=9'd511;
         receiver_ce<=1'b0;
         receiver_we<=1'b1;
+        waittable<=1'b0;
     end else begin
+        if (waittable==1'b1) begin
+        end
         case(state)
             STATE_IDLE:begin
                 receiver_addr<=9'd511;
@@ -327,7 +337,12 @@ always @(posedge clk or posedge rst)begin
                 tx_axis_tvalid <=0;
                 if(rx_axis_tvalid && rx_axis_tready_int)begin
                     if(rx_axis_tlast) begin
-                        state <= STATE_COMPUTE;
+                        if (waittable || (data_tail>=38 && (data[16]==8'h08 && data[17]==8'h00) && !({data[34],data[35],data[36],data[37]}==my_ip[data[15]] || {data[34],data[35],data[36],data[37]}==32'he0000009) && data[26]!=0)) begin
+                            state<=STATE_ROUTING;
+                        end
+                        else begin
+                            state <= STATE_COMPUTE;
+                        end
                         rx_axis_tready_int <=0;
                     end else begin
                         rx_axis_tready_int <=1;
@@ -336,6 +351,35 @@ always @(posedge clk or posedge rst)begin
                     data_tail <= data_tail+1;
                 end else begin
                     rx_axis_tready_int <=1;
+                end
+                if (data_tail>=38 && (data[16]==8'h08 && data[17]==8'h00) && !({data[34],data[35],data[36],data[37]}==my_ip[data[15]] || {data[34],data[35],data[36],data[37]}==32'he0000009) && data[26]!=0) begin
+                    waittable<=1'b1;
+                            dest_ip_valid<=1;
+                            dest_ip <= {data[34],data[35],data[36],data[37]};
+                end
+                if (dest_ip_valid) begin
+                    if(lookup_ready)begin
+                        dest_ip_valid <= 0;
+                    end else begin 
+                        //dest_ip_valid <= 0;
+                    end
+                end
+                else begin
+                    if(waittable && nexthop_valid) begin
+                    waittable<=1'b0;
+                        nexthopnotnot<=nexthop_not_found;
+                            nexthop_cache<=nexthop;
+                            porttt_cache<=porttt;
+                        if(nexthop_not_found) begin
+                            state<=STATE_IDLE;
+                        end
+                        else begin
+                            nexthop_cache<=nexthop;
+                            porttt_cache<=porttt;
+                            state<=STATE_SLEEP;
+                            //lookup_valid<=1;
+                        end
+                    end
                 end
             end
             STATE_COMPUTE:begin
@@ -377,6 +421,7 @@ always @(posedge clk or posedge rst)begin
                         end
                         else begin
                             state<=STATE_ROUTING;
+                            waittable<=1'b1;
                             dest_ip_valid<=1;
                             dest_ip <= {data[34],data[35],data[36],data[37]};
                         end
@@ -462,7 +507,19 @@ always @(posedge clk or posedge rst)begin
                     end
                 end
                 else begin
-                    if(nexthop_valid) begin
+                    if (!waittable) begin
+                        if(nexthopnotnot) begin
+                            state<=STATE_IDLE;
+                        end
+                        else begin
+                            //nexthop_cache<=nexthop;
+                            //porttt_cache<=porttt;
+                            state<=STATE_SLEEP;
+                            //lookup_valid<=1;
+                        end
+                    end
+                    else if(nexthop_valid) begin
+                    waittable<=1'b0;
                         if(nexthop_not_found) begin
                             state<=STATE_IDLE;
                         end
