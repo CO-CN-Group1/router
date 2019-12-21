@@ -128,7 +128,7 @@ typedef struct {
     // 为了实现 RIP 协议，需要在这里添加额外的字段
 } RoutingTableEntry;
 
-RoutingTableEntry routersList[1005];
+RoutingTableEntry routersList[1920*32];
 uint32_t cnt = 1, goal;
 
 int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
@@ -831,6 +831,7 @@ int main(int argc, char *argv[]) {
   routersList[cnt].metric = 0;
   routersList[cnt].nexthop = 0;
   routersList[cnt].timer = 0;
+  routersList[cnt].isleaf = false;
   // 0b. Add direct routes
   // For example:
   // 10.0.1.0/24 if 0
@@ -1246,14 +1247,14 @@ int main(int argc, char *argv[]) {
           putstring("\nNum: ");
             printbase(rip.numEntries, 8, 16, 0);
           for (int i = 0; i < (int)rip.numEntries; i++){
-            /*putstring("\nAddr: ");
+            putstring("\nAddr: ");
             printbase(rip.entries[i].addr, 8, 16, 0);
-            putstring("\nMask: ");
+            putstring(" Mask: ");
             printbase(rip.entries[i].mask, 8, 16, 0);
             putstring("\nNexthop: ");
             printbase(rip.entries[i].nexthop, 8, 16, 0);
-            putstring("\nMetric: ");
-            printbase(rip.entries[i].metric, 8, 16, 0);*/
+            putstring(" Metric: ");
+            printbase(rip.entries[i].metric, 8, 16, 0);/**/
             bool hasroute = query(rip.entries[i].addr, rip.entries[i].mask);
             RoutingTableEntry routingentry;
             routingentry.addr = rip.entries[i].addr;
