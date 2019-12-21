@@ -28,7 +28,7 @@ logic insert_ready;
 
 
 arp_table arp_table_inst(
-    .clk(clk_50M),
+    .clk(clk_125M),
     .rst(rst),
     .lookup_ip(lookup_ip),
     .lookup_mac(lookup_mac),
@@ -67,9 +67,44 @@ initial begin
     arp_sample_out_fd = $fopen("arp_sample_out.mem","w");
     
     rst = 1;
-    #100 rst = 0;
-    #100 init = 1;
+    #20 rst = 0;
 end
+
+localparam[1:0]
+    STATE_INSERT_IDLE = 0,
+    STATE_INSERT_INSERT = 1;
+
+logic[1:0] state_insert;
+logic[4:0] timer; 
+integer insert_current;
+
+always @(posedge clk_125M) begin
+    if(rst) begin
+        state_insert <= STATE_INSERT_IDLE;
+        timer <= 5'b0;
+        insert_current <= 0;
+    end else begin
+        case(state_insert)
+            STATE_INSERT_IDLE:begin
+                if(timer == 5'b11111)begin
+                    state_insert <= STATE_INSERT_INSERT;
+                end else begin
+                    timer <= timer+1;
+                    insert_ip <= 32'b0;
+                    insert_mac <= 48'b0;
+                    insert_port <= 16'b0;
+                    insert
+                end
+            end
+
+        endcase
+    end
+end
+
+
+
+
+
 
 logic[1:0] table_insert = 0;
 integer current = 0;
