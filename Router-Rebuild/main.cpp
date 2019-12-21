@@ -373,13 +373,13 @@ void update(bool insert, RoutingTableEntry entry) {
   *(c+5) = 1;
   *(c+6) = 1;
   *(c+7) = 1;
-  putstring("Inserting ");
+  /*putstring("Inserting ");
   printbase(addr, 8, 16, 0);
   putchar(' ');
   printbase(len, 1, 10, 0);
   putchar(' ');
   printbase(nxth, 8, 16, 0);
-  putchar('\n');
+  putchar('\n');*/
   if(insert){
     for (int i = 0; i < len; i++){
       q = (((ii>>i)&addr)>0);
@@ -926,7 +926,18 @@ int main(int argc, char *argv[]) {
               resp.entries[resp.numEntries].mask = routersList[i].mask;
               resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
               resp.entries[resp.numEntries].metric = routersList[i].metric;
+
+              printbase(resp.entries[resp.numEntries].addr, 8, 16, 0);
+              putchar(' ');
+              printbase(resp.entries[resp.numEntries].mask, 8, 16, 0);
+              putchar(' ');
+              printbase(resp.entries[resp.numEntries].nexthop, 8, 16, 0);
+              putchar(' ');
+              printbase(resp.entries[resp.numEntries].metric, 1, 10, 0);
+              putchar('\n');
               resp.numEntries++;
+
+              
 
               if(resp.numEntries == 25){
                 uint32_t rip_len = assemble(&resp, &output[20 + 8]);
@@ -1235,14 +1246,14 @@ int main(int argc, char *argv[]) {
           putstring("\nNum: ");
             printbase(rip.numEntries, 8, 16, 0);
           for (int i = 0; i < (int)rip.numEntries; i++){
-            putstring("\nAddr: ");
+            /*putstring("\nAddr: ");
             printbase(rip.entries[i].addr, 8, 16, 0);
             putstring("\nMask: ");
             printbase(rip.entries[i].mask, 8, 16, 0);
             putstring("\nNexthop: ");
             printbase(rip.entries[i].nexthop, 8, 16, 0);
             putstring("\nMetric: ");
-            printbase(rip.entries[i].metric, 8, 16, 0);
+            printbase(rip.entries[i].metric, 8, 16, 0);*/
             bool hasroute = query(rip.entries[i].addr, rip.entries[i].mask);
             RoutingTableEntry routingentry;
             routingentry.addr = rip.entries[i].addr;
@@ -1270,7 +1281,7 @@ int main(int argc, char *argv[]) {
                 else routingentry.nexthop = src_addr;
                 routingentry.if_index = if_index;
                 routingentry.timer = time;
-                if(routingentry.metric < 16)update(true, routingentry);
+                if((int)routingentry.metric < 16)update(true, routingentry);
               }
               else{
                 routersList[goal].timer = time;
@@ -1280,7 +1291,7 @@ int main(int argc, char *argv[]) {
               putstring("\nnot found route\n");
               printbase(rip.entries[i].metric, 1, 10, 0);
               routingentry.metric = rip.entries[i].metric + 1;
-              if(routingentry.metric>=16)continue;
+              if((int)routingentry.metric>=16)continue;
               routingentry.mask = rip.entries[i].mask;
               if(rip.entries[i].nexthop!=0){
                 routingentry.nexthop = rip.entries[i].nexthop;
@@ -1386,8 +1397,8 @@ int main(int argc, char *argv[]) {
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
           //putchar('\n');
-          printbase(resp.numEntries, 1, 10, 0);
-          putstring(" rules...\n");
+          /*printbase(resp.numEntries, 1, 10, 0);
+          putstring(" rules...\n");*/
           macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
           for(int j = 0; j < 4; j++)
             if(j+1 != (int)if_index){
