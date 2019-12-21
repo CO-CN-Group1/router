@@ -114,14 +114,14 @@ always @(posedge clk) begin
             end
             STATE_LOOKUP_LOOKUP:begin
                 if(lookup_current_depth == 4'b1000)begin
-                    if(douta[95:64]==lookup_ip_cache) begin
+                    /*if(douta[95:64]==lookup_ip_cache) begin
                         {lookup_mac,lookup_port} <= douta[63:0];
                         lookup_mac_valid <= 1'b1;
                         lookup_mac_not_found <= 1'b0;
                         lookup_ip_cache <= 32'b0;
                         lookup_current_depth <= 4'b0;
                         state_lookup<=STATE_LOOKUP_IDLE;
-                    end else begin
+                    end else begin*/
                         lookup_mac <= 48'b0;
                         lookup_port <= 16'b0;
                         lookup_mac_valid <= 1'b1;
@@ -129,7 +129,7 @@ always @(posedge clk) begin
                         lookup_ip_cache <= 32'b0;
                         lookup_current_depth <= 4'b0;
                         state_lookup<=STATE_LOOKUP_IDLE;
-                    end
+                    /*end*/
                 end else if(douta[95:64]==lookup_ip_cache) begin
                     {lookup_mac,lookup_port} <= douta[63:0];
                     lookup_mac_valid <= 1'b1;
