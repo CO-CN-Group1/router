@@ -124,7 +124,7 @@ typedef struct {
     uint32_t mask;
     uint32_t timer;
     uint32_t lson, rson;
-    //bool disabled;
+    bool isleaf;
     // 为了实现 RIP 协议，需要在这里添加额外的字段
 } RoutingTableEntry;
 
@@ -167,11 +167,12 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
         /*printbase(buffer[i], 2, 16, 0);
         putstring(" ");*/
     }
-    for(uint32_t i = len - 18; i < len; i++, c+=1){
-        buffer[i] = *c;
+    for(uint32_t i = len - 18; i < len; i++){
+        buffer[i] = 0;
         /*printbase(buffer[i], 2, 16, 0);
         putstring(" ");*/
     }
+    putchar('\n');
     *hastoRead = 0;
     return (int)len - 18;
 }
@@ -395,6 +396,7 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].if_index = entry.if_index;
             routersList[cnt].metric = entry.metric;
             routersList[cnt].nexthop = entry.nexthop;
+            routersList[cnt].isleaf = true;
             cc = (uint32_t*)(0xbd000000+(cnt<<3));
             *cc = nxth;
             /*c = (uint8_t*)(0xbf000000+cnt);
@@ -428,6 +430,7 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].metric = 0;
             routersList[cnt].nexthop = 0;
             routersList[cnt].timer = 0;
+            routersList[cnt].isleaf = false;
           }
           p = cnt;  
         }
@@ -439,6 +442,7 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].if_index = entry.if_index;
             routersList[p].metric = entry.metric;
             routersList[p].nexthop = entry.nexthop;
+            routersList[p].isleaf = true;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = nxth;
             c = (uint8_t*)(0xbf000000+(p>>2));
@@ -470,6 +474,7 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].if_index = entry.if_index;
             routersList[cnt].metric = entry.metric;
             routersList[cnt].nexthop = entry.nexthop;
+            routersList[cnt].isleaf = true;
             cc = (uint32_t*)(0xbd000000+(cnt<<3));
             *cc = nxth;
             c = (uint8_t*)(0xbf000000+(cnt>>2));
@@ -502,6 +507,7 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].metric = 0;
             routersList[cnt].nexthop = 0;
             routersList[cnt].timer = 0;
+            routersList[cnt].isleaf = false;
           }
           p = cnt;
         }
@@ -513,6 +519,7 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].if_index = entry.if_index;
             routersList[p].metric = entry.metric;
             routersList[p].nexthop = entry.nexthop;
+            routersList[p].isleaf = true;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = nxth;
             c = (uint8_t*)(0xbf000000+(p>>2));
@@ -541,8 +548,8 @@ void update(bool insert, RoutingTableEntry entry) {
           break;
         }
         else{
-          if(i == len - 2){
-            //routersList[routersList[p].lson].disabled = true;
+          if(i == len - 1){
+            routersList[routersList[p].lson].isleaf = false;
             routersList[routersList[p].lson].nexthop = 0;
             routersList[p].lson = 0;
             cc = (uint32_t*)(0xbd000000+(p<<3));
@@ -562,8 +569,8 @@ void update(bool insert, RoutingTableEntry entry) {
           break;
         }
         else{
-          if(i == len - 2){
-            //routersList[routersList[p].rson].disabled = true;
+          if(i == len - 1){
+            routersList[routersList[p].rson].isleaf = false;
             routersList[routersList[p].rson].nexthop = 0;
             routersList[p].rson = 0;
             cc = (uint32_t*)(0xbd000000+(p<<3));
@@ -598,23 +605,36 @@ void update(bool insert, RoutingTableEntry entry) {
  * @param if_index 如果查询到目标，把表项的 if_index 写入
  * @return 查到则返回 true ，没查到则返回 false
  */
-bool query(uint32_t addr) {
+bool query(uint32_t addr, uint32_t mask) {
   int p = 1, q;
+  //bool found = false;
   uint32_t ii = (((uint32_t)1)<<31);
   uint32_t addrx = ((addr&0xff)<<24) + (((addr>>8)&0xff)<<16) + (((addr>>16)&0xff)<<8)+ ((addr>>24)&0xff);
-  for (int i = 0; i < 32; i++){
-      q = (((ii>>1)&addrx)>0);
-      if(routersList[p].nexthop!=0)goal = p;
+  uint32_t mmask = ((mask&0xff)<<24) + (((mask>>8)&0xff)<<16) + (((mask>>16)&0xff)<<8)+ ((mask>>24)&0xff);
+  int len = 0, i;
+  i = 0;
+  if(mmask == 0xFFFFFFFF) len = 32;
+  else for (len = 0; ((((uint32_t)1)<<(31-len))&mmask);len++);
+  /*printbase(len, 1, 10, 0);
+  putchar('\n');
+  printbase(addrx, 1, 10, 0);*/
+  for (i = 0; i < len; i++){
+      q = (((ii>>i)&addrx));
       if(q==0){
         p = routersList[p].lson;
-        if(!p)break;
+        if(p==0)break;
       }
       else{
         p = routersList[p].rson;
-        if(!p)break;
+        if(p==0)break;
       }
   }
-  return true;
+  if(i == len && routersList[p].isleaf == true){
+    goal = p;
+    return true;
+  }
+  else return false;
+  //return found;
 }
 
 /**
@@ -678,9 +698,22 @@ bool disassemble(const uint8_t *packet, uint32_t len, RipPacket *output) {
   // check command
   if(output->command < 1 || output->command > 2)return false;
 
-  int offset, j;
-  for (offset = 0, j = 0; offset + 52 <= len; j++, offset += 20){
+  int offset = 0, j = 0;
+  /*printbase((int)len, 1, 10, 0);
+  putchar(' ');*/
+  offset = 0;
+  j = 0;
+  /*printbase(offset, 1, 10, 0);
+  putchar('\n');
+  printbase((offset + 52), 1, 10, 0);
+  putchar('\n');*/
+
+  for (offset = 0, j = 0; (offset + 52) <= ((int)len); j++, offset += 20){
     output->numEntries++;
+    /*printbase(offset, 1, 10, 0);
+    putchar('\n');
+    printbase((offset + 52), 1, 10, 0);
+  putchar('\n');*/
     for(int i = 39+offset; i >= 36+offset; i--){
       output->entries[j].addr = (output->entries[j].addr << 8) + packet[i];
     }
@@ -692,11 +725,14 @@ bool disassemble(const uint8_t *packet, uint32_t len, RipPacket *output) {
       output->entries[j].nexthop = (output->entries[j].nexthop << 8) + packet[i];
     }
     if(packet[51+offset]==0)return false;
-    for(int i = 51+offset; i >= 48+offset; i--){
+    for(int i = 48+offset; i <= 51+offset; i++){
       output->entries[j].metric = (output->entries[j].metric << 8) + packet[i];
     }
   }
-  return (len-52)%20==0;
+  if(((len-52)%20)==0){
+    return true;
+  }
+  else return false;
 }
 
 /**
@@ -885,7 +921,7 @@ int main(int argc, char *argv[]) {
           resp.numEntries = 0;
           putchar('\n');
           for(int i = 1; i <= (int)cnt; i++)
-            if(routersList[i].nexthop!=0){
+            if(routersList[i].isleaf == true){
               resp.entries[resp.numEntries].addr = routersList[i].addr;
               resp.entries[resp.numEntries].mask = routersList[i].mask;
               resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
@@ -982,8 +1018,8 @@ int main(int argc, char *argv[]) {
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
           //putchar('\n');
-        //printbase(resp.numEntries, 1, 10, 0);
-        //putstring(" rules...\n");
+        printbase(resp.numEntries, 1, 10, 0);
+        putstring(" rules...\n");
         macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
         for(int j = 0; j < 4; j++){
           output[15] = ((addrs[j]>>24)&0xff);
@@ -1055,8 +1091,11 @@ int main(int argc, char *argv[]) {
       // 3a.1
       RipPacket rip;
       // check and validate
-      if (disassemble(packet, res, &rip)) {
-        putstring("\nomg it's rip\n");
+      bool disass = disassemble(packet, res, &rip);
+      if (disass == true) {
+        putstring("\nomg it's rip ");
+        printbase(rip.command, 1, 10, 0);
+        putstring("\n");
         if (rip.command == 1) {
           // 3a.3 request, ref. RFC2453 3.9.1
           // only need to respond to whole table requests in the lab
@@ -1066,7 +1105,7 @@ int main(int argc, char *argv[]) {
             resp.command = 2;
             resp.numEntries = 0;
             for(int i = 1; i <= cnt; i++)
-              if(routersList[i].nexthop != 0){
+              if(routersList[i].isleaf == true){
                 resp.entries[resp.numEntries].addr = routersList[i].addr;
                 resp.entries[resp.numEntries].mask = routersList[i].mask;
                 resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
@@ -1129,7 +1168,7 @@ int main(int argc, char *argv[]) {
             for(int i = 0; i < rip.numEntries; i++){
               resp.entries[resp.numEntries].addr = rip.entries[i].addr;
               resp.entries[resp.numEntries].mask = rip.entries[i].mask;
-              if(query(rip.entries[i].addr)){
+              if(query(rip.entries[i].addr, rip.entries[i].mask)){
                 resp.entries[resp.numEntries].nexthop = rip.entries[i].nexthop;
                 //resp.entries[resp.numEntries].metric = routersList[goal].nexthop;
                 resp.entries[resp.numEntries].metric = routersList[goal].metric;
@@ -1190,18 +1229,33 @@ int main(int argc, char *argv[]) {
           // update metric, if_index, nexthop
           // what is missing from RoutingTableEntry?
           // TODO: use query and update
+          putstring("This is rip response");
           RipPacket resp;
           resp.numEntries = 0;
-          for (int i = 0; i < rip.numEntries; i++){
-            bool hasroute = query(rip.entries[i].addr);
+          putstring("\nNum: ");
+            printbase(rip.numEntries, 8, 16, 0);
+          for (int i = 0; i < (int)rip.numEntries; i++){
+            putstring("\nAddr: ");
+            printbase(rip.entries[i].addr, 8, 16, 0);
+            putstring("\nMask: ");
+            printbase(rip.entries[i].mask, 8, 16, 0);
+            putstring("\nNexthop: ");
+            printbase(rip.entries[i].nexthop, 8, 16, 0);
+            putstring("\nMetric: ");
+            printbase(rip.entries[i].metric, 8, 16, 0);
+            bool hasroute = query(rip.entries[i].addr, rip.entries[i].mask);
             RoutingTableEntry routingentry;
             routingentry.addr = rip.entries[i].addr;
             if(hasroute){
+              putstring("\nfound route\n");
               if(routersList[goal].metric>rip.entries[i].metric + 1){
                 update(false, routingentry);
                 routingentry.metric = rip.entries[i].metric + 1;
                 routingentry.mask = rip.entries[i].mask;
-                routingentry.nexthop = rip.entries[i].nexthop;
+                if(rip.entries[i].nexthop!=0){
+                  routingentry.nexthop = rip.entries[i].nexthop;
+                }
+                else routingentry.nexthop = src_addr;
                 routingentry.if_index = if_index;
                 routingentry.timer = time;
                 update(true, routingentry);
@@ -1210,7 +1264,10 @@ int main(int argc, char *argv[]) {
                 update(false, routingentry);
                 routingentry.metric = rip.entries[i].metric + 1;
                 routingentry.mask = rip.entries[i].mask;
-                routingentry.nexthop = rip.entries[i].nexthop;
+                if(rip.entries[i].nexthop!=0){
+                  routingentry.nexthop = rip.entries[i].nexthop;
+                }
+                else routingentry.nexthop = src_addr;
                 routingentry.if_index = if_index;
                 routingentry.timer = time;
                 if(routingentry.metric < 16)update(true, routingentry);
@@ -1220,10 +1277,15 @@ int main(int argc, char *argv[]) {
               }
             }
             else{
+              putstring("\nnot found route\n");
+              printbase(rip.entries[i].metric, 1, 10, 0);
               routingentry.metric = rip.entries[i].metric + 1;
               if(routingentry.metric>=16)continue;
               routingentry.mask = rip.entries[i].mask;
-              routingentry.nexthop = rip.entries[i].nexthop;
+              if(rip.entries[i].nexthop!=0){
+                routingentry.nexthop = rip.entries[i].nexthop;
+              }
+              else routingentry.nexthop = src_addr;
               routingentry.if_index = if_index;
               routingentry.timer = time;
               //routersList[goal] = routingentry;
