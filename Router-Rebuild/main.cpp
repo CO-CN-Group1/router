@@ -329,7 +329,7 @@ bool calculateIPChecksum(uint8_t *packet, size_t len) {
  * 插入时如果已经存在一条 addr 和 len 都相同的表项，则替换掉原有的。
  * 删除时按照 addr 和 len 匹配。
  */
-uint8_t makethzero[]={0x0, 0xfc, 0xf4, 0xcf, 0x4f};
+uint8_t makethzero[]={0xfc, 0xf3, 0xcf, 0x3f};
 void update(bool insert, RoutingTableEntry entry) {
   int p = 1, q;
   uint32_t ii = 1<<31;
@@ -380,12 +380,15 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(cnt>>2));
             x = *c;
             y = ((cnt&3)<<1);
-            z = x&makethzero[entry.if_index];
+            z = x&makethzero[cnt&3];
             *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
-            /*printbase(*c, 4, 4, 0);
+            printbase(*c, 4, 4, 0);
+            putchar(' ');
+            printbase(x, 4, 4, 0);
+            putchar(' ');
             printbase(z, 4, 4, 0);
-            printbase(y, 4, 4, 0);
-            printbase((uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);
+            putchar('\n');
+            /*printbase((uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);
             printbase(z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
@@ -419,7 +422,7 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(p>>2));
             x = *c;
             y = ((p&3)<<1);
-            z = x&makethzero[entry.if_index];
+            z = x&makethzero[cnt&3];
             *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
@@ -450,11 +453,15 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(cnt>>2));
             x = *c;
             y = ((cnt&3)<<1);
-            z = x&makethzero[entry.if_index];
+            z = x&makethzero[cnt&3];
             *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
-            /*printbase(*c, 4, 4, 0);
+            printbase(*c, 4, 4, 0);
+            putchar(' ');
+            printbase(x, 4, 4, 0);
+            putchar(' ');
             printbase(z, 4, 4, 0);
-            printbase(y, 4, 4, 0);
+            putchar('\n');
+            /*
             printbase((uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);
             printbase(z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
             /*putstring("new node nexthop:\n");
@@ -489,7 +496,7 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(p>>2));
             x = *c;
             y = ((p&3)<<1);
-            z = x&makethzero[entry.if_index];
+            z = x&makethzero[cnt&3];
             *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
@@ -521,7 +528,7 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(p>>2));
             x = *c;
             y = ((p&3)<<1);
-            z = x&makethzero[entry.if_index];
+            z = x&makethzero[cnt&3];
             *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             break;
           }
@@ -542,7 +549,7 @@ void update(bool insert, RoutingTableEntry entry) {
             c = (uint8_t*)(0xbf000000+(p>>2));
             x = *c;
             y = ((p&3)<<1);
-            z = x&makethzero[entry.if_index];
+            z = x&makethzero[cnt&3];
             *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
             break;
           }
@@ -796,6 +803,12 @@ int main(int argc, char *argv[]) {
   entry.mask = 0x00FEFFFF;        // small endian
   entry.if_index = 2;    // small endian
   entry.nexthop = 0x0202000a;      // big endian, means direct
+  entry.metric = 2;
+  update(true, entry);
+  entry.addr = 0x0203000a & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
+  entry.if_index = 2;    // small endian
+  entry.nexthop = 0x0302000a;      // big endian, means direct
   entry.metric = 2;
   update(true, entry);
   putstring("Insertion done\n");
