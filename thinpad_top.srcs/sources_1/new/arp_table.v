@@ -180,7 +180,7 @@ always @(posedge clk) begin
             end
             STATE_SEARCH:begin
                 insert_data_entry <= 0;
-                /*if(lookup_dout[IP_LENGTH+MAC_LENGTH+PORT_LENGTH-1:MAC_LENGTH+PORT_LENGTH] == lookup_ip_cache) begin
+                if(lookup_dout[IP_LENGTH+MAC_LENGTH+PORT_LENGTH-1:MAC_LENGTH+PORT_LENGTH] == lookup_ip_cache) begin
                     lookup_mac_valid <= 1;
                     lookup_mac_not_found <= 0;
                     {lookup_mac,lookup_port} <= lookup_dout[MAC_LENGTH + PORT_LENGTH-1:0];
@@ -197,8 +197,8 @@ always @(posedge clk) begin
                     insert_ready <= 1;
                 end else begin
                     lookup_current_depth <= lookup_current_depth + 1;
-                end*/
-                state <= STATE_IDLE;
+                end
+                /*state <= STATE_IDLE;
                 lookup_mac_valid <= 1;
                 
                 state <= STATE_IDLE;
@@ -218,7 +218,7 @@ always @(posedge clk) begin
                         lookup_mac <= 0;
                         lookup_port <= 0;
                     end
-                endcase
+                endcase*/
 
             end
         endcase
