@@ -1,7 +1,7 @@
 module routing_table_lookup #
 (
     parameter DATA_WIDTH = 8,
-    parameter FRAME_LENGTH = 4096,
+    parameter FRAME_LENGTH = 2048*8,
     parameter IP_LENGTH = 32,
     parameter PORT_LENGTH = 8,
     parameter MAC_LENGTH = 48
@@ -16,7 +16,7 @@ module routing_table_lookup #
 
     input wire [DATA_WIDTH-1:0] receiver_data_i,
     output reg [DATA_WIDTH-1:0] receiver_data_o,
-    output reg [8:0] receiver_addr,
+    output reg [10:0] receiver_addr,
     output wire receiver_cen,
     output wire receiver_wen,
 
@@ -27,7 +27,7 @@ module routing_table_lookup #
 
     input wire [DATA_WIDTH*4-1:0] sender_data_i,
     output reg [DATA_WIDTH*4-1:0] sender_data_o,
-    output reg [6:0] sender_addr,
+    output reg [8:0] sender_addr,
     output wire sender_cen,
     output wire [3:0]sender_wen,
 

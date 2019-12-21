@@ -372,13 +372,13 @@ assign eth_rx_axis_no_crc_tready = eth_tx_axis_fifo_tready;
 
 wire[7:0] receiver_router_data_i;
 wire[7:0] receiver_router_data_o;
-wire[8:0] receiver_router_addr;
+wire[10:0] receiver_router_addr;
 wire receiver_router_ce_n;
 wire receiver_router_we_n;
 
 wire[31:0] sender_router_data_i;
 wire[31:0] sender_router_data_o;
-wire[6:0] sender_router_addr;
+wire[8:0] sender_router_addr;
 wire sender_router_ce_n;
 wire[3:0] sender_router_we_n;
 
@@ -547,12 +547,12 @@ mips_cpu mips_cpu_inst(
     .timer_int_o(timer_int)
 );
 
-reg[6:0] receiver_cpu_addr;
+reg[8:0] receiver_cpu_addr;
 reg receiver_cpu_ce_n;
 reg[3:0] receiver_cpu_we_n;
 wire[31:0] receiver_cpu_data_o;
 
-reg[6:0] sender_cpu_addr;
+reg[8:0] sender_cpu_addr;
 reg sender_cpu_ce_n;
 reg [3:0]sender_cpu_we_n;
 wire[31:0] sender_cpu_data_o;
@@ -626,11 +626,11 @@ always@(*)begin
         openmips_if_data_i <= 32'b0;
         openmips_mem_data_i <= 32'b0;
         
-        receiver_cpu_addr <= 7'b0000000;
+        receiver_cpu_addr <= 9'b0000000;
         receiver_cpu_we_n <= 4'b0000;
         receiver_cpu_ce_n <= 1'b0;
 
-        sender_cpu_addr <= 7'b0000000;
+        sender_cpu_addr <= 9'b0000000;
         sender_cpu_we_n <= 4'b0000;
         sender_cpu_ce_n <= 1'b0;
 
@@ -668,11 +668,11 @@ always@(*)begin
         openmips_if_data_i <= 32'b0;
         openmips_mem_data_i <= 32'b0;
         
-        receiver_cpu_addr <= 7'b0000000;
+        receiver_cpu_addr <= 9'b0000000;
         receiver_cpu_we_n <= 4'b0000;
         receiver_cpu_ce_n <= 1'b0;
 
-        sender_cpu_addr <= 7'b0000000;
+        sender_cpu_addr <= 9'b0000000;
         sender_cpu_we_n <= 4'b0000;
         sender_cpu_ce_n <= 1'b0;
         
@@ -738,7 +738,7 @@ always@(*)begin
                 rom_ce <= 1'b1;
                 openmips_mem_data_i <= rom_data; 
             end else if(openmips_mem_receiver_mem_ce_o) begin
-                receiver_cpu_addr <= openmips_mem_addr_o[8:2];
+                receiver_cpu_addr <= openmips_mem_addr_o[10:2];
                 receiver_cpu_ce_n <= 1'b1;
                 if(openmips_mem_we_o) begin
                     receiver_cpu_we_n <= openmips_mem_sel_o;
@@ -747,7 +747,7 @@ always@(*)begin
                     receiver_cpu_we_n <=4'b0000;
                 end
             end else if(openmips_mem_sender_mem_ce_o) begin
-                sender_cpu_addr <= openmips_mem_addr_o[8:2];
+                sender_cpu_addr <= openmips_mem_addr_o[10:2];
                 sender_cpu_ce_n <= 1'b1;
                 if(openmips_mem_we_o) begin
                     sender_cpu_we_n <= openmips_mem_sel_o;
