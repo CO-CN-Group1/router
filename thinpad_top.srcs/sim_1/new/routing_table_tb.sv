@@ -26,8 +26,8 @@ logic[7:0] os_wea;
 logic os_rst;
 
 logic[13:0] os_port_addr;
-logic[31:0] os_port_din;
-logic[31:0] os_port_dout;
+logic[7:0] os_port_din;
+logic[7:0] os_port_dout;
 logic[3:0] os_port_wea;
 
 
@@ -223,10 +223,10 @@ always @(posedge clk_50M)begin
                 os_addr <= 0;
                 os_port_addr <= 0;
                 os_din <= 0;
-                os_port_din <= 0;
+                os_port_din <= 8'b0;
                 os_wea <= 0;
                 os_port_wea <= 0;
-                if(timer>=20) begin
+                if(timer>=43) begin
                     cpu_state <= CPU_STATE_WRITE1;
                     cpu_cnt <= 0;
                     timer <= 0;
@@ -237,10 +237,10 @@ always @(posedge clk_50M)begin
                 os_addr <= 0;
                 os_port_addr <= 0;
                 os_din <= 0;
-                os_port_din <= 0;
+                os_port_din <= 8'b0;
                 os_wea <= 0;
                 os_port_wea <= 0;
-                if(timer>=30) begin
+                if(timer>=35) begin
                     cpu_state <= CPU_STATE_WRITE2;
                     cpu_cnt <= 0;
                     timer <= 0;
@@ -252,14 +252,14 @@ always @(posedge clk_50M)begin
                     os_addr <= cpu_cnt;
                     os_port_addr <= cpu_cnt>>2;
                     os_din <= trie1[cpu_cnt];
-                    os_port_din <= ports1[cpu_cnt>>2];
+                    os_port_din <= {ports1[cpu_cnt>>2][25:24],ports1[cpu_cnt>>2][17:16],ports1[cpu_cnt>>2][9:8],ports1[cpu_cnt>>2][1:0]};
                     os_wea <= 8'b11111111;
                     os_port_wea <= 4'b1111;
                     cpu_cnt <= cpu_cnt+1;
                 end else begin
                     os_wea <= 8'b11111111;
                     os_port_wea <= 4'b0000;
-                    os_port_din <= 0;
+                    os_port_din <= 8'b0;
                     os_port_addr <= 0;
                     os_din <= 0;
                     os_addr <= 0;
@@ -272,14 +272,14 @@ always @(posedge clk_50M)begin
                     os_addr <= cpu_cnt;
                     os_port_addr <= cpu_cnt>>2;
                     os_din <= trie2[cpu_cnt];
-                    os_port_din <= ports2[cpu_cnt>>2];
+                    os_port_din <= {ports2[cpu_cnt>>2][25:24],ports2[cpu_cnt>>2][17:16],ports2[cpu_cnt>>2][9:8],ports2[cpu_cnt>>2][1:0]};
                     os_wea <= 8'b11111111;
                     os_port_wea <= 4'b1111;
                     cpu_cnt <= cpu_cnt+1;
                 end else begin
                     os_wea <= 8'b11111111;
                     os_port_wea <= 4'b0000;
-                    os_port_din <= 0;
+                    os_port_din <= 8'b0;
                     os_port_addr <= 0;
                     os_din <= 0;
                     os_addr <= 0;

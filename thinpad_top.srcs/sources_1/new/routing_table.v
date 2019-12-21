@@ -27,8 +27,8 @@ module routing_table
     input wire os_en,
     
     input wire[13:0] os_port_addr,
-    input wire[31:0] os_port_din,
-    output wire[31:0] os_port_dout,
+    input wire[7:0] os_port_din,
+    output wire[7:0] os_port_dout,
     input wire[3:0] os_port_we,
     input wire os_port_en
 
@@ -60,7 +60,7 @@ xpm_memory_tdpram #(
     .BYTE_WRITE_WIDTH_B(64),
     .READ_DATA_WIDTH_B(64),
     .READ_LATENCY_B(1),
-    .MEMORY_SIZE(2048*32*16),
+    .MEMORY_SIZE(2048*32*64),
     .CLOCKING_MODE("independent_clock")
 ) xpm_memory_tdpram_table (
     .dina(os_din),
@@ -80,20 +80,20 @@ xpm_memory_tdpram #(
     .enb(1'b1)
 );
 
-wire[31:0] dout_port;
+wire[7:0] dout_port;
 
 xpm_memory_tdpram #(
     .ADDR_WIDTH_A(14),
-    .WRITE_DATA_WIDTH_A(32),
-    .BYTE_WRITE_WIDTH_A(8),
-    .READ_DATA_WIDTH_A(32),
+    .WRITE_DATA_WIDTH_A(8),
+    .BYTE_WRITE_WIDTH_A(2),
+    .READ_DATA_WIDTH_A(8),
     .READ_LATENCY_A(1),
     .ADDR_WIDTH_B(14),
-    .WRITE_DATA_WIDTH_B(32),
-    .BYTE_WRITE_WIDTH_B(32),
-    .READ_DATA_WIDTH_B(32),
+    .WRITE_DATA_WIDTH_B(8),
+    .BYTE_WRITE_WIDTH_B(8),
+    .READ_DATA_WIDTH_B(8),
     .READ_LATENCY_B(1),
-    .MEMORY_SIZE(2048*32*8),
+    .MEMORY_SIZE(2048*32*2),
     .CLOCKING_MODE("independent_clock")
 ) xpm_memory_tdpram_port (
     .dina(os_port_din),
@@ -104,7 +104,7 @@ xpm_memory_tdpram #(
     .rsta(os_rst),
     .ena(os_port_en),
 
-    .dinb(32'b0),
+    .dinb(8'b0),
     .addrb(current[15:2]),
     .web(1'b0),
     .doutb(dout_port),
@@ -125,7 +125,7 @@ localparam[1:0]
 
 reg[1:0] state = STATE_IDLE;
 reg[31:0] ans;
-reg[7:0] ans_port;
+reg[1:0] ans_port;
 integer pos;
 
 always @(posedge clk) begin
@@ -138,7 +138,7 @@ always @(posedge clk) begin
         nexthop_valid <= 0;
         current <= 1;
         ans <= 32'h00000000;
-        ans_port <= 8'b0;
+        ans_port <= 2'b0;
         dest_ip_cache <= 32'h00000000;
     end begin
         case(state)
@@ -167,7 +167,7 @@ always @(posedge clk) begin
                         state <= STATE_SEARCH1;
                         current <= 1;
                         ans <= 0;
-                        ans_port <= 8'b0;
+                        ans_port <= 2'b0;
                         pos <= 31;
                     end else begin
                         dest_ip_cache <= 0;
@@ -196,7 +196,7 @@ always @(posedge clk) begin
                         state <= STATE_SEARCH1;
                         current <= 1;
                         ans <= 0;
-                        ans_port <= 8'b0;
+                        ans_port <= 2'b0;
                         pos <= 31;
                         nexthop <= 0;
                         port <= 0;
@@ -218,7 +218,10 @@ always @(posedge clk) begin
                     lookup_ready <= 0;
                     if(current == 0)begin
                         nexthop <= ans;
-                        port <= ans_port;
+                        case(ans_port)
+                            2'b01,2'b10,2'b11:port<={6'b0,ans_port};
+                            2'b00:port <= (ans==0)?8'b0:8'b00000100;
+                        endcase
                         if(ans == 0) begin
                             nexthop_not_found <= 1;
                         end else begin
@@ -245,10 +248,10 @@ always @(posedge clk) begin
                     if(dout[31:0]!=0)begin
                         ans <= dout[31:0];
                         case(current[1:0])
-                            2'b00:ans_port <= dout_port[7:0];
-                            2'b01:ans_port <= dout_port[15:8];
-                            2'b10:ans_port <= dout_port[23:16];
-                            2'b11:ans_port <= dout_port[31:24];
+                            2'b00:ans_port <= dout_port[1:0];
+                            2'b01:ans_port <= dout_port[3:2];
+                            2'b10:ans_port <= dout_port[5:4];
+                            2'b11:ans_port <= dout_port[7:6];
                         endcase
                     end
                     if(pos!=-1)begin
