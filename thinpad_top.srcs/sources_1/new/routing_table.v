@@ -60,7 +60,7 @@ xpm_memory_tdpram #(
     .BYTE_WRITE_WIDTH_B(64),
     .READ_DATA_WIDTH_B(64),
     .READ_LATENCY_B(1),
-    .MEMORY_SIZE(2048*32*64),
+    .MEMORY_SIZE(1920*32*64),
     .CLOCKING_MODE("independent_clock")
 ) xpm_memory_tdpram_table (
     .dina(os_din),
@@ -93,7 +93,7 @@ xpm_memory_tdpram #(
     .BYTE_WRITE_WIDTH_B(8),
     .READ_DATA_WIDTH_B(8),
     .READ_LATENCY_B(1),
-    .MEMORY_SIZE(2048*32*2),
+    .MEMORY_SIZE(1920*32*2),
     .CLOCKING_MODE("independent_clock")
 ) xpm_memory_tdpram_port (
     .dina(os_port_din),

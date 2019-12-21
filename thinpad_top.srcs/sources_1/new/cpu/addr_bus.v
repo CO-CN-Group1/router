@@ -51,9 +51,9 @@ always@(*)begin
 			if (addr_i >= 32'hba000000 && addr_i <= 32'hba080000) vga_ce <= 1'b1;
 			else if (addr_i >= 32'hbb000000 && addr_i <= 32'hbb0001ff) receiver_mem_ce <= 1'b1;
 			else if (addr_i >= 32'hbc000000 && addr_i <= 32'hbc0001ff) sender_mem_ce <= 1'b1;
-			else if (addr_i >= 32'hbd000000 && addr_i <= 32'hbd07ffff) router_table_ce <= 1'b1;
+			else if (addr_i >= 32'hbd000000 && addr_i <= 32'hbd077fff) router_table_ce <= 1'b1;
             else if (addr_i >= 32'hbe000000 && addr_i <= 32'hbeffffff) flash_ce <= 1'b1;
-			else if (addr_i >= 32'hbf000000 && addr_i <= 32'hbf003fff) router_port_ce <= 1'b1;
+			else if (addr_i >= 32'hbf000000 && addr_i <= 32'hbf003bff) router_port_ce <= 1'b1;
             else if (addr_i >= 32'hbfc00000 && addr_i <= 32'hbfc00fff) rom_ce <= 1'b1;
             else if (addr_i >= 32'hbfd003f8 && addr_i <= 32'hbfd003fc)begin
                 serial_ce <= 1'b1;
