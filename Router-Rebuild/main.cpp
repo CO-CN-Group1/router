@@ -128,7 +128,7 @@ typedef struct {
     // 为了实现 RIP 协议，需要在这里添加额外的字段
 } RoutingTableEntry;
 
-RoutingTableEntry routersList[1920*32];
+RoutingTableEntry routersList[61440];
 uint32_t cnt = 1, goal;
 
 int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
