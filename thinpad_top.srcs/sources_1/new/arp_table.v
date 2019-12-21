@@ -31,14 +31,14 @@ xpm_memory_tdpram #(
     .ADDR_WIDTH_A(4+3),
     .WRITE_DATA_WIDTH_A(96),
     .BYTE_WRITE_WIDTH_A(96),
-
+    .READ_DATA_WIDTH_A(96),
+    .READ_LATENCY_A(1),
     .ADDR_WIDTH_B(4+3),
     .WRITE_DATA_WIDTH_B(96),
     .BYTE_WRITE_WIDTH_B(96),
+    .READ_DATA_WIDTH_A(96),
     .MEMORY_SIZE(128*96),
-    .READ_LATENCY_A(1),
-    .READ_LATENCY_B(1),
-    .CLOCKING_MODE("independent_clock")
+    .READ_LATENCY_B(1)
 ) xpm_memory_tdpram_inst (
     // a for lookup, b for insert
     .dina(96'b0),
@@ -93,7 +93,7 @@ always @(posedge clk) begin
     end else begin
         case(state_lookup)
             STATE_LOOKUP_IDLE:begin
-                if(lookup_valid) begin
+                if(lookup_valid && lookup_ready) begin
                     lookup_ip_cache <= lookup_ip;
                     lookup_ready <= 1'b0;
                     lookup_mac <= 48'b0;
@@ -114,13 +114,22 @@ always @(posedge clk) begin
             end
             STATE_LOOKUP_LOOKUP:begin
                 if(lookup_current_depth == 4'b1000)begin
-                    lookup_mac <= 48'b0;
-                    lookup_port <= 16'b0;
-                    lookup_mac_valid <= 1'b1;
-                    lookup_mac_not_found <= 1'b1;
-                    lookup_ip_cache <= 32'b0;
-                    lookup_current_depth <= 4'b0;
-                    state_lookup<=STATE_LOOKUP_IDLE;
+                    if(douta[95:64]==lookup_ip_cache) begin
+                        {lookup_mac,lookup_port} <= douta[63:0];
+                        lookup_mac_valid <= 1'b1;
+                        lookup_mac_not_found <= 1'b0;
+                        lookup_ip_cache <= 32'b0;
+                        lookup_current_depth <= 4'b0;
+                        state_lookup<=STATE_LOOKUP_IDLE;
+                    end else begin
+                        lookup_mac <= 48'b0;
+                        lookup_port <= 16'b0;
+                        lookup_mac_valid <= 1'b1;
+                        lookup_mac_not_found <= 1'b1;
+                        lookup_ip_cache <= 32'b0;
+                        lookup_current_depth <= 4'b0;
+                        state_lookup<=STATE_LOOKUP_IDLE;
+                    end
                 end else if(douta[95:64]==lookup_ip_cache) begin
                     {lookup_mac,lookup_port} <= douta[63:0];
                     lookup_mac_valid <= 1'b1;
@@ -175,7 +184,7 @@ always @(posedge clk)begin
     end else begin
         case(state_insert)
             STATE_INSERT_IDLE:begin
-                if(insert_valid)begin
+                if(insert_valid && insert_ready)begin
                     state_insert <= STATE_INSERT_LOOKUP;
                     insert_ip_cache <= insert_ip;
                     insert_mac_cache <= insert_mac;
@@ -196,11 +205,18 @@ always @(posedge clk)begin
             end
             STATE_INSERT_LOOKUP:begin
                 if(insert_current_depth == 4'b1000)begin
-                    // ARP表里没有出现过这�?条ip
-                    insert_current_depth <= {1'b0,insert_hash_depth};
-                    state_insert <= STATE_INSERT_INSERT;
+                    if(doutb[95:64]==insert_ip_cache) begin
+                        state_insert <= STATE_INSERT_INSERT;
+                        insert_current_depth <= insert_current_depth - 1;
+                    end else begin
+                        // ARP表里没有出现过这�?条ip
+                        insert_current_depth <= {1'b0,insert_hash_depth};
+                        insert_hash_depth <= insert_hash_depth+3;
+                        state_insert <= STATE_INSERT_INSERT;
+                    end
                 end else if(doutb[95:64]==insert_ip_cache) begin
                     state_insert <= STATE_INSERT_INSERT;
+                    insert_current_depth <= insert_current_depth - 1;
                     // 出现过，是修�?
                 end else
                     insert_current_depth <= insert_current_depth +1;

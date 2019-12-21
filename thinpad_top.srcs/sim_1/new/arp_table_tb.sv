@@ -48,7 +48,7 @@ arp_table arp_table_inst(
 logic init = 0;
 integer arp_table_fd,count_table = 0,arp_sample_in_fd,arp_sample_out_fd,count_ip = 0;
 logic[32+48+16-1:0] arp_table_data[0:31];
-logic[31:0] ip_data[0:9];
+logic[31:0] ip_data[0:31];
 initial begin
     arp_table_fd = $fopen("arp_table_file.mem","r");
     while(!$feof(arp_table_fd))begin 
@@ -83,86 +83,76 @@ always @(posedge clk_125M) begin
         state_insert <= STATE_INSERT_IDLE;
         timer <= 5'b0;
         insert_current <= 0;
+        insert_ip <= 32'b0;
+        insert_mac <= 48'b0;
+        insert_port <= 16'b0;
+        insert_valid <= 1'b0;
     end else begin
         case(state_insert)
             STATE_INSERT_IDLE:begin
-                if(timer == 5'b11111)begin
+                if(timer == 5'b11111 && insert_ready)begin
                     state_insert <= STATE_INSERT_INSERT;
-                end else begin
-                    timer <= timer+1;
                     insert_ip <= 32'b0;
                     insert_mac <= 48'b0;
                     insert_port <= 16'b0;
-                    insert
+                    insert_valid <= 1'b0;
+                    timer <= 0;
+                end else begin
+                    if(insert_ready)
+                        timer <= timer+1;
+                    insert_ip <= 32'b0;
+                    insert_mac <= 48'b0;
+                    insert_port <= 16'b0;
+                    insert_valid <= 1'b0;
                 end
             end
-
+            STATE_INSERT_INSERT:begin
+                {insert_ip,insert_mac,insert_port} <= arp_table_data[insert_current];
+                insert_current <= insert_current == count_table-1? 0:insert_current + 1;
+                insert_valid <= 1'b1;
+                state_insert <= STATE_INSERT_IDLE;
+            end
         endcase
     end
 end
 
+localparam[1:0]
+    STATE_LOOKUP_IDLE = 0,
+    STATE_LOOKUP_LOOKUP = 1;
 
+logic[1:0] state_lookup;
+integer lookup_current;
 
-
-
-
-logic[1:0] table_insert = 0;
-integer current = 0;
-
-always @(posedge clk_50M)begin
-    if(init)begin
-        if(table_insert==0)begin
-            
-            if(insert_ready&&!insert_valid)begin
-                insert_valid = 1;
-                {insert_ip,insert_mac,insert_port} = arp_table_data[current];
-                if(current==count_table-1)begin
-                    table_insert = 1;
-                    current = 0;
+always @(posedge clk_125M) begin
+    if(rst) begin
+        state_lookup <= STATE_LOOKUP_IDLE;
+        lookup_current <= 0;
+        lookup_ip <= 32'b0;
+        lookup_valid <= 1'b0;
+    end else begin
+        case(state_lookup)
+            STATE_LOOKUP_IDLE:begin
+                if(lookup_ready)begin
+                    state_lookup <= STATE_LOOKUP_LOOKUP;
+                    lookup_ip <= ip_data[lookup_current];
+                    lookup_current <= (lookup_current == count_ip-1)?0:lookup_current+1;
+                    lookup_valid <= 1'b1;
                 end else begin
-                    current = current + 1;
+                    lookup_ip <= 32'b0;
+                    lookup_valid <= 1'b0;
                 end
-            end else begin
-                lookup_valid = 0;
-                insert_valid = 0;    
             end
-        end else if(table_insert==1)begin
-            
-            if(lookup_mac_valid)begin
-                $fwrite(arp_sample_out_fd,"%08h ",lookup_ip);
-                if(lookup_mac_not_found)begin
-                    $fwrite(arp_sample_out_fd,"not found\n");
-                end else begin
-                    $fwrite(arp_sample_out_fd,"%12h %04h\n",lookup_mac,lookup_port);
+            STATE_LOOKUP_LOOKUP:begin
+                lookup_valid <= 1'b0;
+                if(lookup_mac_valid)begin
+                    state_lookup <= STATE_LOOKUP_IDLE;
+                    if(lookup_mac_not_found)
+                        $display("%08h not found",lookup_ip);
+                    else
+                        $display("%08h %12h %4h",lookup_ip,lookup_mac,lookup_port);
                 end
-            end else if(lookup_ready && !lookup_valid && !insert_valid)begin
-                lookup_ip = ip_data[current];
-                lookup_valid = 1;
-                if(current == count_ip-1)begin 
-                    table_insert = 2;
-                    
-                end else 
-                    current = current + 1;
-            end else begin
-                insert_valid = 0;
-                lookup_valid = 0;
             end
-        end else begin
-            if(lookup_mac_valid)begin
-                $fwrite(arp_sample_out_fd,"%08h ",lookup_ip);
-                if(lookup_mac_not_found)begin
-                    $fwrite(arp_sample_out_fd,"not found\n");
-                end else begin
-                    $fwrite(arp_sample_out_fd,"%12h %04h\n",lookup_mac,lookup_port);
-                end
-                $fclose(arp_sample_out_fd);
-            end
-            insert_valid = 0;
-            lookup_valid = 0;
-        end
+        endcase
     end
 end
-
-
-
 endmodule
