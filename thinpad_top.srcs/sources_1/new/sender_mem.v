@@ -29,23 +29,23 @@ module sender_mem(
 
 xpm_memory_tdpram #(
     // A for cpu B for router
-    .ADDR_WIDTH_A(7),
+    .ADDR_WIDTH_A(9),
     .WRITE_DATA_WIDTH_A(32),
     .BYTE_WRITE_WIDTH_A(8),
     .READ_DATA_WIDTH_A(32),
     .READ_LATENCY_A(1),
-    .ADDR_WIDTH_B(7),
+    .ADDR_WIDTH_B(9),
     .WRITE_DATA_WIDTH_B(32),
     .BYTE_WRITE_WIDTH_B(8),
     .READ_DATA_WIDTH_B(32),
     .READ_LATENCY_B(1),
-    .MEMORY_SIZE(32*128),
+    .MEMORY_SIZE(2048*8),
     .CLOCKING_MODE("independent_clock")
 ) xpm_memory_tdpram0 (
     .clka(cpu_clk),
     .rsta(cpu_rst),
     .ena(cpu_ce_n),
-    .addra(cpu_addr),
+    .addra({2'b0,cpu_addr}),
     .dina(cpu_data_i),
     .douta(cpu_data_o),
     .wea(cpu_we_n),
@@ -53,7 +53,7 @@ xpm_memory_tdpram #(
     .clkb(router_clk),
     .rstb(router_rst),
     .enb(router_ce_n),
-    .addrb(router_addr),
+    .addrb({2'b0,router_addr}),
     .dinb(router_data_i),
     .doutb(router_data_o),
     .web(router_we_n)
