@@ -26,9 +26,9 @@ module routing_table
     input wire os_rst,
     input wire os_en,
     
-    input wire[13:0] os_port_addr,
-    input wire[7:0] os_port_din,
-    output wire[7:0] os_port_dout,
+    input wire[11:0] os_port_addr,
+    input wire[31:0] os_port_din,
+    output wire[31:0] os_port_dout,
     input wire[3:0] os_port_we,
     input wire os_port_en
 
@@ -83,10 +83,10 @@ xpm_memory_tdpram #(
 wire[7:0] dout_port;
 
 xpm_memory_tdpram #(
-    .ADDR_WIDTH_A(14),
-    .WRITE_DATA_WIDTH_A(8),
-    .BYTE_WRITE_WIDTH_A(2),
-    .READ_DATA_WIDTH_A(8),
+    .ADDR_WIDTH_A(12),
+    .WRITE_DATA_WIDTH_A(32),
+    .BYTE_WRITE_WIDTH_A(8),
+    .READ_DATA_WIDTH_A(32),
     .READ_LATENCY_A(1),
     .ADDR_WIDTH_B(14),
     .WRITE_DATA_WIDTH_B(8),

@@ -452,8 +452,8 @@ wire[63:0] router_table_os_dout;
 reg[7:0] router_table_os_we;
 reg router_table_os_en;
 
-reg[13:0] router_table_os_port_addr;
-wire[7:0] router_table_os_port_dout;
+reg[11:0] router_table_os_port_addr;
+wire[31:0] router_table_os_port_dout;
 reg[3:0] router_table_os_port_we;
 reg router_table_os_port_en;
 
@@ -498,7 +498,7 @@ routing_table_lookup lookup_inst(
     .router_table_os_en(router_table_os_en),
 
     .router_table_os_port_addr(router_table_os_port_addr),
-    .router_table_os_port_din({openmips_mem_data_o[25:24],openmips_mem_data_o[17:16],openmips_mem_data_o[9:8],openmips_mem_data_o[1:0]}),
+    .router_table_os_port_din(openmips_mem_data_o),
     .router_table_os_port_dout(router_table_os_port_dout),
     .router_table_os_port_we(router_table_os_port_we),
     .router_table_os_port_en(router_table_os_port_en)
@@ -638,7 +638,7 @@ always@(*)begin
         router_table_os_we <= 8'b0;
         router_table_os_en <= 1'b0;
 
-        router_table_os_port_addr <= 14'b0;
+        router_table_os_port_addr <= 12'b0;
         router_table_os_port_we <= 4'b0;
         router_table_os_port_en <= 1'b0;
 
@@ -680,7 +680,7 @@ always@(*)begin
         router_table_os_we <= 8'b0;
         router_table_os_en <= 1'b0;
 
-        router_table_os_port_addr <= 14'b0;
+        router_table_os_port_addr <= 12'b0;
         router_table_os_port_we <= 4'b0;
         router_table_os_port_en <= 1'b0;
 
@@ -775,11 +775,11 @@ always@(*)begin
                 end
             end else if(openmips_mem_router_port_ce_o) begin
                 router_table_os_port_en <= 1'b1;
-                router_table_os_port_addr <= openmips_mem_addr_o[15:2];
+                router_table_os_port_addr <= openmips_mem_addr_o[13:2];
                 if(openmips_mem_we_o) begin
                     router_table_os_port_we <= openmips_mem_sel_o;
                 end else begin
-                    openmips_mem_data_i<= {6'b0,router_table_os_port_dout[7:6],6'b0,router_table_os_port_dout[5:4],6'b0,router_table_os_port_dout[3:2],6'b0,router_table_os_port_dout[1:0]};
+                    openmips_mem_data_i<= router_table_os_port_dout;
                     router_table_os_port_we <= 4'b0000;
                 end
             end

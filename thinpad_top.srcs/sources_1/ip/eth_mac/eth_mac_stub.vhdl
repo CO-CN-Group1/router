@@ -1,10 +1,10 @@
 -- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
--- Date        : Sat Dec 14 15:16:51 2019
--- Host        : DESKTOP-RN0QBT2 running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode synth_stub -rename_top eth_mac -prefix
---               eth_mac_ eth_mac_stub.vhdl
+-- Date        : Sat Dec 21 10:48:06 2019
+-- Host        : Spectre running 64-bit major release  (build 9200)
+-- Command     : write_vhdl -force -mode synth_stub
+--               C:/codes/cod19grp1/thinpad_top.srcs/sources_1/ip/eth_mac/eth_mac_stub.vhdl
 -- Design      : eth_mac
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7a100tfgg676-2L
