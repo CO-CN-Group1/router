@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+uint8_t packet[2048];
+uint8_t output[2048];
+
 void write_serial(uint8_t data){
     uint8_t *pt = (uint8_t*)0xBFD003FC;
     uint8_t x = *pt;
@@ -138,10 +141,10 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
     if(x==(uint8_t)0x0){
         return 0;
     }
-    putstring("\ngot a packet, hastoRead=");
+    //putstring("\ngot a packet, hastoRead=");
     x = *hastoRead;
-    printbase(x, 1, 10, 0);
-    putstring("\n");
+    //printbase(x, 1, 10, 0);
+    //putstring("\n");
     c = (uint8_t*)0xbb0001fc;
     d = (uint8_t*)0xbb0001fd;
     e = (uint8_t*)0xbb0001fe;
@@ -155,9 +158,9 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
     memcpy(dst_mac, buffer, sizeof(macaddr_t));
     memcpy(src_mac, &buffer[6], sizeof(macaddr_t));
     *if_index = buffer[15];
-    putstring("\nreceived length ");
+    /*putstring("\nreceived length ");
     printbase(len, 1, 10, 0);
-    putchar('\n');
+    putchar('\n');*/
     c = &buffer[18];
     for(uint32_t i = 0; i < len - 18; i++, c+=1){
         buffer[i] = *c;
@@ -205,13 +208,17 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
     *e = (uint8_t)((legth>>16)&0xff);
     c = (uint8_t*)0xbc000000;
     for (int i = 0; i < 18; i++, c+=1) *c = bufferh[i];
-    for (int i = 0; i < (int)length; i++, c+=1) *c = buffer[i];
+    for (int i = 0; i < (int)length; i++, c+=1) {
+      *c = buffer[i];
+      //printbase(*c, 2, 16, 0);
+      //putchar(' ');
+    }
     c = (uint8_t*)0xbc000000;
     /*for (int i = 0; i < (int)legth; i++, c+=1){
       printbase(*c, 2, 16, 0);
       putchar(' ');
     }*/
-    putstring("sent an packet\n");
+    //putstring("sent an packet\n");
     (*hastoWrite) = 0xff;
     return 0;
 }
@@ -259,25 +266,33 @@ bool validateIPChecksum(uint8_t *packet, size_t len) {
     printbase(packet[i], 2, 16, 0);
     putchar(' ');
   }putchar('\n');*/
-  uint16_t fcsm = (uint16_t)(((uint32_t)packet[10] << 8) | (uint32_t)packet[11]);
+  uint32_t fcsm = (uint32_t)(((uint32_t)packet[10] << 8) | (uint32_t)packet[11]);
   int length = ((int)packet[0] & ((1 << 4) - 1)) * 4;
   packet[10] = 0;
   packet[11] = 0;
-  uint32_t checksum = 0, cur, filter = (1 << 16) - 1;
+  uint32_t checksum = 0, cur, filter = (0x1 << 16) - 1;
   for (int i = 0; i < length; i += 2){
-      cur = (((uint16_t)packet[i] << 8) | (uint16_t)packet[i + 1]);
+      cur = (((uint32_t)packet[i] << 8) | (uint32_t)packet[i + 1]);
       checksum += cur;
   }
   /*printbase(checksum, 8, 16, 0);
-  putchar('\n');*/
+  putchar(' ');*/
   for (;(checksum >> 16) > 0; checksum = ((checksum & filter) + (checksum >> 16)));
-  uint16_t csm = ~(uint16_t)(checksum & filter);
-  packet[10] = csm >> 8;
-  packet[11] = csm & ((1 << 8) - 1);
+  /*printbase(checksum, 8, 16, 0);
+  putchar(' ');
+  printbase(checksum & filter, 8, 16, 0);
+  putchar(' ');
+  printbase(~(uint32_t)(checksum & filter), 8, 16, 0);
+  putchar(' ');*/
+  uint32_t csm = (~(uint32_t)(checksum & filter))&0xffff;
+  /*printbase(csm, 8, 16, 0);
+  putchar('\n');*/
+  packet[10] = (uint8_t)((csm >> 8)&0xff);
+  packet[11] = (uint8_t)(csm & 0xff);
  /*printbase(csm, 2, 16, 0);
   putchar(' ');
   printbase(fcsm, 2, 16, 0);
-  putchar(' '); */
+  putchar('\n'); */
   if(fcsm == csm){
     //putstring(" wow ");
     return true;
@@ -287,26 +302,33 @@ bool validateIPChecksum(uint8_t *packet, size_t len) {
     return false;
   }
 }
-bool calculateIPChecksum(uint8_t *packet, size_t len) {
+bool calculateUDPChecksum(uint8_t *packet, size_t len) {
   /*for(int i = 0; i < (int)len; i++){
     printbase(packet[i], 2, 16, 0);
     putchar(' ');
   }putchar('\n');*/
-  uint16_t fcsm = (uint16_t)(((uint32_t)packet[6] << 8) | (uint32_t)packet[7]);
+  uint32_t fcsm = (uint32_t)(((uint32_t)packet[6] << 8) | (uint32_t)packet[7]);
   int length = (int)len;
   packet[6] = 0;
   packet[7] = 0;
-  uint32_t checksum = 0, cur, filter = (1 << 16) - 1;
-  for (int i = 0; i < length; i += 2){
-      cur = (((uint16_t)packet[i] << 8) | (uint16_t)packet[i + 1]);
+  uint32_t checksum = 0, cur, filter = (0x1 << 16) - 1;
+  for (int i = 12; i < 20; i += 2){
+      cur = (((uint32_t)output[i] << 8) | (uint32_t)output[i + 1]);
       checksum += cur;
   }
+  checksum += 0x0011;
+  for (int i = 0; i < length; i += 2){
+      cur = (((uint32_t)packet[i] << 8) | (uint32_t)packet[i + 1]);
+      checksum += cur;
+  }
+  cur = (((uint32_t)packet[4] << 8) | (uint32_t)packet[5]);
+  checksum += cur;
   /*printbase(checksum, 8, 16, 0);
   putchar('\n');*/
   for (;(checksum >> 16) > 0; checksum = ((checksum & filter) + (checksum >> 16)));
-  uint16_t csm = ~(uint16_t)(checksum & filter);
-  packet[6] = csm >> 8;
-  packet[7] = csm & ((1 << 8) - 1);
+  uint32_t csm = (~(uint32_t)(checksum & filter))&0xffff;
+  packet[6] = (uint8_t)((csm >> 8)&0xff);
+  packet[7] = (uint8_t)(csm & 0xff);
  /*printbase(csm, 2, 16, 0);
   putchar(' ');
   printbase(fcsm, 2, 16, 0);
@@ -382,12 +404,12 @@ void update(bool insert, RoutingTableEntry entry) {
             y = ((cnt&3)<<1);
             z = x&makethzero[cnt&3];
             *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
-            printbase(*c, 4, 4, 0);
+            /*printbase(*c, 4, 4, 0);
             putchar(' ');
             printbase(x, 4, 4, 0);
             putchar(' ');
             printbase(z, 4, 4, 0);
-            putchar('\n');
+            putchar('\n');*/
             /*printbase((uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);
             printbase(z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
             /*putstring("new node nexthop:\n");
@@ -455,13 +477,13 @@ void update(bool insert, RoutingTableEntry entry) {
             y = ((cnt&3)<<1);
             z = x&makethzero[cnt&3];
             *c = (z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y));
-            printbase(*c, 4, 4, 0);
+            /*printbase(*c, 4, 4, 0);
             putchar(' ');
             printbase(x, 4, 4, 0);
             putchar(' ');
             printbase(z, 4, 4, 0);
             putchar('\n');
-            /*
+            
             printbase((uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);
             printbase(z|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
             /*putstring("new node nexthop:\n");
@@ -737,8 +759,7 @@ uint32_t assemble(const RipPacket *rip, uint8_t *buffer) {
   return 4 + rip->numEntries * 20;
 }
 
-uint8_t packet[2048];
-uint8_t output[2048];
+
 // 0: 10.0.1.1
 // 1: 10.0.2.1
 // 2: 10.0.3.1
@@ -793,22 +814,16 @@ int main(int argc, char *argv[]) {
   for(int i = 0; i < 2048; i++, ccc+=1) *ccc = 0;
 
   /*RoutingTableEntry entry;
-  entry.addr = 0x0201000a & 0x00FFFFFF; // big endian
+  entry.addr = 0x0100a8c0 & 0x00FFFFFF; // big endian
   entry.mask = 0x00FFFFFF;        // small endian
   entry.if_index = 1;    // small endian
-  entry.nexthop = 0x0201000a;      // big endian, means direct
+  entry.nexthop = 0x0200a8c0;      // big endian, means direct
   entry.metric = 1;
   update(true, entry);
-  entry.addr = 0x0202000a & 0x00FEFFFF; // big endian
+  entry.addr = 0x0101a8c0 & 0x00FEFFFF; // big endian
   entry.mask = 0x00FEFFFF;        // small endian
   entry.if_index = 2;    // small endian
-  entry.nexthop = 0x0202000a;      // big endian, means direct
-  entry.metric = 2;
-  update(true, entry);
-  entry.addr = 0x0203000a & 0x00FFFFFF; // big endian
-  entry.mask = 0x00FFFFFF;        // small endian
-  entry.if_index = 2;    // small endian
-  entry.nexthop = 0x0302000a;      // big endian, means direct
+  entry.nexthop = 0x0201a8c0;      // big endian, means direct
   entry.metric = 2;
   update(true, entry);
   putstring("Insertion done\n");*/
@@ -855,7 +870,7 @@ int main(int argc, char *argv[]) {
       time++;
       ptime++;
     }
-    if (ptime == 30) {
+    if (ptime == 5) {
       ptime = 0; 
       // What to do?
       // send complete routing table to every interface
@@ -876,6 +891,58 @@ int main(int argc, char *argv[]) {
               resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
               resp.entries[resp.numEntries].metric = routersList[i].metric;
               resp.numEntries++;
+
+              if(resp.numEntries == 25){
+                uint32_t rip_len = assemble(&resp, &output[20 + 8]);
+                // assemble
+                // IP
+                output[0] = 0x45;
+                output[1] = 0xc0;
+                output[2] = ((rip_len + 28)>>8)&0xff;
+                output[3] = (rip_len + 28)&0xff;
+
+                output[6] = 0x40;
+                output[7] = 0x00;
+                output[8] = 0x01;
+                output[9] = 0x11;
+                // ...
+                // UDP
+                // port = 520
+                output[16] = 224;
+                output[17] = 0;
+                output[18] = 0;
+                output[19] = 9;
+
+                output[20] = 0x02;
+                output[21] = 0x08;
+                output[22] = 0x02;
+                output[23] = 0x08;
+                output[24] = ((rip_len + 8)>>8)&0xff;
+                output[25] = (rip_len + 8)&0xff;
+
+                
+                // ...
+                // RIP
+                
+                // checksum calculation for ip and udp
+                // if you don't want to calculate udp checksum, set it to zero
+                // send it back
+                //putchar('\n');
+                //printbase(resp.numEntries, 1, 10, 0);
+                //putstring(" rules...\n");
+                macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
+                for(int j = 0; j < 4; j++){
+                  output[15] = ((addrs[j]>>24)&0xff);
+                  output[14] = ((addrs[j]>>16)&0xff);
+                  output[13] = ((addrs[j]>>8)&0xff);
+                  output[12] = (addrs[j]&0xff);
+                  calculateUDPChecksum(&output[20], rip_len+8);
+                  validateIPChecksum(output, rip_len+20+8);
+                  HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, bro_mac);
+                }
+                resp.numEntries = 0;
+              }
+
               /*printbase(routersList[i].nexthop, 8, 16, 0);
               putchar(' ');*/
             }
@@ -907,7 +974,7 @@ int main(int argc, char *argv[]) {
           output[24] = ((rip_len + 8)>>8)&0xff;
           output[25] = (rip_len + 8)&0xff;
 
-          calculateIPChecksum(&output[20], rip_len+8);
+          
           // ...
           // RIP
           
@@ -915,14 +982,15 @@ int main(int argc, char *argv[]) {
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
           //putchar('\n');
-        printbase(resp.numEntries, 1, 10, 0);
-        putstring(" rules...\n");
+        //printbase(resp.numEntries, 1, 10, 0);
+        //putstring(" rules...\n");
         macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
         for(int j = 0; j < 4; j++){
           output[15] = ((addrs[j]>>24)&0xff);
           output[14] = ((addrs[j]>>16)&0xff);
           output[13] = ((addrs[j]>>8)&0xff);
           output[12] = (addrs[j]&0xff);
+          calculateUDPChecksum(&output[20], rip_len+8);
           validateIPChecksum(output, rip_len+20+8);
           HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, bro_mac);
         }
@@ -1004,6 +1072,55 @@ int main(int argc, char *argv[]) {
                 resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
                 resp.entries[resp.numEntries].metric = routersList[i].metric;
                 resp.numEntries++;
+                if(resp.numEntries == 25){
+                  uint32_t rip_len = assemble(&resp, &output[20 + 8]);
+                  // assemble
+                  // IP
+                  output[0] = 0x45;
+                  output[1] = 0xc0;
+                  output[2] = ((rip_len + 28)>>8)&0xff;
+                  output[3] = (rip_len + 28)&0xff;
+
+                  output[6] = 0x40;
+                  output[7] = 0x00;
+                  output[8] = 0x01;
+                  output[9] = 0x11;
+                  // ...
+                  // UDP
+                  // port = 520
+                  output[16] = 224;
+                  output[17] = 0;
+                  output[18] = 0;
+                  output[19] = 9;
+
+                  output[20] = 0x02;
+                  output[21] = 0x08;
+                  output[22] = 0x02;
+                  output[23] = 0x08;
+                  output[24] = ((rip_len + 8)>>8)&0xff;
+                  output[25] = (rip_len + 8)&0xff;
+
+                  
+                  // ...
+                  // RIP
+                  
+                  // checksum calculation for ip and udp
+                  // if you don't want to calculate udp checksum, set it to zero
+                  // send it back
+                  //putchar('\n');
+                  //printbase(resp.numEntries, 1, 10, 0);
+                  //putstring(" rules...\n");
+                  output[15] = ((addrs[if_index-1]>>24)&0xff);
+                  output[14] = ((addrs[if_index-1]>>16)&0xff);
+                  output[13] = ((addrs[if_index-1]>>8)&0xff);
+                  output[12] = (addrs[if_index-1]&0xff);
+                  calculateUDPChecksum(&output[20], rip_len+8);
+                  validateIPChecksum(output, rip_len+20+8);
+                  HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
+
+                  resp.numEntries = 0;
+                }
+
               }
           }
           else{
@@ -1051,7 +1168,7 @@ int main(int argc, char *argv[]) {
           output[24] = ((rip_len + 8)>>8)&0xff;
           output[25] = (rip_len + 8)&0xff;
 
-          calculateIPChecksum(&output[20], rip_len+8);
+          
           // ...
           // RIP
           
@@ -1059,10 +1176,11 @@ int main(int argc, char *argv[]) {
           // if you don't want to calculate udp checksum, set it to zero
           // send it back
           //putchar('\n');
-          output[15] = ((addrs[if_index]>>24)&0xff);
-          output[14] = ((addrs[if_index]>>16)&0xff);
-          output[13] = ((addrs[if_index]>>8)&0xff);
-          output[12] = (addrs[if_index]&0xff);
+          output[15] = ((addrs[if_index-1]>>24)&0xff);
+          output[14] = ((addrs[if_index-1]>>16)&0xff);
+          output[13] = ((addrs[if_index-1]>>8)&0xff);
+          output[12] = (addrs[if_index-1]&0xff);
+          calculateUDPChecksum(&output[20], rip_len+8);
           validateIPChecksum(output, rip_len+20+8);
           HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
         } else {
@@ -1115,6 +1233,57 @@ int main(int argc, char *argv[]) {
               resp.entries[resp.numEntries].nexthop = rip.entries[i].nexthop;
               resp.entries[resp.numEntries].metric = routingentry.metric;
               resp.numEntries++;
+              if(resp.numEntries == 25){
+                uint32_t rip_len = assemble(&resp, &output[20 + 8]);
+                // assemble
+                // IP
+                output[0] = 0x45;
+                output[1] = 0xc0;
+                output[2] = ((rip_len + 28)>>8)&0xff;
+                output[3] = (rip_len + 28)&0xff;
+
+                output[6] = 0x40;
+                output[7] = 0x00;
+                output[8] = 0x01;
+                output[9] = 0x11;
+                // ...
+                // UDP
+                // port = 520
+                output[16] = 224;
+                output[17] = 0;
+                output[18] = 0;
+                output[19] = 9;
+
+                output[20] = 0x02;
+                output[21] = 0x08;
+                output[22] = 0x02;
+                output[23] = 0x08;
+                output[24] = ((rip_len + 8)>>8)&0xff;
+                output[25] = (rip_len + 8)&0xff;
+
+                
+                // ...
+                // RIP
+                
+                // checksum calculation for ip and udp
+                // if you don't want to calculate udp checksum, set it to zero
+                // send it back
+                //putchar('\n');
+                printbase(resp.numEntries, 1, 10, 0);
+                putstring(" rules...\n");
+                macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
+                for(int j = 0; j < 4; j++)
+                  if(j+1 != (int)if_index){
+                    output[15] = ((addrs[j]>>24)&0xff);
+                    output[14] = ((addrs[j]>>16)&0xff);
+                    output[13] = ((addrs[j]>>8)&0xff);
+                    output[12] = (addrs[j]&0xff);
+                    calculateUDPChecksum(&output[20], rip_len+8);
+                    validateIPChecksum(output, rip_len+20+8);
+                    HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, bro_mac);
+                  }
+                resp.numEntries = 0;
+              }
             }
           }
           // triggered updates? ref. RFC2453 3.10.1
@@ -1147,7 +1316,7 @@ int main(int argc, char *argv[]) {
           output[24] = ((rip_len + 8)>>8)&0xff;
           output[25] = (rip_len + 8)&0xff;
 
-          calculateIPChecksum(&output[20], rip_len+8);
+          
           // ...
           // RIP
           
@@ -1158,14 +1327,16 @@ int main(int argc, char *argv[]) {
           printbase(resp.numEntries, 1, 10, 0);
           putstring(" rules...\n");
           macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
-          for(int j = 0; j < 4; j++){
-            output[15] = ((addrs[j]>>24)&0xff);
-            output[14] = ((addrs[j]>>16)&0xff);
-            output[13] = ((addrs[j]>>8)&0xff);
-            output[12] = (addrs[j]&0xff);
-            validateIPChecksum(output, rip_len+20+8);
-            HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, bro_mac);
-          }
+          for(int j = 0; j < 4; j++)
+            if(j+1 != (int)if_index){
+              output[15] = ((addrs[j]>>24)&0xff);
+              output[14] = ((addrs[j]>>16)&0xff);
+              output[13] = ((addrs[j]>>8)&0xff);
+              output[12] = (addrs[j]&0xff);
+              calculateUDPChecksum(&output[20], rip_len+8);
+              validateIPChecksum(output, rip_len+20+8);
+              HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, bro_mac);
+            }
         }
       }
     } 
