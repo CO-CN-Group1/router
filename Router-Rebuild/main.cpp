@@ -845,10 +845,11 @@ int main(int argc, char *argv[]) {
     entry.mask = 0x00FFFFFF;        // small endian
     entry.if_index = i + 1;    // small endian
     entry.nexthop = 0;      // big endian, means direct
+    entry.metric = 0;
     update(true, entry);
   }*/
   volatile uint8_t *cc = (uint8_t*)0xbd000000, *ccc = (uint8_t*)0xbf000000;
-  for(int i = 0; i < 2048; i++, ccc+=1) *ccc = 0;
+  for(int i = 0; i < 2048*32; i++, ccc+=1) *ccc = 0;
 
   /*RoutingTableEntry entry;
   entry.addr = 0x0100a8c0 & 0x00FFFFFF; // big endian
@@ -925,14 +926,14 @@ int main(int argc, char *argv[]) {
             if(routersList[i].isleaf == true){
               resp.entries[resp.numEntries].addr = routersList[i].addr;
               resp.entries[resp.numEntries].mask = routersList[i].mask;
-              resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
+              resp.entries[resp.numEntries].nexthop = 0x0;
               resp.entries[resp.numEntries].metric = routersList[i].metric;
 
               printbase(resp.entries[resp.numEntries].addr, 8, 16, 0);
               putchar(' ');
               printbase(resp.entries[resp.numEntries].mask, 8, 16, 0);
               putchar(' ');
-              printbase(resp.entries[resp.numEntries].nexthop, 8, 16, 0);
+              printbase(routersList[i].nexthop, 8, 16, 0);
               putchar(' ');
               printbase(resp.entries[resp.numEntries].metric, 1, 10, 0);
               putchar('\n');
@@ -1063,7 +1064,7 @@ int main(int argc, char *argv[]) {
       // packet is truncated, ignore it
       continue;
     }
-    printbase(res, 1, 10, 0);
+    /*printbase(res, 1, 10, 0);
     putchar(' ');
     for(int i = 0; i < 6; i++)
       printbase(src_mac[i], 2, 16, 0);
@@ -1072,7 +1073,7 @@ int main(int argc, char *argv[]) {
       printbase(dst_mac[i], 2, 16, 0);
     putchar(' ');
     printbase(if_index, 1, 10, 0);
-    putchar('\n');
+    putchar('\n');*/
     // 1. validate
     if (!validateIPChecksum(&packet[0], res)) {
       putstring("Invalid IP Checksum\n");
@@ -1083,8 +1084,11 @@ int main(int argc, char *argv[]) {
     // big endian
     src_addr = packet[12]|((uint32_t)packet[13]<<8)|((uint32_t)packet[14]<<16)|((uint32_t)packet[15]<<24);
     dst_addr = packet[16]|((uint32_t)packet[17]<<8)|((uint32_t)packet[18]<<16)|((uint32_t)packet[19]<<24);
-    /*printbase(dst_addr, 8, 16, 0);
-    putchar('\n');*/
+    putstring("\nSRC: ");
+    printbase(src_addr, 8, 16, 0);
+    putstring(" DST: ");
+    printbase(dst_addr, 8, 16, 0);
+    putchar('\n');
 
     // 2. check whether dst is me
     bool dst_is_me = false;
@@ -1105,7 +1109,7 @@ int main(int argc, char *argv[]) {
       // check and validate
       bool disass = disassemble(packet, res, &rip);
       if (disass == true) {
-        putstring("\nomg it's rip ");
+        putstring("omg it's rip ");
         printbase(rip.command, 1, 10, 0);
         putstring("\n");
         if (rip.command == 1) {
@@ -1120,7 +1124,7 @@ int main(int argc, char *argv[]) {
               if(routersList[i].isleaf == true){
                 resp.entries[resp.numEntries].addr = routersList[i].addr;
                 resp.entries[resp.numEntries].mask = routersList[i].mask;
-                resp.entries[resp.numEntries].nexthop = routersList[i].nexthop;
+                resp.entries[resp.numEntries].nexthop = 0x0;
                 resp.entries[resp.numEntries].metric = routersList[i].metric;
                 resp.numEntries++;
                 if(resp.numEntries == 25){
