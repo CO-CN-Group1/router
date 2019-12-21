@@ -337,6 +337,7 @@ void update(bool insert, RoutingTableEntry entry) {
   int len = 0;
   if(mask == 0xFFFFFFFF) len = 32;
   else for (len = 0; ((((uint32_t)1)<<(31-len))&mask);len++);
+  uint8_t x, y;
   uint8_t *c = (uint8_t*)(0xbd000000);
   uint32_t *cc = (uint32_t*)(0xbd000000);
   *c = 1;
@@ -372,9 +373,18 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].nexthop = entry.nexthop;
             cc = (uint32_t*)(0xbd000000+(cnt<<3));
             *cc = nxth;
-            c = (uint8_t*)(0xbf000000+cnt);
-            *c = (uint8_t)entry.if_index;
-            //printbase(*c, 2, 16, 0);
+            /*c = (uint8_t*)(0xbf000000+cnt);
+            *c = (uint8_t)entry.if_index;*/
+            c = (uint8_t*)(0xbf000000+(cnt>>2));
+            x = *c;
+            y = ((cnt&3)<<1);
+            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
+            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
+            /*printbase(*c, 4, 4, 0);
+            printbase(x, 4, 4, 0);
+            printbase(y, 4, 4, 0);
+            printbase((uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);
+            printbase(x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -404,8 +414,11 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].nexthop = entry.nexthop;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = nxth;
-            c = (uint8_t*)(0xbf000000+p);
-            *c = (uint8_t)entry.if_index;
+            c = (uint8_t*)(0xbf000000+(p>>2));
+            x = *c;
+            y = ((p&3)<<1);
+            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
+            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -432,9 +445,16 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[cnt].nexthop = entry.nexthop;
             cc = (uint32_t*)(0xbd000000+(cnt<<3));
             *cc = nxth;
-            c = (uint8_t*)(0xbf000000+cnt);
-            *c = (uint8_t)entry.if_index;
-            //printbase(*c, 2, 16, 0);
+            c = (uint8_t*)(0xbf000000+(cnt>>2));
+            x = *c;
+            y = ((cnt&3)<<1);
+            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
+            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
+            /*printbase(*c, 4, 4, 0);
+            printbase(x, 4, 4, 0);
+            printbase(y, 4, 4, 0);
+            printbase((uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);
+            printbase(x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y), 4, 4, 0);*/
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -464,8 +484,11 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].nexthop = entry.nexthop;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = nxth;
-            c = (uint8_t*)(0xbf000000+p);
-            *c = (uint8_t)entry.if_index;
+            c = (uint8_t*)(0xbf000000+(p>>2));
+            x = *c;
+            y = ((p&3)<<1);
+            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
+            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
             /*putstring("new node nexthop:\n");
             printbase((uint32_t)c, 2, 16, 0);
             printbase(*c, 2, 16, 0);
@@ -493,8 +516,11 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].lson = 0;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = 0;
-            c = (uint8_t*)(0xbf000000+p);
-            *c = (uint8_t)entry.if_index;
+            c = (uint8_t*)(0xbf000000+(p>>2));
+            x = *c;
+            y = ((p&3)<<1);
+            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
+            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
             break;
           }
           p = routersList[p].lson;
@@ -511,8 +537,11 @@ void update(bool insert, RoutingTableEntry entry) {
             routersList[p].rson = 0;
             cc = (uint32_t*)(0xbd000000+(p<<3));
             *cc = 0;
-            c = (uint8_t*)(0xbf000000+p);
-            *c = (uint8_t)entry.if_index;
+            c = (uint8_t*)(0xbf000000+(p>>2));
+            x = *c;
+            y = ((p&3)<<1);
+            x = (((x>>y)&0x3)<<y)|(x&((1<<y)-0x1));
+            *c = x|(uint8_t)(((uint8_t)entry.if_index&0x3)<<y);
             break;
           }
           p = routersList[p].rson;
@@ -786,9 +815,11 @@ int main(int argc, char *argv[]) {
       putstring("\nNode: ");
       printbase(i>>3, 2, 16, 0);
       putchar(' ');
-      printbase(*ccc, 2, 16, 0);
+      printbase((((uint32_t)i>>3)>>2), 2, 16, 0);
       putchar(' ');
-      ccc+=1;
+      ccc = (uint8_t*)(0xbf000000+(((uint32_t)i>>3)>>2));
+      printbase(*ccc, 4, 4, 0);
+      putchar(' ');
     }
     printbase(*cc, 2, 16, 0);
   }*/
