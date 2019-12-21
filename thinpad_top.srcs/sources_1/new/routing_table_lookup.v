@@ -1,7 +1,7 @@
 module routing_table_lookup #
 (
     parameter DATA_WIDTH = 8,
-    parameter FRAME_LENGTH = 576*8,
+    parameter FRAME_LENGTH = 4608,
     parameter IP_LENGTH = 32,
     parameter PORT_LENGTH = 8,
     parameter MAC_LENGTH = 48
@@ -97,7 +97,6 @@ initial begin
     my_ip[2] <= 32'hc0a80101;
     my_ip[3] <= 32'hc0a80201;
     my_ip[4] <= 32'hc0a80301;
-
 
 end
 
