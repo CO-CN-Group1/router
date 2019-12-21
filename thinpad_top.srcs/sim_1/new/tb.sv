@@ -54,7 +54,7 @@ wire eth_rgmii_tx_ctl;   //RGMII TX 控制
 wire eth_rgmii_txc;      //RGMII TX 时钟
 
 //Windows需要注意路径分隔符的转义，例如"D:\\foo\\bar.bin"
-parameter BASE_RAM_INIT_FILE = "C:\\codes\\cod19grp1\\thinpad_top.srcs\\sim_1\\new\\a.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
+parameter BASE_RAM_INIT_FILE = "C:\\codes\\mips32lab\\toolchain\\bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
 parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路径
 parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flash初始化文件，请修改为实际的绝对路径
 parameter STATIC_ROUTER_TABLE = "static_router_table.mem";

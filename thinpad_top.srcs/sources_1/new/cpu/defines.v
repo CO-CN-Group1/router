@@ -8,9 +8,9 @@
 `define exe_xor 6'b100110
 `define exe_nor 6'b100111
 `define exe_andi 6'b001100
+`define exe_ori 6'b001101
 `define exe_xori 6'b001110
 `define exe_lui 6'b001111
-`define exe_ori 6'b001101
 
 `define exe_sll 6'b000000
 `define exe_sllv 6'b000100
@@ -111,7 +111,7 @@
 `define exe_mflo_op 8'b00010010 
 `define exe_mtlo_op 8'b00010011 
 
-`define exe_slt_op 8'b00001010 
+`define exe_slt_op 8'b00101010 
 `define exe_sltu_op 8'b00101011 
 `define exe_slti_op 8'b01010111 
 `define exe_sltiu_op 8'b01011000 
@@ -143,7 +143,7 @@
 `define exe_bgez_op 8'b01000001
 `define exe_bgezal_op 8'b01001011 
 `define exe_bgtz_op 8'b01010100 
-`define exe_blez_op 8'b01010100 
+`define exe_blez_op 8'b01010011 
 `define exe_bltz_op 8'b01000000 
 `define exe_bltzal_op 8'b01001010 
 `define exe_bne_op 8'b01010010
