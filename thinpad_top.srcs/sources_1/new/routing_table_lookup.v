@@ -93,10 +93,10 @@ initial begin
     //tx_axis_tlast = 0;
     dest_ip <= 0;
     //dest_ip_valid = 0;
-    my_ip[1] <= 32'h0a000101;
-    my_ip[2] <= 32'h0a000201;
-    my_ip[3] <= 32'h0a000301;
-    my_ip[4] <= 32'h0a000401;
+    my_ip[1] <= 32'hc0a80001;
+    my_ip[2] <= 32'hc0a80101;
+    my_ip[3] <= 32'hc0a80201;
+    my_ip[4] <= 32'hc0a80301;
 
 end
 
