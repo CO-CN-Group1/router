@@ -398,7 +398,8 @@ always @(posedge clk or posedge rst)begin
                             receiver_addr<=11'h7ff;
                             receiver_ce<=1'b0;
                             receiver_we<=1'b1;
-                            state<=STATE_IDLE;
+                            //state<=STATE_IDLE;
+                            state<=STATE_COMPUTE;
                         end
                         else begin
                             state<=STATE_CPUIN;
