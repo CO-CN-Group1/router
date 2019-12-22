@@ -39,7 +39,7 @@ xpm_memory_tdpram #(
     .BYTE_WRITE_WIDTH_B(8),
     .READ_DATA_WIDTH_B(32),
     .READ_LATENCY_B(1),
-    .MEMORY_SIZE(2048*8),
+    .MEMORY_SIZE(1024*8),
     .CLOCKING_MODE("independent_clock")
 ) xpm_memory_tdpram0 (
     .clka(cpu_clk),
