@@ -14,7 +14,7 @@ module sender_mem(
     input wire cpu_rst,
     input wire[31:0] cpu_data_i,
     output wire[31:0] cpu_data_o,
-    input wire[8:0] cpu_addr,
+    input wire[7:0] cpu_addr,
     input wire cpu_ce_n,
     input wire[3:0] cpu_we_n,
     
@@ -22,19 +22,19 @@ module sender_mem(
     input wire router_clk, 
     input wire[31:0] router_data_i,
     output wire[31:0] router_data_o,
-    input wire[8:0] router_addr,
+    input wire[7:0] router_addr,
     input wire router_ce_n,
     input wire[3:0] router_we_n
 );
 
 xpm_memory_tdpram #(
     // A for cpu B for router
-    .ADDR_WIDTH_A(9),
+    .ADDR_WIDTH_A(8),
     .WRITE_DATA_WIDTH_A(32),
     .BYTE_WRITE_WIDTH_A(8),
     .READ_DATA_WIDTH_A(32),
     .READ_LATENCY_A(1),
-    .ADDR_WIDTH_B(9),
+    .ADDR_WIDTH_B(8),
     .WRITE_DATA_WIDTH_B(32),
     .BYTE_WRITE_WIDTH_B(8),
     .READ_DATA_WIDTH_B(32),
