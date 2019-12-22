@@ -2,7 +2,7 @@
  * 路由器将收到的发送给自己的帧写入到这里
  * cpu从这里读取发送给自己的帧
  * 对于路由器来说，每个上升沿监听2047地址，如果不为0的话不能执行写操作
- * 如果2047为0，那么首先将帧写入，将帧长度写入508-510，小端序
+ * 如果2047为0，那么首先将帧写入，将帧长度写入2044-2046，小端序
  * 最后将2047 置为 8'b11111111
  * 注意!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * we high = write low = read
@@ -71,7 +71,7 @@ xpm_memory_tdpram #(
     .BYTE_WRITE_WIDTH_B(8),
     .READ_DATA_WIDTH_B(32),
     .READ_LATENCY_B(1),
-    .MEMORY_SIZE(576*8),
+    .MEMORY_SIZE(2048*8),
     .CLOCKING_MODE("independent_clock")
 ) xpm_memory_tdpram0 (
     .clka(cpu_clk),
