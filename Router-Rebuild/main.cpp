@@ -136,7 +136,7 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
                         int *if_index){
     volatile uint8_t* hastoRead;
     volatile uint8_t *c,*d,*e;
-    hastoRead = (uint8_t*)0xbb0001ff;
+    hastoRead = (uint8_t*)0xbb0007ff;
     uint8_t x = *hastoRead;
     if(x==(uint8_t)0x0){
         return 0;
@@ -145,9 +145,9 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
     x = *hastoRead;
     //printbase(x, 1, 10, 0);
     //putstring("\n");
-    c = (uint8_t*)0xbb0001fc;
-    d = (uint8_t*)0xbb0001fd;
-    e = (uint8_t*)0xbb0001fe;
+    c = (uint8_t*)0xbb0007fc;
+    d = (uint8_t*)0xbb0007fd;
+    e = (uint8_t*)0xbb0007fe;
     uint32_t len = (*c)+(((uint32_t)*d)<<8)+(((uint32_t)*e)<<16);
     c = (uint8_t*)0xbb000000;
     for(uint32_t i = 0; i < len; i++, c+=1){
@@ -194,16 +194,16 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
     bufferh[16] = 0x08;
     bufferh[17] = 0x00;
     volatile uint8_t* hastoWrite;
-    hastoWrite = (uint8_t*)0xbc0001ff;
+    hastoWrite = (uint8_t*)0xbc0007ff;
     uint8_t x = *hastoWrite;
     while(x==(uint8_t)0xff){
       x = *hastoWrite;
     }
     uint8_t *c,*d,*e;
     size_t legth = length + 18;
-    c = (uint8_t*)0xbc0001fc;
-    d = (uint8_t*)0xbc0001fd;
-    e = (uint8_t*)0xbc0001fe;
+    c = (uint8_t*)0xbc0007fc;
+    d = (uint8_t*)0xbc0007fd;
+    e = (uint8_t*)0xbc0007fe;
     *c = (uint8_t)(legth&0xff);
     *d = (uint8_t)((legth>>8)&0xff);
     *e = (uint8_t)((legth>>16)&0xff);
@@ -232,16 +232,16 @@ uint8_t bufferu[]={
 int HAL_DEBUG_ARP_SendIPPacket() {
     
     volatile uint8_t* hastoWrite;
-    hastoWrite = (uint8_t*)0xbc0001ff;
+    hastoWrite = (uint8_t*)0xbc0007ff;
     uint8_t x = *hastoWrite;
     while(x==(uint8_t)0xff){
       x = *hastoWrite;
     }
     uint8_t *c,*d,*e;
     size_t legth = 64;
-    c = (uint8_t*)0xbc0001fc;
-    d = (uint8_t*)0xbc0001fd;
-    e = (uint8_t*)0xbc0001fe;
+    c = (uint8_t*)0xbc0007fc;
+    d = (uint8_t*)0xbc0007fd;
+    e = (uint8_t*)0xbc0007fe;
     *c = (uint8_t)(legth&0xff);
     *d = (uint8_t)((legth>>8)&0xff);
     *e = (uint8_t)((legth>>16)&0xff);
@@ -816,9 +816,9 @@ int main(int argc, char *argv[]) {
 
   volatile uint8_t* hastoWrite;
   volatile uint8_t* hastoRead;
-  hastoRead = (uint8_t*)0xbb0001ff;
+  hastoRead = (uint8_t*)0xbb0007ff;
   (*hastoRead) = 0x0;
-  hastoWrite = (uint8_t*)0xbc0001ff;
+  hastoWrite = (uint8_t*)0xbc0007ff;
   (*hastoWrite) = 0x0;
 
   int res = 1;
