@@ -93,7 +93,9 @@ localparam[4:0]
     STATE_OUTPUT_CRAZY=15,
     STATE_OUTPUTNAIVE=16,
     STATE_THROW=17,
-    STATE_OUTPUT_THENTHROW=18;
+    STATE_OUTPUT_THENTHROW=18,
+    STATE_CPUINRGMII=19,
+    STATE_CPUINSLEEP=20;
 //(*mark_debug="true"*)reg[3:0] state = STATE_IDLE;
 reg[4:0] state = STATE_IDLE;
 
@@ -193,6 +195,7 @@ reg waittable=0;
 reg nexthopnotnot;
 
 reg[7:0] cpuoutlen[2:0];
+reg[23:0] miyao;
 always @(posedge clk or posedge rst)begin
     if(rst) begin
         state <= STATE_IDLE;
@@ -324,12 +327,46 @@ always @(posedge clk or posedge rst)begin
                     receiver_addr<=receiver_addr+1;
                 end
                 else begin
+                    state<=STATE_CPUINRGMII;
+                end
+                /*
+                else begin
                     state<=STATE_CPUINLEN;
                     receiver_addr<=11'h7fe;
                     receiver_ce<=1'b0;
                     receiver_we<=1'b0;
                     receiver_data_o<=data_tail[23:16];
                 end
+                */
+            end
+            STATE_CPUINRGMII:begin
+                sender_addr<=8'hff;
+                sender_ce<=1'b0;
+                sender_we<=4'b1111;
+                if(rx_axis_tvalid && rx_axis_tready_int)begin
+                    
+                    if(rx_axis_tlast) begin
+                        state <= STATE_CPUINSLEEP;
+                        miyao<=receiver_addr+1;
+                        rx_axis_tready_int <=0;
+                    end else begin
+                        rx_axis_tready_int <=1;
+                    end
+                    receiver_data_o<=rx_axis_tdata;
+                    receiver_addr <= receiver_addr+1;
+                end else begin
+                    rx_axis_tready_int <=1;
+                end
+            end
+            STATE_CPUINSLEEP:begin
+                sender_addr<=8'hff;
+                sender_ce<=1'b0;
+                sender_we<=4'b1111;
+                    state<=STATE_CPUINLEN;
+                    receiver_addr<=11'h7fe;
+                    receiver_ce<=1'b0;
+                    receiver_we<=1'b0;
+                    receiver_data_o<=miyao[23:16];
             end
             STATE_CPUINLEN:begin
                 sender_addr<=8'hff;
@@ -337,11 +374,11 @@ always @(posedge clk or posedge rst)begin
                 sender_we<=4'b1111;
                 if (receiver_addr==11'h7fe) begin
                     receiver_addr<=11'h7fd;
-                    receiver_data_o<=data_tail[15:8];
+                    receiver_data_o<=miyao[15:8];
                 end
                 if (receiver_addr==11'h7fd) begin
                     receiver_addr<=11'h7fc;
-                    receiver_data_o<=data_tail[7:0];
+                    receiver_data_o<=miyao[7:0];
                 end
                 if (receiver_addr==11'h7fc) begin
                     receiver_addr<=11'h7ff;
@@ -440,13 +477,13 @@ always @(posedge clk or posedge rst)begin
                             receiver_addr<=11'h0;
                             receiver_ce<=1'b0;
                             receiver_we<=1'b0;
-                            /////
+                            /*
                             receiver_addr<=11'h7ff;
                             receiver_ce<=1'b0;
                             receiver_we<=1'b1;
                             state<=STATE_IDLE;
                             state<=STATE_THROW;
-                            /////
+                            */
                             receiver_data_o<=data[0];
                         end
                     end
