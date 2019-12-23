@@ -48,6 +48,19 @@ module routing_table_lookup #
 
     output reg [15:0] led_out
 );
+fifo_generator_0 fifo_generator_0_inst(
+    .full(full),
+    .din(din),
+    .wr_en(wr_en),
+    .empty(empty),
+    .dout(dout),
+    .rd_en(rd_en),
+    .clk(clk),
+    .srst(rst)
+);
+reg full,wr_en,empty,rd_en;
+reg[7:0] din,dout;
+
 reg sender_ce,receiver_ce,receiver_we;
 reg[3:0] sender_we;
 assign receiver_cen=~receiver_ce;
@@ -56,9 +69,11 @@ assign sender_cen=~sender_ce;
 assign sender_wen=~sender_we; 
 
 
-reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
+//reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
+//reg [DATA_WIDTH-1:0] data[0:64-1];
+reg [DATA_WIDTH-1:0] data[0:576-1];
 integer data_head = 0, data_tail = 0;
-localparam[3:0]
+localparam[4:0]
     STATE_IDLE = 0,
     STATE_INPUT = 1,
     STATE_COMPUTE = 2,
@@ -74,9 +89,12 @@ localparam[3:0]
     STATE_CPUIN=12,
     STATE_CPUINLEN=13,
     STATE_CPUOUTSLEEP=14,
-    STATE_OUTPUT_CRAZY=15;
+    STATE_OUTPUT_CRAZY=15,
+    STATE_OUTPUTNAIVE=16,
+    STATE_THROW=17,
+    STATE_OUTPUT_THENTHROW=18;
 //(*mark_debug="true"*)reg[3:0] state = STATE_IDLE;
-reg[3:0] state = STATE_IDLE;
+reg[4:0] state = STATE_IDLE;
 
 reg [IP_LENGTH-1:0] my_ip[0:5];
 reg [MAC_LENGTH-1:0] my_mac=48'h00cdefabcdef;
@@ -169,7 +187,7 @@ reg rx_axis_tready_int=0;
 assign rx_axis_tready = rx_axis_tready_int;
 
 assign tx_axis_tdata = data[data_head];
-assign tx_axis_tlast = (data_head+1==data_tail);
+assign tx_axis_tlast = (data_head+1==data_tail) || (data_head==576-1 && data_tail==0);
 reg waittable=0;
 reg nexthopnotnot;
 
@@ -190,7 +208,11 @@ always @(posedge clk or posedge rst)begin
         receiver_ce<=1'b0;
         receiver_we<=1'b1;
         waittable<=1'b0;
+        wr_en<=1'b0;
+        rd_en<=1'b0;
     end else begin
+        wr_en<=1'b0;
+        rd_en<=1'b0;
         if (waittable==1'b1) begin
         end
         case(state)
@@ -281,7 +303,7 @@ always @(posedge clk or posedge rst)begin
                     sender_ce<=1'b0;
                     sender_we<=4'b0000;
                     sender_data_o<=32'b00000000111111111111111111111111;
-                    state<=STATE_OUTPUT;
+                    state<=STATE_OUTPUTNAIVE;
                 end
                 else begin
                     data_tail<=data_tail+4;
@@ -332,13 +354,17 @@ always @(posedge clk or posedge rst)begin
                 led_out<=16'h1100;
                 tx_axis_tvalid <=0;
                 if(rx_axis_tvalid && rx_axis_tready_int)begin
-                    if(rx_axis_tlast) begin
+                    
+                    if(data_tail==64-1 || rx_axis_tlast) begin
+                        state <= STATE_COMPUTE;
+                        /*
                         if (waittable || (data_tail>=38 && (data[16]==8'h08 && data[17]==8'h00) && !({data[34],data[35],data[36],data[37]}==my_ip[data[15]] || {data[34],data[35],data[36],data[37]}==32'he0000009) && data[26]!=0)) begin
                             state<=STATE_ROUTING;
                         end
                         else begin
                             state <= STATE_COMPUTE;
                         end
+                        */
                         rx_axis_tready_int <=0;
                     end else begin
                         rx_axis_tready_int <=1;
@@ -348,6 +374,7 @@ always @(posedge clk or posedge rst)begin
                 end else begin
                     rx_axis_tready_int <=1;
                 end
+                /*
                 if (data_tail>=38 && (data[16]==8'h08 && data[17]==8'h00) && !({data[34],data[35],data[36],data[37]}==my_ip[data[15]] || {data[34],data[35],data[36],data[37]}==32'he0000009) && data[26]!=0) begin
                     waittable<=1'b1;
                             dest_ip_valid<=1;
@@ -377,6 +404,7 @@ always @(posedge clk or posedge rst)begin
                         end
                     end
                 end
+                */
             end
             STATE_COMPUTE:begin
                 sender_addr<=8'hff;
@@ -398,14 +426,22 @@ always @(posedge clk or posedge rst)begin
                             receiver_addr<=11'h7ff;
                             receiver_ce<=1'b0;
                             receiver_we<=1'b1;
-                            //state<=STATE_IDLE;
-                            state<=STATE_COMPUTE;
+                            state<=STATE_IDLE;
+                            state<=STATE_THROW;
+                            //state<=STATE_COMPUTE;
                         end
                         else begin
                             state<=STATE_CPUIN;
                             receiver_addr<=11'h0;
                             receiver_ce<=1'b0;
                             receiver_we<=1'b0;
+                            /////
+                            receiver_addr<=11'h7ff;
+                            receiver_ce<=1'b0;
+                            receiver_we<=1'b1;
+                            state<=STATE_IDLE;
+                            state<=STATE_THROW;
+                            /////
                             receiver_data_o<=data[0];
                         end
                     end
@@ -415,6 +451,7 @@ always @(posedge clk or posedge rst)begin
                         receiver_we<=1'b1;
                         if (data[26]==0) begin
                             state<=STATE_IDLE;
+                            state<=STATE_THROW;
                         end
                         else begin
                             state<=STATE_ROUTING;
@@ -429,6 +466,7 @@ always @(posedge clk or posedge rst)begin
                     receiver_ce<=1'b0;
                     receiver_we<=1'b1;
                     state<=STATE_IDLE;
+                    state<=STATE_THROW;
                 end
             end
             STATE_ARPUPDATE:begin
@@ -446,10 +484,12 @@ always @(posedge clk or posedge rst)begin
                         end
                         else begin
                             state<=STATE_IDLE;
+                            state<=STATE_THROW;
                         end
                     end
                     else begin
                         state<=STATE_IDLE;
+                        state<=STATE_THROW;
                     end
                 end else begin
                     //insert_valid<=0;
@@ -487,7 +527,7 @@ always @(posedge clk or posedge rst)begin
                 {data[42],data[43],data[44],data[45]}<={data[32],data[33],data[34],data[35]};
                 {data[46],data[47],data[48],data[49],data[50],data[51],data[52],data[53],data[54],data[55],data[56],data[57],data[58],data[59]}=112'h0000000000000000000000000000;
                 data_tail<=60;
-                state<=STATE_OUTPUT;
+                state<=STATE_OUTPUT_THENTHROW;
             end
             STATE_ROUTING:begin
                 receiver_addr<=11'h7ff;
@@ -507,6 +547,7 @@ always @(posedge clk or posedge rst)begin
                     if (!waittable) begin
                         if(nexthopnotnot) begin
                             state<=STATE_IDLE;
+                            state<=STATE_THROW;
                         end
                         else begin
                             //nexthop_cache<=nexthop;
@@ -519,6 +560,7 @@ always @(posedge clk or posedge rst)begin
                     waittable<=1'b0;
                         if(nexthop_not_found) begin
                             state<=STATE_IDLE;
+                            state<=STATE_THROW;
                         end
                         else begin
                             nexthop_cache<=nexthop;
@@ -585,17 +627,25 @@ always @(posedge clk or posedge rst)begin
                             data_tail<=60;
                             data[15]<=porttt_cache;
                             
-                            state <= STATE_OUTPUT;
+                            state <= STATE_OUTPUT_THENTHROW;
                             //state <= STATE_OUTPUT_CRAZY;
                         end
                         else begin
                             {data[14],data[15]}<=lookup_port;
                             data[26]<=data[26]-1;
-                            checksum<=32'h00000000;
-                            if (data[29]==32'hfeff) begin
+                            //checksum<=32'h00000000;
+                            if (data[28]==8'hff) begin
+                                data[28]<=8'h00;
+                                data[29]<=data[29]+1;
+                            end
+                            else if (data[28]==8'hfe && data[29]==8'hff) begin
+                                data[28]<=8'h00;
+                                data[29]<=8'h00;
+                                //data[28]<=data[28]+1;
+                            end
+                            else begin
                                 data[28]<=data[28]+1;
                             end
-                            data[28]<=data[28]+1;
                             {data[0],data[1],data[2],data[3],data[4],data[5]}<=lookup_mac;
                             {data[6],data[7],data[8],data[9],data[10],data[11]}<=my_mac;
                             state<=STATE_OUTPUT;
@@ -644,6 +694,53 @@ always @(posedge clk or posedge rst)begin
                 state <= STATE_IDLE; // debug
             end
             STATE_OUTPUT:begin
+            
+                if(rx_axis_tvalid && rx_axis_tready_int)begin
+                    
+                    if(rx_axis_tlast) begin
+                        state <= STATE_OUTPUTNAIVE;
+                        rx_axis_tready_int <=0;
+                    end else begin
+                        rx_axis_tready_int <=!(data_tail+2==data_head || data_tail==576-2 && data_head==0 || data_tail==576-1 && data_head==1);
+                    end
+                    data[data_tail]<=rx_axis_tdata;
+                    if (data_tail==576-1) begin
+                        data_tail<=0;
+                    end
+                    else begin
+                        data_tail <= data_tail+1;
+                    end
+                end else begin
+                    rx_axis_tready_int <=!(data_tail+2==data_head || data_tail==576-2 && data_head==0 || data_tail==576-1 && data_head==1);
+                end
+                receiver_addr<=11'h7ff;
+                receiver_ce<=1'b0;
+                receiver_we<=1'b1;
+                sender_addr<=8'hff;
+                sender_ce<=1'b0;
+                sender_we<=4'b1111;
+                tx_axis_tvalid<=!(data_head+3==data_tail || data_head==576-3 && data_tail==0 || data_head==576-2 && data_tail==1 || data_head==576-1 && data_tail==2);
+                if(tx_axis_tvalid && tx_axis_tready)begin
+                    if (data_head==576-1) begin
+                        data_head<=0;
+                    end
+                    else begin
+                        data_head<=data_head+1;
+                    end
+                    /*
+                    if(tx_axis_tlast)begin
+                        //data_head <= data_head + 1;
+                        //tx_axis_tlast <= 1;
+                        state <= STATE_IDLE;
+                        tx_axis_tvalid<=0;
+                    end else begin
+                        //data_head <= data_head + 1;
+                    end
+                    */
+                end
+            end
+            STATE_OUTPUTNAIVE:begin
+                rx_axis_tready_int<=0;
                 receiver_addr<=11'h7ff;
                 receiver_ce<=1'b0;
                 receiver_we<=1'b1;
@@ -652,7 +749,12 @@ always @(posedge clk or posedge rst)begin
                 sender_we<=4'b1111;
                 tx_axis_tvalid<=1;
                 if(tx_axis_tvalid && tx_axis_tready)begin
-                    data_head<=data_head+1;
+                    if (data_head==576-1) begin
+                        data_head<=0;
+                    end
+                    else begin
+                        data_head<=data_head+1;
+                    end
                     if(tx_axis_tlast)begin
                         //data_head <= data_head + 1;
                         //tx_axis_tlast <= 1;
@@ -662,6 +764,62 @@ always @(posedge clk or posedge rst)begin
                         //data_head <= data_head + 1;
                     end
                 end
+            end
+            STATE_OUTPUT_THENTHROW:begin
+                rx_axis_tready_int<=0;
+                receiver_addr<=11'h7ff;
+                receiver_ce<=1'b0;
+                receiver_we<=1'b1;
+                sender_addr<=8'hff;
+                sender_ce<=1'b0;
+                sender_we<=4'b1111;
+                tx_axis_tvalid<=1;
+                if(tx_axis_tvalid && tx_axis_tready)begin
+                    if (data_head==576-1) begin
+                        data_head<=0;
+                    end
+                    else begin
+                        data_head<=data_head+1;
+                    end
+                    if(tx_axis_tlast)begin
+                        //data_head <= data_head + 1;
+                        //tx_axis_tlast <= 1;
+                        state <= STATE_THROW;
+                        tx_axis_tvalid<=0;
+                    end else begin
+                        //data_head <= data_head + 1;
+                    end
+                end
+            end
+            STATE_THROW:begin
+                rx_axis_tready_int<=1;
+                if(rx_axis_tvalid && rx_axis_tready_int)begin
+                    
+                    if(rx_axis_tlast) begin
+                        state <= STATE_OUTPUTNAIVE;
+                        rx_axis_tready_int <=0;
+                    end else begin
+                        //rx_axis_tready_int <=!(data_tail+2==data_head || data_tail==576-2 && data_head==0 || data_tail==576-1 && data_head==1);
+                    end
+                    /*
+                    data[data_tail]<=rx_axis_tdata;
+                    if (data_tail==576-1) begin
+                        data_tail<=0;
+                    end
+                    else begin
+                        data_tail <= data_tail+1;
+                    end
+                    */
+                end else begin
+                    //rx_axis_tready_int <=!(data_tail+2==data_head || data_tail==576-2 && data_head==0 || data_tail==576-1 && data_head==1);
+                end
+                receiver_addr<=11'h7ff;
+                receiver_ce<=1'b0;
+                receiver_we<=1'b1;
+                sender_addr<=8'hff;
+                sender_ce<=1'b0;
+                sender_we<=4'b1111;
+                tx_axis_tvalid<=0;
             end
             STATE_OUTPUT_CRAZY:begin
                 receiver_addr<=11'h7ff;
