@@ -70,7 +70,7 @@ assign sender_wen=~sender_we;
 
 
 //reg [DATA_WIDTH-1:0] data[0:FRAME_LENGTH/DATA_WIDTH-1];
-//reg [DATA_WIDTH-1:0] data[0:64-1];
+//reg [DATA_WIDTH-1:0] data[0:46-1];
 reg [DATA_WIDTH-1:0] data[0:576-1];
 integer data_head = 0, data_tail = 0;
 localparam[4:0]
@@ -355,7 +355,7 @@ always @(posedge clk or posedge rst)begin
                 tx_axis_tvalid <=0;
                 if(rx_axis_tvalid && rx_axis_tready_int)begin
                     
-                    if(data_tail==64-1 || rx_axis_tlast) begin
+                    if(data_tail==46-1 || rx_axis_tlast) begin
                         state <= STATE_COMPUTE;
                         /*
                         if (waittable || (data_tail>=38 && (data[16]==8'h08 && data[17]==8'h00) && !({data[34],data[35],data[36],data[37]}==my_ip[data[15]] || {data[34],data[35],data[36],data[37]}==32'he0000009) && data[26]!=0)) begin
