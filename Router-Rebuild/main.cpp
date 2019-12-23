@@ -142,7 +142,6 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
         return 0;
     }
     //putstring("\ngot a packet, hastoRead=");
-    x = *hastoRead;
     //printbase(x, 1, 10, 0);
     //putstring("\n");
     c = (uint8_t*)0xbb0007fc;
@@ -172,7 +171,7 @@ int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
         /*printbase(buffer[i], 2, 16, 0);
         putstring(" ");*/
     }
-    putchar('\n');
+    //putchar('\n');
     *hastoRead = 0;
     return (int)len - 18;
 }
@@ -215,11 +214,11 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
       //putchar(' ');
     }
     c = (uint8_t*)0xbc000000;
-    /*for (int i = 0; i < (int)legth; i++, c+=1){
+    for (int i = 0; i < (int)legth; i++, c+=1){
       printbase(*c, 2, 16, 0);
       putchar(' ');
-    }*/
-    //putstring("sent an packet\n");
+    }/**/
+    putstring("\nsent an packet\n");
     (*hastoWrite) = 0xff;
     return 0;
 }
@@ -839,19 +838,45 @@ int main(int argc, char *argv[]) {
   // 10.0.3.0/24 if 2
   // 10.0.4.0/24 if 3
   putstring("Initializing routing table\n");
-  /*for (int i = 0; i < N_IFACE_ON_BOARD; i++) {
+ /* for (int i = 0; i < 51; i++) {
     RoutingTableEntry entry;
-    entry.addr = addrs[i] & 0x00FFFFFF; // big endian
-    entry.mask = 0x00FFFFFF;        // small endian
-    entry.if_index = i + 1;    // small endian
+    entry.addr = ((uint32_t)i) & 0xFFFFFFFF; // big endian
+    entry.mask = 0xFFFFFFFF;        // small endian
+    entry.if_index = 1;    // small endian
     entry.nexthop = 0;      // big endian, means direct
-    entry.metric = 0;
+    entry.metric = 1;
     update(true, entry);
   }*/
   volatile uint8_t *cc = (uint8_t*)0xbd000000, *ccc = (uint8_t*)0xbf000000;
   for(int i = 0; i < 2048*32; i++, ccc+=1) *ccc = 0;
 
   RoutingTableEntry entry;
+  entry.addr = 0x0005a8c0 & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
+  entry.if_index = 1;    // small endian
+  entry.nexthop = 0x0200a8c0;      // big endian, means direct
+  entry.metric = 2;
+  update(true, entry);
+  entry.addr = 0x0006a8c0 & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
+  entry.if_index = 2;    // small endian
+  entry.nexthop = 0x0201a8c0;      // big endian, means direct
+  entry.metric = 2;
+  update(true, entry);
+  entry.addr = 0x0007a8c0 & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
+  entry.if_index = 3;    // small endian
+  entry.nexthop = 0x0202a8c0;      // big endian, means direct
+  entry.metric = 2;
+  update(true, entry);
+  entry.addr = 0x0008a8c0 & 0x00FFFFFF; // big endian
+  entry.mask = 0x00FFFFFF;        // small endian
+  entry.if_index = 4;    // small endian
+  entry.nexthop = 0x0203a8c0;      // big endian, means direct
+  entry.metric = 2;
+  update(true, entry);
+
+  /*RoutingTableEntry entry;
   entry.addr = 0x0100a8c0 & 0x00FFFFFF; // big endian
   entry.mask = 0x00FFFFFF;        // small endian
   entry.if_index = 1;    // small endian
@@ -864,7 +889,7 @@ int main(int argc, char *argv[]) {
   entry.nexthop = 0x0201a8c0;      // big endian, means direct
   entry.metric = 2;
   update(true, entry);
-  putstring("Insertion done\n");/**/
+  putstring("Insertion done\n");*/
   /*RoutingTableEntry entry;
   entry.addr = 0x0102000a & 0x00FFFFFF; // big endian
   entry.mask = 0x00FFFFFF;        // small endian
@@ -883,7 +908,7 @@ int main(int argc, char *argv[]) {
 
   
   
-  for(int i = 0; i < (int)((cnt+1)<<3); i++, cc+=1){
+  /*for(int i = 0; i < (int)((cnt+1)<<3); i++, cc+=1){
     if(i%8==0){
       putstring("\nNode: ");
       printbase(i>>3, 2, 16, 0);
@@ -895,7 +920,7 @@ int main(int argc, char *argv[]) {
       putchar(' ');
     }
     printbase(*cc, 2, 16, 0);
-  }
+  }*/
   //HAL_DEBUG_ARP_SendIPPacket();
   uint64_t last_time = 0;
   uint64_t time = 0;
@@ -915,7 +940,7 @@ int main(int argc, char *argv[]) {
       // ref. RFC2453 3.8
       // multicast MAC for 224.0.0.9 is 01:00:5e:00:00:09
       //printf("30s Timer\n");
-      putstring("\nmulticasting routing table with ");
+      putstring("\nmulticasting routing table");
       // TODO: broadcast everything
       
           RipPacket resp;
@@ -936,7 +961,7 @@ int main(int argc, char *argv[]) {
               printbase(routersList[i].nexthop, 8, 16, 0);
               putchar(' ');
               printbase(resp.entries[resp.numEntries].metric, 1, 10, 0);
-              putchar('\n');
+              putchar('\n');/**/
               resp.numEntries++;
 
               
@@ -977,7 +1002,7 @@ int main(int argc, char *argv[]) {
                 // if you don't want to calculate udp checksum, set it to zero
                 // send it back
                 //putchar('\n');
-                //printbase(resp.numEntries, 1, 10, 0);
+                printbase(resp.numEntries, 1, 10, 0);
                 //putstring(" rules...\n");
                 macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
                 for(int j = 0; j < 4; j++){
@@ -996,6 +1021,7 @@ int main(int argc, char *argv[]) {
               putchar(' ');*/
             }
           //putchar('\n');
+          if(resp.numEntries == 0)continue;
           uint32_t rip_len = assemble(&resp, &output[20 + 8]);
           // assemble
           // IP
@@ -1032,7 +1058,7 @@ int main(int argc, char *argv[]) {
           // send it back
           //putchar('\n');
         printbase(resp.numEntries, 1, 10, 0);
-        putstring(" rules...\n");
+        /*putstring(" rules...\n");*/
         macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
         for(int j = 0; j < 4; j++){
           output[15] = ((addrs[j]>>24)&0xff);
@@ -1064,7 +1090,7 @@ int main(int argc, char *argv[]) {
       // packet is truncated, ignore it
       continue;
     }
-    /*printbase(res, 1, 10, 0);
+    printbase(res, 1, 10, 0);
     putchar(' ');
     for(int i = 0; i < 6; i++)
       printbase(src_mac[i], 2, 16, 0);
@@ -1073,7 +1099,7 @@ int main(int argc, char *argv[]) {
       printbase(dst_mac[i], 2, 16, 0);
     putchar(' ');
     printbase(if_index, 1, 10, 0);
-    putchar('\n');*/
+    putchar('\n');/**/
     // 1. validate
     if (!validateIPChecksum(&packet[0], res)) {
       putstring("Invalid IP Checksum\n");
@@ -1084,11 +1110,11 @@ int main(int argc, char *argv[]) {
     // big endian
     src_addr = packet[12]|((uint32_t)packet[13]<<8)|((uint32_t)packet[14]<<16)|((uint32_t)packet[15]<<24);
     dst_addr = packet[16]|((uint32_t)packet[17]<<8)|((uint32_t)packet[18]<<16)|((uint32_t)packet[19]<<24);
-    putstring("\nSRC: ");
+    /*putstring("\nSRC: ");
     printbase(src_addr, 8, 16, 0);
     putstring(" DST: ");
     printbase(dst_addr, 8, 16, 0);
-    putchar('\n');
+    putchar('\n');*/
 
     // 2. check whether dst is me
     bool dst_is_me = false;
@@ -1103,15 +1129,15 @@ int main(int argc, char *argv[]) {
       dst_is_me = true;
     }
     if (dst_is_me) {
-      putstring("\nwow it's a packet for the router\n");
+      //putstring("\nwow it's a packet for the router\n");
       // 3a.1
       RipPacket rip;
       // check and validate
       bool disass = disassemble(packet, res, &rip);
       if (disass == true) {
-        putstring("omg it's rip ");
-        printbase(rip.command, 1, 10, 0);
-        putstring("\n");
+        //putstring("omg it's rip ");
+        /*printbase(rip.command, 1, 10, 0);
+        putstring("\n");*/
         if (rip.command == 1) {
           // 3a.3 request, ref. RFC2453 3.9.1
           // only need to respond to whole table requests in the lab
@@ -1175,7 +1201,6 @@ int main(int argc, char *argv[]) {
 
                   resp.numEntries = 0;
                 }
-
               }
           }
           else{
@@ -1195,8 +1220,58 @@ int main(int argc, char *argv[]) {
                 resp.entries[resp.numEntries].metric = 16;
               }
               resp.numEntries++;
+              if(resp.numEntries == 25){
+                  uint32_t rip_len = assemble(&resp, &output[20 + 8]);
+                  // assemble
+                  // IP
+                  output[0] = 0x45;
+                  output[1] = 0xc0;
+                  output[2] = ((rip_len + 28)>>8)&0xff;
+                  output[3] = (rip_len + 28)&0xff;
+
+                  output[6] = 0x40;
+                  output[7] = 0x00;
+                  output[8] = 0x01;
+                  output[9] = 0x11;
+                  // ...
+                  // UDP
+                  // port = 520
+                  output[16] = 224;
+                  output[17] = 0;
+                  output[18] = 0;
+                  output[19] = 9;
+
+                  output[20] = 0x02;
+                  output[21] = 0x08;
+                  output[22] = 0x02;
+                  output[23] = 0x08;
+                  output[24] = ((rip_len + 8)>>8)&0xff;
+                  output[25] = (rip_len + 8)&0xff;
+
+                  
+                  // ...
+                  // RIP
+                  
+                  // checksum calculation for ip and udp
+                  // if you don't want to calculate udp checksum, set it to zero
+                  // send it back
+                  //putchar('\n');
+                  //printbase(resp.numEntries, 1, 10, 0);
+                  //putstring(" rules...\n");
+                  output[15] = ((addrs[if_index-1]>>24)&0xff);
+                  output[14] = ((addrs[if_index-1]>>16)&0xff);
+                  output[13] = ((addrs[if_index-1]>>8)&0xff);
+                  output[12] = (addrs[if_index-1]&0xff);
+                  calculateUDPChecksum(&output[20], rip_len+8);
+                  validateIPChecksum(output, rip_len+20+8);
+                  HAL_SendIPPacket(if_index, output, rip_len + 20 + 8, src_mac);
+
+                  resp.numEntries = 0;
+                }
             }
           }
+
+          if(resp.numEntries == 0)continue;
 
           uint32_t rip_len = assemble(&resp, &output[20 + 8]);
           output[0] = 0x45;
@@ -1245,25 +1320,25 @@ int main(int argc, char *argv[]) {
           // update metric, if_index, nexthop
           // what is missing from RoutingTableEntry?
           // TODO: use query and update
-          putstring("This is rip response");
+          //putstring("This is rip response");
           RipPacket resp;
           resp.numEntries = 0;
           putstring("\nNum: ");
-            printbase(rip.numEntries, 8, 16, 0);
+            printbase(rip.numEntries, 8, 16, 0);/**/
           for (int i = 0; i < (int)rip.numEntries; i++){
-            putstring("\nAddr: ");
+            /*putstring("\nAddr: ");
             printbase(rip.entries[i].addr, 8, 16, 0);
             putstring(" Mask: ");
             printbase(rip.entries[i].mask, 8, 16, 0);
             putstring("\nNexthop: ");
             printbase(rip.entries[i].nexthop, 8, 16, 0);
             putstring(" Metric: ");
-            printbase(rip.entries[i].metric, 8, 16, 0);/**/
+            printbase(rip.entries[i].metric, 8, 16, 0);*/
             bool hasroute = query(rip.entries[i].addr, rip.entries[i].mask);
             RoutingTableEntry routingentry;
             routingentry.addr = rip.entries[i].addr;
             if(hasroute){
-              putstring("\nfound route\n");
+              //putstring("\nfound route\n");
               if(routersList[goal].metric>rip.entries[i].metric + 1){
                 update(false, routingentry);
                 routingentry.metric = rip.entries[i].metric + 1;
@@ -1293,8 +1368,8 @@ int main(int argc, char *argv[]) {
               }
             }
             else{
-              putstring("\nnot found route\n");
-              printbase(rip.entries[i].metric, 1, 10, 0);
+              //putstring("\nnot found route\n");
+              //printbase(rip.entries[i].metric, 1, 10, 0);
               routingentry.metric = rip.entries[i].metric + 1;
               if((int)routingentry.metric>=16)continue;
               routingentry.mask = rip.entries[i].mask;
@@ -1311,57 +1386,6 @@ int main(int argc, char *argv[]) {
               resp.entries[resp.numEntries].nexthop = rip.entries[i].nexthop;
               resp.entries[resp.numEntries].metric = routingentry.metric;
               resp.numEntries++;
-              if(resp.numEntries == 25){
-                uint32_t rip_len = assemble(&resp, &output[20 + 8]);
-                // assemble
-                // IP
-                output[0] = 0x45;
-                output[1] = 0xc0;
-                output[2] = ((rip_len + 28)>>8)&0xff;
-                output[3] = (rip_len + 28)&0xff;
-
-                output[6] = 0x40;
-                output[7] = 0x00;
-                output[8] = 0x01;
-                output[9] = 0x11;
-                // ...
-                // UDP
-                // port = 520
-                output[16] = 224;
-                output[17] = 0;
-                output[18] = 0;
-                output[19] = 9;
-
-                output[20] = 0x02;
-                output[21] = 0x08;
-                output[22] = 0x02;
-                output[23] = 0x08;
-                output[24] = ((rip_len + 8)>>8)&0xff;
-                output[25] = (rip_len + 8)&0xff;
-
-                
-                // ...
-                // RIP
-                
-                // checksum calculation for ip and udp
-                // if you don't want to calculate udp checksum, set it to zero
-                // send it back
-                //putchar('\n');
-                printbase(resp.numEntries, 1, 10, 0);
-                putstring(" rules...\n");
-                macaddr_t bro_mac = {0x01,0x00,0x5e,0x00,0x00,0x09};
-                for(int j = 0; j < 4; j++)
-                  if(j+1 != (int)if_index){
-                    output[15] = ((addrs[j]>>24)&0xff);
-                    output[14] = ((addrs[j]>>16)&0xff);
-                    output[13] = ((addrs[j]>>8)&0xff);
-                    output[12] = (addrs[j]&0xff);
-                    calculateUDPChecksum(&output[20], rip_len+8);
-                    validateIPChecksum(output, rip_len+20+8);
-                    HAL_SendIPPacket(j+1, output, rip_len + 20 + 8, bro_mac);
-                  }
-                resp.numEntries = 0;
-              }
             }
           }
           // triggered updates? ref. RFC2453 3.10.1
