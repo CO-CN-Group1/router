@@ -74,7 +74,7 @@ wire[3:0] lookup_bucket_index;
 每个桶的大小�?8
 lookup_bucket_index 为lookup_ip对应的桶的编�?
 */
-assign lookup_bucket_index = {lookup_ip_cache[17],lookup_ip_cache[11],lookup_ip_cache[5],lookup_ip_cache[2]};
+assign lookup_bucket_index = {lookup_ip_cache[11],lookup_ip_cache[10],lookup_ip_cache[9],lookup_ip_cache[8]};
 
 reg [3:0] lookup_current_depth;
 
@@ -163,7 +163,7 @@ wire[3:0] insert_bucket_index;
 每个桶的大小�?8
 insert_bucket_index 为insert_ip对应的桶的编�?
 */
-assign insert_bucket_index = {insert_ip_cache[17],insert_ip_cache[11],insert_ip_cache[5],insert_ip_cache[2]};
+assign insert_bucket_index = {insert_ip_cache[11],insert_ip_cache[10],insert_ip_cache[9],insert_ip_cache[8]};
 
 reg [3:0] insert_current_depth;
 reg [2:0] insert_hash_depth;
