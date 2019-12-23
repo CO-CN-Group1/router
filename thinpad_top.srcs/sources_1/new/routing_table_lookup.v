@@ -48,6 +48,7 @@ module routing_table_lookup #
 
     output reg [15:0] led_out
 );
+/*
 fifo_generator_0 fifo_generator_0_inst(
     .full(full),
     .din(din),
@@ -60,7 +61,7 @@ fifo_generator_0 fifo_generator_0_inst(
 );
 reg full,wr_en,empty,rd_en;
 reg[7:0] din,dout;
-
+*/
 reg sender_ce,receiver_ce,receiver_we;
 reg[3:0] sender_we;
 assign receiver_cen=~receiver_ce;
@@ -208,11 +209,15 @@ always @(posedge clk or posedge rst)begin
         receiver_ce<=1'b0;
         receiver_we<=1'b1;
         waittable<=1'b0;
+        /*
         wr_en<=1'b0;
         rd_en<=1'b0;
+        */
     end else begin
+        /*
         wr_en<=1'b0;
         rd_en<=1'b0;
+        */
         if (waittable==1'b1) begin
         end
         case(state)
@@ -796,7 +801,7 @@ always @(posedge clk or posedge rst)begin
                 if(rx_axis_tvalid && rx_axis_tready_int)begin
                     
                     if(rx_axis_tlast) begin
-                        state <= STATE_OUTPUTNAIVE;
+                        state <= STATE_IDLE;
                         rx_axis_tready_int <=0;
                     end else begin
                         //rx_axis_tready_int <=!(data_tail+2==data_head || data_tail==576-2 && data_head==0 || data_tail==576-1 && data_head==1);
