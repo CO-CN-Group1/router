@@ -347,7 +347,7 @@ always @(posedge clk or posedge rst)begin
                     
                     if(rx_axis_tlast) begin
                         state <= STATE_CPUINSLEEP;
-                        miyao<=receiver_addr+1;
+                        miyao<=receiver_addr+2;
                         rx_axis_tready_int <=0;
                     end else begin
                         rx_axis_tready_int <=1;
