@@ -200,7 +200,7 @@ always @(posedge clk or posedge rst)begin
         //tx_axis_tdata <= 0;
         //tx_axis_tlast <= 0;
         tx_axis_tvalid <=0;
-        //jrx_axis_tready_int <=0;
+        rx_axis_tready_int <=0;
         sender_addr<=8'hff;
         sender_ce<=1'b0;
         sender_we<=4'b1111;
