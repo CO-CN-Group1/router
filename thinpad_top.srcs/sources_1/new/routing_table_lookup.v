@@ -95,7 +95,8 @@ localparam[4:0]
     STATE_THROW=17,
     STATE_OUTPUT_THENTHROW=18,
     STATE_CPUINRGMII=19,
-    STATE_CPUINSLEEP=20;
+    STATE_CPUINSLEEP=20,
+    STATE_OUT_BUT_CPUOUT=21;
 //(*mark_debug="true"*)reg[3:0] state = STATE_IDLE;
 reg[4:0] state = STATE_IDLE;
 
@@ -835,6 +836,7 @@ always @(posedge clk or posedge rst)begin
                         state <= STATE_IDLE;
                         tx_axis_tvalid<=0;
                     end else if (data_head==60-1 && data_tail==64) begin
+                        data_head<=0;
                         data_tail<=0;
                         state<=STATE_CPUOUTSLEEP;
                         tx_axis_tvalid<=0;
