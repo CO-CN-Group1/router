@@ -314,8 +314,14 @@ always @(posedge clk or posedge rst)begin
                     state<=STATE_OUTPUTNAIVE;
                 end
                 else begin
-                    data_tail<=data_tail+4;
-                    sender_addr<=sender_addr+1;
+                    if (data_tail>=56) begin
+                        data_tail<=64;
+                        state<=STATE_OUT_BUT_CPUOUT;
+                    end
+                    else begin
+                        data_tail<=data_tail+4;
+                        sender_addr<=sender_addr+1;
+                    end
                 end
             end
             STATE_CPUIN:begin
@@ -801,6 +807,36 @@ always @(posedge clk or posedge rst)begin
                         //data_head <= data_head + 1;
                         //tx_axis_tlast <= 1;
                         state <= STATE_IDLE;
+                        tx_axis_tvalid<=0;
+                    end else begin
+                        //data_head <= data_head + 1;
+                    end
+                end
+            end
+            STATE_OUT_BUT_CPUOUT:begin
+                rx_axis_tready_int<=0;
+                receiver_addr<=11'h7ff;
+                receiver_ce<=1'b0;
+                receiver_we<=1'b1;
+                sender_addr<=8'hff;
+                sender_ce<=1'b0;
+                sender_we<=4'b1111;
+                tx_axis_tvalid<=1;
+                if(tx_axis_tvalid && tx_axis_tready)begin
+                    if (data_head==576-1) begin
+                        data_head<=0;
+                    end
+                    else begin
+                        data_head<=data_head+1;
+                    end
+                    if(tx_axis_tlast)begin
+                        //data_head <= data_head + 1;
+                        //tx_axis_tlast <= 1;
+                        state <= STATE_IDLE;
+                        tx_axis_tvalid<=0;
+                    end else if (data_head==60-1 && data_tail==64) begin
+                        data_tail<=0;
+                        state<=STATE_CPUOUTSLEEP;
                         tx_axis_tvalid<=0;
                     end else begin
                         //data_head <= data_head + 1;
