@@ -231,7 +231,7 @@ vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
 
 
 // 以太�?? MAC 配置演示
-/*
+
 wire [7:0] eth_rx_axis_mac_tdata;
 wire eth_rx_axis_mac_tvalid;
 wire eth_rx_axis_mac_tlast;
@@ -280,7 +280,7 @@ eth_mac eth_mac_inst (
     .rx_configuration_vector(80'b10100000101110),
     // transmit 1Gb/s | vlan | enable
     .tx_configuration_vector(80'b10000000000110)
-);*/
+);
 
 
 //---------------------loop back + fifo----------------------------
@@ -304,8 +304,37 @@ wire eth_tx_axis_fifo_tvalid;
 wire eth_tx_axis_fifo_tlast;
 wire eth_tx_axis_fifo_tready;
 
+eth_mac_wrapper eth_mac_wrapper0(
+    // MAC-side (write-side) AxiStream interface
+    .rx_mac_aclk(eth_rx_mac_aclk),
+    .rx_mac_resetn(eth_rst_n),
+    .rx_axis_mac_tdata(eth_rx_axis_mac_tdata),
+    .rx_axis_mac_tvalid(eth_rx_axis_mac_tvalid),
+    .rx_axis_mac_tlast(eth_rx_axis_mac_tlast),
+    .rx_axis_mac_tuser(eth_rx_axis_mac_tuser),
 
-eth_mac_fifo_block trimac_fifo_block (
+    // MAC-side (read-side) AxiStream interface
+    .tx_mac_aclk(eth_tx_mac_aclk),
+    .tx_mac_resetn(eth_rst_n),
+    .tx_axis_mac_tdata(eth_tx_axis_mac_tdata),
+    .tx_axis_mac_tvalid(eth_tx_axis_mac_tvalid),
+    .tx_axis_mac_tlast(eth_tx_axis_mac_tlast),
+    .tx_axis_mac_tready(eth_tx_axis_mac_tready),
+    .tx_axis_mac_tuser(eth_tx_axis_mac_tuser),
+
+    .rx_axis_fifo_tvalid(eth_rx_axis_fifo_tvalid),
+    .rx_axis_fifo_tdata(eth_rx_axis_fifo_tdata),
+    .rx_axis_fifo_tlast(eth_rx_axis_fifo_tlast),
+    .rx_axis_fifo_tready(eth_rx_axis_fifo_tready),
+
+    .tx_axis_fifo_tvalid(eth_tx_axis_fifo_tvalid),
+    .tx_axis_fifo_tdata(eth_tx_axis_fifo_tdata),
+    .tx_axis_fifo_tlast(eth_tx_axis_fifo_tlast),
+    .tx_axis_fifo_tready(eth_tx_axis_fifo_tready)
+);
+
+
+/*eth_mac_fifo_block trimac_fifo_block (
     .gtx_clk                        (clk_125M),
     .refclk                         (clk_200M),
 
@@ -340,7 +369,7 @@ eth_mac_fifo_block trimac_fifo_block (
 
     .rx_configuration_vector        (80'b10100000101110),
     .tx_configuration_vector        (80'b10000000000110)
-);
+);*/
 
 wire[7:0] eth_rx_axis_no_crc_tdata;
 wire eth_rx_axis_no_crc_tvalid;
