@@ -128,7 +128,7 @@ typedef struct {
     // 为了实现 RIP 协议，需要在这里添加额外的字段
 } RoutingTableEntry;
 
-RoutingTableEntry routersList[61440];
+RoutingTableEntry routersList[1000*32];
 uint32_t cnt = 1, goal;
 
 int HAL_ReceiveIPPacket(int if_index_mask, uint8_t *buffer, size_t length,
@@ -214,11 +214,11 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
       //putchar(' ');
     }
     c = (uint8_t*)0xbc000000;
-    for (int i = 0; i < (int)legth; i++, c+=1){
+    /*for (int i = 0; i < (int)legth; i++, c+=1){
       printbase(*c, 2, 16, 0);
       putchar(' ');
-    }/**/
-    putstring("\nsent an packet\n");
+    }*/
+    //putstring("\nsent an packet\n");
     (*hastoWrite) = 0xff;
     return 0;
 }
@@ -372,13 +372,13 @@ void update(bool insert, RoutingTableEntry entry) {
   *(c+5) = 1;
   *(c+6) = 1;
   *(c+7) = 1;
-  /*putstring("Inserting ");
+  putstring("Inserting ");
   printbase(addr, 8, 16, 0);
   putchar(' ');
   printbase(len, 1, 10, 0);
   putchar(' ');
   printbase(nxth, 8, 16, 0);
-  putchar('\n');*/
+  putchar('\n');/**/
   if(insert){
     for (int i = 0; i < len; i++){
       q = (((ii>>i)&addr)>0);
@@ -874,7 +874,7 @@ int main(int argc, char *argv[]) {
   entry.if_index = 4;    // small endian
   entry.nexthop = 0x0203a8c0;      // big endian, means direct
   entry.metric = 2;
-  update(true, entry);
+  update(true, entry);/**/
 
   /*RoutingTableEntry entry;
   entry.addr = 0x0100a8c0 & 0x00FFFFFF; // big endian
@@ -933,7 +933,7 @@ int main(int argc, char *argv[]) {
       time++;
       ptime++;
     }
-    if (ptime == 5) {
+    if ((time == 0 && last_time == 1)||ptime == 5) {
       ptime = 0; 
       // What to do?
       // send complete routing table to every interface
@@ -1129,13 +1129,13 @@ int main(int argc, char *argv[]) {
       dst_is_me = true;
     }
     if (dst_is_me) {
-      //putstring("\nwow it's a packet for the router\n");
+      putstring("\nwow it's a packet for the router\n");
       // 3a.1
       RipPacket rip;
       // check and validate
       bool disass = disassemble(packet, res, &rip);
       if (disass == true) {
-        //putstring("omg it's rip ");
+        putstring("omg it's rip ");
         /*printbase(rip.command, 1, 10, 0);
         putstring("\n");*/
         if (rip.command == 1) {
