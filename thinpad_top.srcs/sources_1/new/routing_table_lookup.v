@@ -307,7 +307,17 @@ always @(posedge clk or posedge rst)begin
                 //data_tail<=data_tail+4;
                 if ({sender_addr,2'b00}>={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}) begin
                 //if (sender_addr=={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}-1) begin
-                    data_tail<={data_tail[31:2],cpuoutlen[0][1:0]};
+                    if (cpuoutlen[0][1:0]==2'b00) begin
+                        data_tail<=data_tail+4;
+                    end else if (cpuoutlen[0][1:0]==2'b01) begin
+                        data_tail<={data_tail[31:2],2'b10};
+                    end
+                    end else if (cpuoutlen[0][1:0]==2'b10) begin
+                        data_tail<={data_tail[31:2],2'b11};
+                    end
+                    end else if (cpuoutlen[0][1:0]==2'b11) begin
+                        data_tail<={data_tail[31:2],2'b00};
+                    end
                     sender_addr<=8'hff;
                     sender_ce<=1'b0;
                     sender_we<=4'b0000;
