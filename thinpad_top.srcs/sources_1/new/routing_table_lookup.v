@@ -304,7 +304,7 @@ always @(posedge clk or posedge rst)begin
                 data[data_tail+3]<=sender_data_i[31:24];
                 //data_tail<=data_tail+1;
                 //data_tail<=data_tail+4;
-                if (data_tail+4>={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}) begin
+                if ({sender_addr,2'b00}>={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}) begin
                 //if (sender_addr=={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]}-1) begin
                     data_tail<={cpuoutlen[2],cpuoutlen[1],cpuoutlen[0]};
                     sender_addr<=8'hff;
