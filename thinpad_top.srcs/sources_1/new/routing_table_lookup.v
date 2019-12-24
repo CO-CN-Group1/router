@@ -311,10 +311,8 @@ always @(posedge clk or posedge rst)begin
                         data_tail<=data_tail+4;
                     end else if (cpuoutlen[0][1:0]==2'b01) begin
                         data_tail<={data_tail[31:2],2'b10};
-                    end
                     end else if (cpuoutlen[0][1:0]==2'b10) begin
                         data_tail<={data_tail[31:2],2'b11};
-                    end
                     end else if (cpuoutlen[0][1:0]==2'b11) begin
                         data_tail<={data_tail[31:2],2'b00};
                     end
