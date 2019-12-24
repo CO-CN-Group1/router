@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="routing_table_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="routing_table_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="14014500000fs"></ZoomStartTime>
+      <ZoomEndTime time="14136300001fs"></ZoomEndTime>
+      <Cursor1Time time="14116000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="205"></NameColumnWidth>
+      <ValueColumnWidth column_width="100"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="51" />
+   <wvobject fp_name="/routing_table_tb/clk_50M" type="logic">
+      <obj_property name="ElementShortName">clk_50M</obj_property>
+      <obj_property name="ObjectShortName">clk_50M</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/clk_11M0592" type="logic">
+      <obj_property name="ElementShortName">clk_11M0592</obj_property>
+      <obj_property name="ObjectShortName">clk_11M0592</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/clk_125M" type="logic">
+      <obj_property name="ElementShortName">clk_125M</obj_property>
+      <obj_property name="ObjectShortName">clk_125M</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/clk_125M_90deg" type="logic">
+      <obj_property name="ElementShortName">clk_125M_90deg</obj_property>
+      <obj_property name="ObjectShortName">clk_125M_90deg</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/dest_ip" type="array">
+      <obj_property name="ElementShortName">dest_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dest_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/dest_ip_valid" type="logic">
+      <obj_property name="ElementShortName">dest_ip_valid</obj_property>
+      <obj_property name="ObjectShortName">dest_ip_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/nexthop" type="array">
+      <obj_property name="ElementShortName">nexthop[31:0]</obj_property>
+      <obj_property name="ObjectShortName">nexthop[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/port" type="array">
+      <obj_property name="ElementShortName">port[7:0]</obj_property>
+      <obj_property name="ObjectShortName">port[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/lookup_ready" type="logic">
+      <obj_property name="ElementShortName">lookup_ready</obj_property>
+      <obj_property name="ObjectShortName">lookup_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/nexthop_valid" type="logic">
+      <obj_property name="ElementShortName">nexthop_valid</obj_property>
+      <obj_property name="ObjectShortName">nexthop_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/nexthop_not_found" type="logic">
+      <obj_property name="ElementShortName">nexthop_not_found</obj_property>
+      <obj_property name="ObjectShortName">nexthop_not_found</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/os_addr" type="array">
+      <obj_property name="ElementShortName">os_addr[15:0]</obj_property>
+      <obj_property name="ObjectShortName">os_addr[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/os_din" type="array">
+      <obj_property name="ElementShortName">os_din[63:0]</obj_property>
+      <obj_property name="ObjectShortName">os_din[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/os_dout" type="array">
+      <obj_property name="ElementShortName">os_dout[63:0]</obj_property>
+      <obj_property name="ObjectShortName">os_dout[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/os_wea" type="array">
+      <obj_property name="ElementShortName">os_wea[7:0]</obj_property>
+      <obj_property name="ObjectShortName">os_wea[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/os_rst" type="logic">
+      <obj_property name="ElementShortName">os_rst</obj_property>
+      <obj_property name="ObjectShortName">os_rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/os_port_addr" type="array">
+      <obj_property name="ElementShortName">os_port_addr[12:0]</obj_property>
+      <obj_property name="ObjectShortName">os_port_addr[12:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/os_port_din" type="array">
+      <obj_property name="ElementShortName">os_port_din[31:0]</obj_property>
+      <obj_property name="ObjectShortName">os_port_din[31:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/os_port_dout" type="array">
+      <obj_property name="ElementShortName">os_port_dout[31:0]</obj_property>
+      <obj_property name="ObjectShortName">os_port_dout[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/os_port_wea" type="array">
+      <obj_property name="ElementShortName">os_port_wea[3:0]</obj_property>
+      <obj_property name="ObjectShortName">os_port_wea[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/trie1" type="array">
+      <obj_property name="ElementShortName">trie1[0:256][63:0]</obj_property>
+      <obj_property name="ObjectShortName">trie1[0:256][63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/trie2" type="array">
+      <obj_property name="ElementShortName">trie2[0:256][63:0]</obj_property>
+      <obj_property name="ObjectShortName">trie2[0:256][63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/ports1" type="array">
+      <obj_property name="ElementShortName">ports1[0:31][31:0]</obj_property>
+      <obj_property name="ObjectShortName">ports1[0:31][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/ports2" type="array">
+      <obj_property name="ElementShortName">ports2[0:31][31:0]</obj_property>
+      <obj_property name="ObjectShortName">ports2[0:31][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/total1" type="array">
+      <obj_property name="ElementShortName">total1[15:0]</obj_property>
+      <obj_property name="ObjectShortName">total1[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/total2" type="array">
+      <obj_property name="ElementShortName">total2[15:0]</obj_property>
+      <obj_property name="ObjectShortName">total2[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/route_table_fd" type="array">
+      <obj_property name="ElementShortName">route_table_fd[31:0]</obj_property>
+      <obj_property name="ObjectShortName">route_table_fd[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/route_sample_in_fd" type="array">
+      <obj_property name="ElementShortName">route_sample_in_fd[31:0]</obj_property>
+      <obj_property name="ObjectShortName">route_sample_in_fd[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/route_sample_out_fd" type="array">
+      <obj_property name="ElementShortName">route_sample_out_fd[31:0]</obj_property>
+      <obj_property name="ObjectShortName">route_sample_out_fd[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/count_ip" type="array">
+      <obj_property name="ElementShortName">count_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">count_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/ip" type="array">
+      <obj_property name="ElementShortName">ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/mask" type="array">
+      <obj_property name="ElementShortName">mask[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mask[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/dip" type="array">
+      <obj_property name="ElementShortName">dip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/tmp_port" type="array">
+      <obj_property name="ElementShortName">tmp_port[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tmp_port[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/tmp_port2" type="array">
+      <obj_property name="ElementShortName">tmp_port2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">tmp_port2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/current" type="array">
+      <obj_property name="ElementShortName">current[15:0]</obj_property>
+      <obj_property name="ObjectShortName">current[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/ip_data" type="array">
+      <obj_property name="ElementShortName">ip_data[0:20][31:0]</obj_property>
+      <obj_property name="ObjectShortName">ip_data[0:20][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/cpu_init" type="logic">
+      <obj_property name="ElementShortName">cpu_init</obj_property>
+      <obj_property name="ObjectShortName">cpu_init</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/router_init" type="logic">
+      <obj_property name="ElementShortName">router_init</obj_property>
+      <obj_property name="ObjectShortName">router_init</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/cpu_state" type="array">
+      <obj_property name="ElementShortName">cpu_state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">cpu_state[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/timer" type="array">
+      <obj_property name="ElementShortName">timer[31:0]</obj_property>
+      <obj_property name="ObjectShortName">timer[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/cpu_cnt" type="array">
+      <obj_property name="ElementShortName">cpu_cnt[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cpu_cnt[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/router_state" type="array">
+      <obj_property name="ElementShortName">router_state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">router_state[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/router_cnt" type="array">
+      <obj_property name="ElementShortName">router_cnt[31:0]</obj_property>
+      <obj_property name="ObjectShortName">router_cnt[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/CPU_STATE_IDLE1" type="array">
+      <obj_property name="ElementShortName">CPU_STATE_IDLE1[1:0]</obj_property>
+      <obj_property name="ObjectShortName">CPU_STATE_IDLE1[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/CPU_STATE_WRITE1" type="array">
+      <obj_property name="ElementShortName">CPU_STATE_WRITE1[1:0]</obj_property>
+      <obj_property name="ObjectShortName">CPU_STATE_WRITE1[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/CPU_STATE_IDLE2" type="array">
+      <obj_property name="ElementShortName">CPU_STATE_IDLE2[1:0]</obj_property>
+      <obj_property name="ObjectShortName">CPU_STATE_IDLE2[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/CPU_STATE_WRITE2" type="array">
+      <obj_property name="ElementShortName">CPU_STATE_WRITE2[1:0]</obj_property>
+      <obj_property name="ObjectShortName">CPU_STATE_WRITE2[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/ROUTER_STATE_IDLE" type="array">
+      <obj_property name="ElementShortName">ROUTER_STATE_IDLE[1:0]</obj_property>
+      <obj_property name="ObjectShortName">ROUTER_STATE_IDLE[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/routing_table_tb/ROUTER_STATE_SEARCH" type="array">
+      <obj_property name="ElementShortName">ROUTER_STATE_SEARCH[1:0]</obj_property>
+      <obj_property name="ObjectShortName">ROUTER_STATE_SEARCH[1:0]</obj_property>
+   </wvobject>
+</wave_config>
