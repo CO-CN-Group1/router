@@ -54,32 +54,46 @@
 
 (* DowngradeIPIdentifiedWarnings = "yes" *)
 module fifo_generator_0 (
-  clk,
-  srst,
-  din,
-  wr_en,
-  rd_en,
-  dout,
-  full,
-  empty
+  wr_rst_busy,
+  rd_rst_busy,
+  s_aclk,
+  s_aresetn,
+  s_axis_tvalid,
+  s_axis_tready,
+  s_axis_tdata,
+  s_axis_tlast,
+  m_axis_tvalid,
+  m_axis_tready,
+  m_axis_tdata,
+  m_axis_tlast
 );
 
-(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME core_clk, FREQ_HZ 100000000, PHASE 0.000, INSERT_VIP 0" *)
-(* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 core_clk CLK" *)
-input wire clk;
-input wire srst;
-(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 FIFO_WRITE WR_DATA" *)
-input wire [7 : 0] din;
-(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 FIFO_WRITE WR_EN" *)
-input wire wr_en;
-(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 FIFO_READ RD_EN" *)
-input wire rd_en;
-(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 FIFO_READ RD_DATA" *)
-output wire [7 : 0] dout;
-(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_write:1.0 FIFO_WRITE FULL" *)
-output wire full;
-(* X_INTERFACE_INFO = "xilinx.com:interface:fifo_read:1.0 FIFO_READ EMPTY" *)
-output wire empty;
+output wire wr_rst_busy;
+output wire rd_rst_busy;
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME slave_aclk, ASSOCIATED_BUSIF S_AXIS:S_AXI, ASSOCIATED_RESET s_aresetn, FREQ_HZ 100000000, PHASE 0.000, INSERT_VIP 0" *)
+(* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 slave_aclk CLK" *)
+input wire s_aclk;
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME slave_aresetn, POLARITY ACTIVE_LOW, INSERT_VIP 0" *)
+(* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 slave_aresetn RST" *)
+input wire s_aresetn;
+(* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 S_AXIS TVALID" *)
+input wire s_axis_tvalid;
+(* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 S_AXIS TREADY" *)
+output wire s_axis_tready;
+(* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 S_AXIS TDATA" *)
+input wire [7 : 0] s_axis_tdata;
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S_AXIS, TDATA_NUM_BYTES 1, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 0, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 0, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
+(* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 S_AXIS TLAST" *)
+input wire s_axis_tlast;
+(* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 M_AXIS TVALID" *)
+output wire m_axis_tvalid;
+(* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 M_AXIS TREADY" *)
+input wire m_axis_tready;
+(* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 M_AXIS TDATA" *)
+output wire [7 : 0] m_axis_tdata;
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME M_AXIS, TDATA_NUM_BYTES 1, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 0, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 0, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.000, LAYERED_METADATA undef, INSERT_VIP 0" *)
+(* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 M_AXIS TLAST" *)
+output wire m_axis_tlast;
 
   fifo_generator_v13_2_3 #(
     .C_COMMON_CLOCK(1),
@@ -92,7 +106,7 @@ output wire empty;
     .C_DOUT_WIDTH(8),
     .C_ENABLE_RLOCS(0),
     .C_FAMILY("artix7"),
-    .C_FULL_FLAGS_RST_VAL(0),
+    .C_FULL_FLAGS_RST_VAL(1),
     .C_HAS_ALMOST_EMPTY(0),
     .C_HAS_ALMOST_FULL(0),
     .C_HAS_BACKUP(0),
@@ -102,8 +116,8 @@ output wire empty;
     .C_HAS_OVERFLOW(0),
     .C_HAS_RD_DATA_COUNT(0),
     .C_HAS_RD_RST(0),
-    .C_HAS_RST(0),
-    .C_HAS_SRST(1),
+    .C_HAS_RST(1),
+    .C_HAS_SRST(0),
     .C_HAS_UNDERFLOW(0),
     .C_HAS_VALID(0),
     .C_HAS_WR_ACK(0),
@@ -117,7 +131,7 @@ output wire empty;
     .C_OVERFLOW_LOW(0),
     .C_PRELOAD_LATENCY(0),
     .C_PRELOAD_REGS(1),
-    .C_PRIM_FIFO_TYPE("2kx9"),
+    .C_PRIM_FIFO_TYPE("4kx4"),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL(4),
     .C_PROG_EMPTY_THRESH_NEGATE_VAL(5),
     .C_PROG_EMPTY_TYPE(0),
@@ -145,10 +159,10 @@ output wire empty;
     .C_WR_RESPONSE_LATENCY(1),
     .C_MSGON_VAL(1),
     .C_ENABLE_RST_SYNC(1),
-    .C_EN_SAFETY_CKT(0),
+    .C_EN_SAFETY_CKT(1),
     .C_ERROR_INJECTION_TYPE(0),
     .C_SYNCHRONIZER_STAGE(2),
-    .C_INTERFACE_TYPE(0),
+    .C_INTERFACE_TYPE(1),
     .C_AXI_TYPE(1),
     .C_HAS_AXI_WR_CHANNEL(1),
     .C_HAS_AXI_RD_CHANNEL(1),
@@ -177,15 +191,15 @@ output wire empty;
     .C_HAS_AXIS_TDATA(1),
     .C_HAS_AXIS_TID(0),
     .C_HAS_AXIS_TDEST(0),
-    .C_HAS_AXIS_TUSER(1),
+    .C_HAS_AXIS_TUSER(0),
     .C_HAS_AXIS_TREADY(1),
-    .C_HAS_AXIS_TLAST(0),
+    .C_HAS_AXIS_TLAST(1),
     .C_HAS_AXIS_TSTRB(0),
     .C_HAS_AXIS_TKEEP(0),
     .C_AXIS_TDATA_WIDTH(8),
     .C_AXIS_TID_WIDTH(1),
     .C_AXIS_TDEST_WIDTH(1),
-    .C_AXIS_TUSER_WIDTH(4),
+    .C_AXIS_TUSER_WIDTH(1),
     .C_AXIS_TSTRB_WIDTH(1),
     .C_AXIS_TKEEP_WIDTH(1),
     .C_WACH_TYPE(0),
@@ -194,10 +208,10 @@ output wire empty;
     .C_RACH_TYPE(0),
     .C_RDCH_TYPE(0),
     .C_AXIS_TYPE(0),
-    .C_IMPLEMENTATION_TYPE_WACH(1),
+    .C_IMPLEMENTATION_TYPE_WACH(2),
     .C_IMPLEMENTATION_TYPE_WDCH(1),
-    .C_IMPLEMENTATION_TYPE_WRCH(1),
-    .C_IMPLEMENTATION_TYPE_RACH(1),
+    .C_IMPLEMENTATION_TYPE_WRCH(2),
+    .C_IMPLEMENTATION_TYPE_RACH(2),
     .C_IMPLEMENTATION_TYPE_RDCH(1),
     .C_IMPLEMENTATION_TYPE_AXIS(1),
     .C_APPLICATION_TYPE_WACH(0),
@@ -211,7 +225,7 @@ output wire empty;
     .C_PRIM_FIFO_TYPE_WRCH("512x36"),
     .C_PRIM_FIFO_TYPE_RACH("512x36"),
     .C_PRIM_FIFO_TYPE_RDCH("1kx36"),
-    .C_PRIM_FIFO_TYPE_AXIS("1kx18"),
+    .C_PRIM_FIFO_TYPE_AXIS("8kx4"),
     .C_USE_ECC_WACH(0),
     .C_USE_ECC_WDCH(0),
     .C_USE_ECC_WRCH(0),
@@ -224,24 +238,24 @@ output wire empty;
     .C_ERROR_INJECTION_TYPE_RACH(0),
     .C_ERROR_INJECTION_TYPE_RDCH(0),
     .C_ERROR_INJECTION_TYPE_AXIS(0),
-    .C_DIN_WIDTH_WACH(1),
+    .C_DIN_WIDTH_WACH(32),
     .C_DIN_WIDTH_WDCH(64),
     .C_DIN_WIDTH_WRCH(2),
     .C_DIN_WIDTH_RACH(32),
     .C_DIN_WIDTH_RDCH(64),
-    .C_DIN_WIDTH_AXIS(1),
+    .C_DIN_WIDTH_AXIS(9),
     .C_WR_DEPTH_WACH(16),
     .C_WR_DEPTH_WDCH(1024),
     .C_WR_DEPTH_WRCH(16),
     .C_WR_DEPTH_RACH(16),
     .C_WR_DEPTH_RDCH(1024),
-    .C_WR_DEPTH_AXIS(1024),
+    .C_WR_DEPTH_AXIS(16384),
     .C_WR_PNTR_WIDTH_WACH(4),
     .C_WR_PNTR_WIDTH_WDCH(10),
     .C_WR_PNTR_WIDTH_WRCH(4),
     .C_WR_PNTR_WIDTH_RACH(4),
     .C_WR_PNTR_WIDTH_RDCH(10),
-    .C_WR_PNTR_WIDTH_AXIS(10),
+    .C_WR_PNTR_WIDTH_AXIS(14),
     .C_HAS_DATA_COUNTS_WACH(0),
     .C_HAS_DATA_COUNTS_WDCH(0),
     .C_HAS_DATA_COUNTS_WRCH(0),
@@ -260,24 +274,24 @@ output wire empty;
     .C_PROG_FULL_TYPE_RACH(0),
     .C_PROG_FULL_TYPE_RDCH(0),
     .C_PROG_FULL_TYPE_AXIS(0),
-    .C_PROG_FULL_THRESH_ASSERT_VAL_WACH(1023),
+    .C_PROG_FULL_THRESH_ASSERT_VAL_WACH(15),
     .C_PROG_FULL_THRESH_ASSERT_VAL_WDCH(1023),
-    .C_PROG_FULL_THRESH_ASSERT_VAL_WRCH(1023),
-    .C_PROG_FULL_THRESH_ASSERT_VAL_RACH(1023),
+    .C_PROG_FULL_THRESH_ASSERT_VAL_WRCH(15),
+    .C_PROG_FULL_THRESH_ASSERT_VAL_RACH(15),
     .C_PROG_FULL_THRESH_ASSERT_VAL_RDCH(1023),
-    .C_PROG_FULL_THRESH_ASSERT_VAL_AXIS(1023),
+    .C_PROG_FULL_THRESH_ASSERT_VAL_AXIS(16383),
     .C_PROG_EMPTY_TYPE_WACH(0),
     .C_PROG_EMPTY_TYPE_WDCH(0),
     .C_PROG_EMPTY_TYPE_WRCH(0),
     .C_PROG_EMPTY_TYPE_RACH(0),
     .C_PROG_EMPTY_TYPE_RDCH(0),
     .C_PROG_EMPTY_TYPE_AXIS(0),
-    .C_PROG_EMPTY_THRESH_ASSERT_VAL_WACH(1022),
+    .C_PROG_EMPTY_THRESH_ASSERT_VAL_WACH(14),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_WDCH(1022),
-    .C_PROG_EMPTY_THRESH_ASSERT_VAL_WRCH(1022),
-    .C_PROG_EMPTY_THRESH_ASSERT_VAL_RACH(1022),
+    .C_PROG_EMPTY_THRESH_ASSERT_VAL_WRCH(14),
+    .C_PROG_EMPTY_THRESH_ASSERT_VAL_RACH(14),
     .C_PROG_EMPTY_THRESH_ASSERT_VAL_RDCH(1022),
-    .C_PROG_EMPTY_THRESH_ASSERT_VAL_AXIS(1022),
+    .C_PROG_EMPTY_THRESH_ASSERT_VAL_AXIS(16382),
     .C_REG_SLICE_MODE_WACH(0),
     .C_REG_SLICE_MODE_WDCH(0),
     .C_REG_SLICE_MODE_WRCH(0),
@@ -287,16 +301,16 @@ output wire empty;
   ) inst (
     .backup(1'D0),
     .backup_marker(1'D0),
-    .clk(clk),
+    .clk(1'D0),
     .rst(1'D0),
-    .srst(srst),
+    .srst(1'D0),
     .wr_clk(1'D0),
     .wr_rst(1'D0),
     .rd_clk(1'D0),
     .rd_rst(1'D0),
-    .din(din),
-    .wr_en(wr_en),
-    .rd_en(rd_en),
+    .din(8'B0),
+    .wr_en(1'D0),
+    .rd_en(1'D0),
     .prog_empty_thresh(11'B0),
     .prog_empty_thresh_assert(11'B0),
     .prog_empty_thresh_negate(11'B0),
@@ -307,12 +321,12 @@ output wire empty;
     .injectdbiterr(1'D0),
     .injectsbiterr(1'D0),
     .sleep(1'D0),
-    .dout(dout),
-    .full(full),
+    .dout(),
+    .full(),
     .almost_full(),
     .wr_ack(),
     .overflow(),
-    .empty(empty),
+    .empty(),
     .almost_empty(),
     .valid(),
     .underflow(),
@@ -323,11 +337,11 @@ output wire empty;
     .prog_empty(),
     .sbiterr(),
     .dbiterr(),
-    .wr_rst_busy(),
-    .rd_rst_busy(),
+    .wr_rst_busy(wr_rst_busy),
+    .rd_rst_busy(rd_rst_busy),
     .m_aclk(1'D0),
-    .s_aclk(1'D0),
-    .s_aresetn(1'D0),
+    .s_aclk(s_aclk),
+    .s_aresetn(s_aresetn),
     .m_aclk_en(1'D0),
     .s_aclk_en(1'D0),
     .s_axi_awid(1'B0),
@@ -420,21 +434,21 @@ output wire empty;
     .m_axi_ruser(1'B0),
     .m_axi_rvalid(1'D0),
     .m_axi_rready(),
-    .s_axis_tvalid(1'D0),
-    .s_axis_tready(),
-    .s_axis_tdata(8'B0),
+    .s_axis_tvalid(s_axis_tvalid),
+    .s_axis_tready(s_axis_tready),
+    .s_axis_tdata(s_axis_tdata),
     .s_axis_tstrb(1'B0),
     .s_axis_tkeep(1'B0),
-    .s_axis_tlast(1'D0),
+    .s_axis_tlast(s_axis_tlast),
     .s_axis_tid(1'B0),
     .s_axis_tdest(1'B0),
-    .s_axis_tuser(4'B0),
-    .m_axis_tvalid(),
-    .m_axis_tready(1'D0),
-    .m_axis_tdata(),
+    .s_axis_tuser(1'B0),
+    .m_axis_tvalid(m_axis_tvalid),
+    .m_axis_tready(m_axis_tready),
+    .m_axis_tdata(m_axis_tdata),
     .m_axis_tstrb(),
     .m_axis_tkeep(),
-    .m_axis_tlast(),
+    .m_axis_tlast(m_axis_tlast),
     .m_axis_tid(),
     .m_axis_tdest(),
     .m_axis_tuser(),
@@ -505,8 +519,8 @@ output wire empty;
     .axi_r_prog_empty(),
     .axis_injectsbiterr(1'D0),
     .axis_injectdbiterr(1'D0),
-    .axis_prog_full_thresh(10'B0),
-    .axis_prog_empty_thresh(10'B0),
+    .axis_prog_full_thresh(14'B0),
+    .axis_prog_empty_thresh(14'B0),
     .axis_data_count(),
     .axis_wr_data_count(),
     .axis_rd_data_count(),

@@ -87,7 +87,7 @@
       <spirit:parameters>
         <spirit:parameter>
           <spirit:name>TDATA_NUM_BYTES</spirit:name>
-          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.M_AXIS.TDATA_NUM_BYTES">0</spirit:value>
+          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.M_AXIS.TDATA_NUM_BYTES">1</spirit:value>
           <spirit:vendorExtensions>
             <xilinx:parameterInfo>
               <xilinx:parameterUsage>none</xilinx:parameterUsage>
@@ -123,7 +123,7 @@
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>HAS_TREADY</spirit:name>
-          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.M_AXIS.HAS_TREADY">0</spirit:value>
+          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.M_AXIS.HAS_TREADY">1</spirit:value>
           <spirit:vendorExtensions>
             <xilinx:parameterInfo>
               <xilinx:parameterUsage>none</xilinx:parameterUsage>
@@ -150,7 +150,7 @@
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>HAS_TLAST</spirit:name>
-          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.M_AXIS.HAS_TLAST">0</spirit:value>
+          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.M_AXIS.HAS_TLAST">1</spirit:value>
           <spirit:vendorExtensions>
             <xilinx:parameterInfo>
               <xilinx:parameterUsage>none</xilinx:parameterUsage>
@@ -206,7 +206,7 @@
       <spirit:vendorExtensions>
         <xilinx:busInterfaceInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.M_AXIS" xilinx:dependency="(((spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)))=1))">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.M_AXIS" xilinx:dependency="(((spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)))=1))">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:busInterfaceInfo>
       </spirit:vendorExtensions>
@@ -293,7 +293,7 @@
       <spirit:parameters>
         <spirit:parameter>
           <spirit:name>TDATA_NUM_BYTES</spirit:name>
-          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.S_AXIS.TDATA_NUM_BYTES">0</spirit:value>
+          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.S_AXIS.TDATA_NUM_BYTES">1</spirit:value>
           <spirit:vendorExtensions>
             <xilinx:parameterInfo>
               <xilinx:parameterUsage>none</xilinx:parameterUsage>
@@ -329,7 +329,7 @@
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>HAS_TREADY</spirit:name>
-          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.S_AXIS.HAS_TREADY">0</spirit:value>
+          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.S_AXIS.HAS_TREADY">1</spirit:value>
           <spirit:vendorExtensions>
             <xilinx:parameterInfo>
               <xilinx:parameterUsage>none</xilinx:parameterUsage>
@@ -356,7 +356,7 @@
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>HAS_TLAST</spirit:name>
-          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.S_AXIS.HAS_TLAST">0</spirit:value>
+          <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.S_AXIS.HAS_TLAST">1</spirit:value>
           <spirit:vendorExtensions>
             <xilinx:parameterInfo>
               <xilinx:parameterUsage>none</xilinx:parameterUsage>
@@ -412,7 +412,7 @@
       <spirit:vendorExtensions>
         <xilinx:busInterfaceInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.S_AXIS" xilinx:dependency="(((spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)))=1))">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.S_AXIS" xilinx:dependency="(((spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)))=1))">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:busInterfaceInfo>
       </spirit:vendorExtensions>
@@ -1806,7 +1806,7 @@
       <spirit:vendorExtensions>
         <xilinx:busInterfaceInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.core_clk" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) != 0)">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.core_clk" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) != 0)">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:busInterfaceInfo>
       </spirit:vendorExtensions>
@@ -1943,7 +1943,7 @@
       <spirit:vendorExtensions>
         <xilinx:busInterfaceInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.slave_aclk" xilinx:dependency="((spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)))>0)">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.slave_aclk" xilinx:dependency="((spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)))>0)">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:busInterfaceInfo>
       </spirit:vendorExtensions>
@@ -2133,7 +2133,7 @@
       <spirit:vendorExtensions>
         <xilinx:busInterfaceInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.slave_aresetn" xilinx:dependency="((spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)))>0)">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.slave_aresetn" xilinx:dependency="((spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)))>0)">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:busInterfaceInfo>
       </spirit:vendorExtensions>
@@ -2181,7 +2181,7 @@
       <spirit:vendorExtensions>
         <xilinx:busInterfaceInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.FIFO_WRITE" xilinx:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.FIFO_WRITE" xilinx:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:busInterfaceInfo>
       </spirit:vendorExtensions>
@@ -2229,7 +2229,7 @@
       <spirit:vendorExtensions>
         <xilinx:busInterfaceInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.FIFO_READ" xilinx:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.FIFO_READ" xilinx:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:busInterfaceInfo>
       </spirit:vendorExtensions>
@@ -2248,11 +2248,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sun Dec 22 13:16:58 UTC 2019</spirit:value>
+            <spirit:value>Tue Dec 24 08:56:07 UTC 2019</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:f7503850</spirit:value>
+            <spirit:value>9:6bbbf377</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -2271,11 +2271,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sun Dec 22 13:17:02 UTC 2019</spirit:value>
+            <spirit:value>Tue Dec 24 08:56:07 UTC 2019</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:f7503850</spirit:value>
+            <spirit:value>9:6bbbf377</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -2289,11 +2289,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sun Dec 22 13:17:02 UTC 2019</spirit:value>
+            <spirit:value>Tue Dec 24 08:56:07 UTC 2019</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:f7503850</spirit:value>
+            <spirit:value>9:6bbbf377</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -2309,11 +2309,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sun Dec 22 13:17:02 UTC 2019</spirit:value>
+            <spirit:value>Tue Dec 24 08:56:07 UTC 2019</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:f7503850</spirit:value>
+            <spirit:value>9:6bbbf377</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -2328,11 +2328,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sun Dec 22 13:17:02 UTC 2019</spirit:value>
+            <spirit:value>Tue Dec 24 08:56:08 UTC 2019</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:9bdf8b14</spirit:value>
+            <spirit:value>9:62a39e89</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -2348,11 +2348,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sun Dec 22 13:17:02 UTC 2019</spirit:value>
+            <spirit:value>Tue Dec 24 08:56:08 UTC 2019</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:9bdf8b14</spirit:value>
+            <spirit:value>9:62a39e89</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -2366,11 +2366,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sun Dec 22 13:17:02 UTC 2019</spirit:value>
+            <spirit:value>Tue Dec 24 08:56:08 UTC 2019</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:f7503850</spirit:value>
+            <spirit:value>9:6bbbf377</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -2384,11 +2384,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sun Dec 22 13:18:31 UTC 2019</spirit:value>
+            <spirit:value>Tue Dec 24 08:57:45 UTC 2019</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:f7503850</spirit:value>
+            <spirit:value>9:6bbbf377</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -2458,7 +2458,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.clk" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) != 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.clk" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_COMMON_CLOCK&apos;)) != 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -2504,7 +2504,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.srst" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_SRST&apos;)) != 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.srst" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_SRST&apos;)) != 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -2623,7 +2623,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.din" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.din" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -2646,7 +2646,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.wr_en" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.wr_en" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -2669,7 +2669,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.rd_en" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.rd_en" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -2950,7 +2950,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.dout" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.dout" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -2973,7 +2973,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.full" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.full" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -3065,7 +3065,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.empty" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.empty" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -3330,7 +3330,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.wr_rst_busy" xilinx:dependency="((((spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;kintexu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;artixu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;zynquplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;kintexuplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;zynquplusrfsoc&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplushbm&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplus58g&apos;) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_SRST&apos;)) = 1 or spirit:decode(id(&apos;MODELPARAM_VALUE.C_MEMORY_TYPE&apos;)) = 4)) or spirit:decode(id(&apos;MODELPARAM_VALUE.C_EN_SAFETY_CKT&apos;))) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.wr_rst_busy" xilinx:dependency="((((spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;kintexu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;artixu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;zynquplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;kintexuplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;zynquplusrfsoc&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplushbm&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplus58g&apos;) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_SRST&apos;)) = 1 or spirit:decode(id(&apos;MODELPARAM_VALUE.C_MEMORY_TYPE&apos;)) = 4)) or spirit:decode(id(&apos;MODELPARAM_VALUE.C_EN_SAFETY_CKT&apos;))) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -3353,7 +3353,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.rd_rst_busy" xilinx:dependency="((((spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;kintexu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;artixu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;zynquplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;kintexuplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;zynquplusrfsoc&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplushbm&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplus58g&apos;) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_SRST&apos;)) = 1 or spirit:decode(id(&apos;MODELPARAM_VALUE.C_MEMORY_TYPE&apos;)) = 4)) or spirit:decode(id(&apos;MODELPARAM_VALUE.C_EN_SAFETY_CKT&apos;))) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.rd_rst_busy" xilinx:dependency="((((spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;kintexu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;artixu&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;zynquplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;kintexuplus&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;zynquplusrfsoc&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplushbm&apos; or spirit:decode(id(&apos;MODELPARAM_VALUE.C_FAMILY&apos;)) = &apos;virtexuplus58g&apos;) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 0) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_SRST&apos;)) = 1 or spirit:decode(id(&apos;MODELPARAM_VALUE.C_MEMORY_TYPE&apos;)) = 4)) or spirit:decode(id(&apos;MODELPARAM_VALUE.C_EN_SAFETY_CKT&apos;))) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -3399,7 +3399,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_aclk" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) > 0)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_aclk" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) > 0)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -3422,7 +3422,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_aresetn" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) > 0)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_aresetn" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) > 0)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -5825,7 +5825,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_axis_tvalid" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_axis_tvalid" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -5848,7 +5848,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_axis_tready" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TREADY&apos;)) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_axis_tready" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TREADY&apos;)) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -5875,7 +5875,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_axis_tdata" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TDATA&apos;)) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_axis_tdata" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TDATA&apos;)) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -5952,7 +5952,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_axis_tlast" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TLAST&apos;)) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.s_axis_tlast" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TLAST&apos;)) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -6016,7 +6016,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_AXIS_TUSER_WIDTH&apos;))-1">3</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_AXIS_TUSER_WIDTH&apos;))-1">0</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -6056,7 +6056,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.m_axis_tvalid" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.m_axis_tvalid" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -6079,7 +6079,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.m_axis_tready" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TREADY&apos;)) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.m_axis_tready" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TREADY&apos;)) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -6106,7 +6106,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.m_axis_tdata" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TDATA&apos;)) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.m_axis_tdata" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TDATA&apos;)) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -6183,7 +6183,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.m_axis_tlast" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TLAST&apos;)) = 1)">false</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.m_axis_tlast" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_INTERFACE_TYPE&apos;)) = 1 and spirit:decode(id(&apos;MODELPARAM_VALUE.C_HAS_AXIS_TLAST&apos;)) = 1)">true</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -6247,7 +6247,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_AXIS_TUSER_WIDTH&apos;))-1">3</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_AXIS_TUSER_WIDTH&apos;))-1">0</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -7915,7 +7915,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))-1">9</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))-1">13</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -7942,7 +7942,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))-1">9</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))-1">13</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -7969,7 +7969,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))">10</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))">14</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -7996,7 +7996,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))">10</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))">14</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -8023,7 +8023,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))">10</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS&apos;))">14</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -8227,7 +8227,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_FULL_FLAGS_RST_VAL</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_FULL_FLAGS_RST_VAL">0</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_FULL_FLAGS_RST_VAL">1</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_HAS_ALMOST_EMPTY</spirit:name>
@@ -8267,11 +8267,11 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_HAS_RST</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_HAS_RST">0</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_HAS_RST">1</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_HAS_SRST</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_HAS_SRST">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_HAS_SRST">0</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_HAS_UNDERFLOW</spirit:name>
@@ -8327,7 +8327,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="string">
         <spirit:name>C_PRIM_FIFO_TYPE</spirit:name>
-        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PRIM_FIFO_TYPE">2kx9</spirit:value>
+        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PRIM_FIFO_TYPE">4kx4</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_EMPTY_THRESH_ASSERT_VAL</spirit:name>
@@ -8439,7 +8439,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_EN_SAFETY_CKT</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_EN_SAFETY_CKT">0</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_EN_SAFETY_CKT">1</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_ERROR_INJECTION_TYPE</spirit:name>
@@ -8451,7 +8451,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_INTERFACE_TYPE</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_INTERFACE_TYPE">0</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_INTERFACE_TYPE">1</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_AXI_TYPE</spirit:name>
@@ -8567,7 +8567,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_HAS_AXIS_TUSER</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_HAS_AXIS_TUSER">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_HAS_AXIS_TUSER">0</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_HAS_AXIS_TREADY</spirit:name>
@@ -8575,7 +8575,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_HAS_AXIS_TLAST</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_HAS_AXIS_TLAST">0</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_HAS_AXIS_TLAST">1</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_HAS_AXIS_TSTRB</spirit:name>
@@ -8599,7 +8599,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_AXIS_TUSER_WIDTH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_AXIS_TUSER_WIDTH">4</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_AXIS_TUSER_WIDTH">1</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_AXIS_TSTRB_WIDTH</spirit:name>
@@ -8635,7 +8635,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_IMPLEMENTATION_TYPE_WACH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE_WACH">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE_WACH">2</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_IMPLEMENTATION_TYPE_WDCH</spirit:name>
@@ -8643,11 +8643,11 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_IMPLEMENTATION_TYPE_WRCH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE_WRCH">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE_WRCH">2</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_IMPLEMENTATION_TYPE_RACH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE_RACH">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_IMPLEMENTATION_TYPE_RACH">2</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_IMPLEMENTATION_TYPE_RDCH</spirit:name>
@@ -8703,7 +8703,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="string">
         <spirit:name>C_PRIM_FIFO_TYPE_AXIS</spirit:name>
-        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PRIM_FIFO_TYPE_AXIS">1kx18</spirit:value>
+        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PRIM_FIFO_TYPE_AXIS">8kx4</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_USE_ECC_WACH</spirit:name>
@@ -8755,7 +8755,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_DIN_WIDTH_WACH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_DIN_WIDTH_WACH">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_DIN_WIDTH_WACH">32</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_DIN_WIDTH_WDCH</spirit:name>
@@ -8775,7 +8775,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_DIN_WIDTH_AXIS</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_DIN_WIDTH_AXIS">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_DIN_WIDTH_AXIS">9</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_WR_DEPTH_WACH</spirit:name>
@@ -8799,7 +8799,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_WR_DEPTH_AXIS</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_WR_DEPTH_AXIS">1024</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_WR_DEPTH_AXIS">16384</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_WR_PNTR_WIDTH_WACH</spirit:name>
@@ -8823,7 +8823,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_WR_PNTR_WIDTH_AXIS</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS">10</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_WR_PNTR_WIDTH_AXIS">14</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_HAS_DATA_COUNTS_WACH</spirit:name>
@@ -8899,7 +8899,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_FULL_THRESH_ASSERT_VAL_WACH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL_WACH">1023</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL_WACH">15</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_FULL_THRESH_ASSERT_VAL_WDCH</spirit:name>
@@ -8907,11 +8907,11 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_FULL_THRESH_ASSERT_VAL_WRCH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL_WRCH">1023</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL_WRCH">15</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_FULL_THRESH_ASSERT_VAL_RACH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL_RACH">1023</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL_RACH">15</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_FULL_THRESH_ASSERT_VAL_RDCH</spirit:name>
@@ -8919,7 +8919,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_FULL_THRESH_ASSERT_VAL_AXIS</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL_AXIS">1023</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_FULL_THRESH_ASSERT_VAL_AXIS">16383</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_EMPTY_TYPE_WACH</spirit:name>
@@ -8947,7 +8947,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_EMPTY_THRESH_ASSERT_VAL_WACH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_ASSERT_VAL_WACH">1022</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_ASSERT_VAL_WACH">14</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_EMPTY_THRESH_ASSERT_VAL_WDCH</spirit:name>
@@ -8955,11 +8955,11 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_EMPTY_THRESH_ASSERT_VAL_WRCH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_ASSERT_VAL_WRCH">1022</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_ASSERT_VAL_WRCH">14</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_EMPTY_THRESH_ASSERT_VAL_RACH</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_ASSERT_VAL_RACH">1022</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_ASSERT_VAL_RACH">14</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_EMPTY_THRESH_ASSERT_VAL_RDCH</spirit:name>
@@ -8967,7 +8967,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_PROG_EMPTY_THRESH_ASSERT_VAL_AXIS</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_ASSERT_VAL_AXIS">1022</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PROG_EMPTY_THRESH_ASSERT_VAL_AXIS">16382</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_REG_SLICE_MODE_WACH</spirit:name>
@@ -9066,6 +9066,10 @@
       <spirit:enumeration spirit:text="Active Low">Active_Low</spirit:enumeration>
     </spirit:choice>
     <spirit:choice>
+      <spirit:name>choice_pairs_26bda4ef</spirit:name>
+      <spirit:enumeration spirit:text="Asynchronous Reset">Asynchronous_Reset</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
       <spirit:name>choice_pairs_2d5d8925</spirit:name>
       <spirit:enumeration spirit:text="Common Clock Block RAM">Common_Clock_Block_RAM</spirit:enumeration>
       <spirit:enumeration spirit:text="Common Clock Distributed RAM">Common_Clock_Distributed_RAM</spirit:enumeration>
@@ -9109,6 +9113,11 @@
       <spirit:enumeration spirit:text="AXI4 Lite">AXI4_Lite</spirit:enumeration>
     </spirit:choice>
     <spirit:choice>
+      <spirit:name>choice_pairs_6b0d53ac</spirit:name>
+      <spirit:enumeration spirit:text="Data FIFO">Data_FIFO</spirit:enumeration>
+      <spirit:enumeration spirit:text="Packet FIFO">Packet_FIFO</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
       <spirit:name>choice_pairs_8334cf20</spirit:name>
       <spirit:enumeration spirit:text="Data FIFO">Data_FIFO</spirit:enumeration>
       <spirit:enumeration spirit:text="Packet FIFO">Packet_FIFO</spirit:enumeration>
@@ -9133,11 +9142,6 @@
       <spirit:enumeration spirit:text="Light Weight">Light_Weight</spirit:enumeration>
     </spirit:choice>
     <spirit:choice>
-      <spirit:name>choice_pairs_ae1178b5</spirit:name>
-      <spirit:enumeration spirit:text="Asynchronous Reset">Asynchronous_Reset</spirit:enumeration>
-      <spirit:enumeration spirit:text="Synchronous Reset">Synchronous_Reset</spirit:enumeration>
-    </spirit:choice>
-    <spirit:choice>
       <spirit:name>choice_pairs_b3e9d19b</spirit:name>
       <spirit:enumeration spirit:text="FIFO">FIFO</spirit:enumeration>
       <spirit:enumeration spirit:text="Register Slice">Register_Slice</spirit:enumeration>
@@ -9158,6 +9162,11 @@
       <spirit:enumeration spirit:text="Read Write">READ_WRITE</spirit:enumeration>
       <spirit:enumeration spirit:text="Read Only">READ_ONLY</spirit:enumeration>
       <spirit:enumeration spirit:text="Write Only">WRITE_ONLY</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
+      <spirit:name>choice_pairs_d45cd093</spirit:name>
+      <spirit:enumeration spirit:text="Data FIFO">Data_FIFO</spirit:enumeration>
+      <spirit:enumeration spirit:text="Low Latency Data FIFO">Low_Latency_Data_FIFO</spirit:enumeration>
     </spirit:choice>
     <spirit:choice>
       <spirit:name>choice_pairs_eb98f74b</spirit:name>
@@ -9351,7 +9360,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>INTERFACE_TYPE</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.INTERFACE_TYPE" spirit:choiceRef="choice_pairs_53eba4dc" spirit:order="3">Native</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.INTERFACE_TYPE" spirit:choiceRef="choice_pairs_53eba4dc" spirit:order="3">AXI_STREAM</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -9472,22 +9481,22 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Reset_Type</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Reset_Type" spirit:choiceRef="choice_pairs_ae1178b5" spirit:order="14">Synchronous_Reset</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Reset_Type" spirit:choiceRef="choice_pairs_26bda4ef" spirit:order="14">Asynchronous_Reset</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Reset_Type">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Reset_Type">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Full_Flags_Reset_Value</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Flags_Reset_Value" spirit:choiceRef="choice_list_8af5a703" spirit:order="15">0</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Flags_Reset_Value" spirit:choiceRef="choice_list_8af5a703" spirit:order="15">1</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Full_Flags_Reset_Value">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Full_Flags_Reset_Value">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -9751,7 +9760,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Disable_Timing_Violations">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Disable_Timing_Violations">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -9872,7 +9881,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.HAS_ACLKEN">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.HAS_ACLKEN">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10004,7 +10013,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.TID_WIDTH">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.TID_WIDTH">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10015,18 +10024,18 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.TDEST_WIDTH">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.TDEST_WIDTH">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>TUSER_WIDTH</spirit:name>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.TUSER_WIDTH" spirit:order="73" spirit:minimum="0" spirit:maximum="4096" spirit:rangeType="long">4</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.TUSER_WIDTH" spirit:order="73" spirit:minimum="0" spirit:maximum="4096" spirit:rangeType="long">0</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.TUSER_WIDTH">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.TUSER_WIDTH">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10044,7 +10053,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Enable_TLAST</spirit:name>
-      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.Enable_TLAST" spirit:order="75">false</spirit:value>
+      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.Enable_TLAST" spirit:order="75">true</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10059,7 +10068,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.HAS_TSTRB">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.HAS_TSTRB">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10081,7 +10090,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.HAS_TKEEP">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.HAS_TKEEP">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10111,7 +10120,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>FIFO_Implementation_wach</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Implementation_wach" spirit:choiceRef="choice_pairs_3c123ec0" spirit:order="81">Common_Clock_Block_RAM</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Implementation_wach" spirit:choiceRef="choice_pairs_3c123ec0" spirit:order="81">Common_Clock_Distributed_RAM</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10127,7 +10136,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.FIFO_Application_Type_wach">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.FIFO_Application_Type_wach">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10203,7 +10212,7 @@
     <spirit:parameter>
       <spirit:name>Full_Threshold_Assert_Value_wach</spirit:name>
       <spirit:displayName>Full Threshold Assert Value</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value_wach" spirit:order="90" spirit:minimum="6" spirit:maximum="1023" spirit:rangeType="long">1023</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value_wach" spirit:order="90" spirit:minimum="6" spirit:maximum="15" spirit:rangeType="long">15</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10227,7 +10236,7 @@
     <spirit:parameter>
       <spirit:name>Empty_Threshold_Assert_Value_wach</spirit:name>
       <spirit:displayName>Empty Threshold Assert Value</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value_wach" spirit:order="92" spirit:minimum="4" spirit:maximum="1022" spirit:rangeType="long">1022</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value_wach" spirit:order="92" spirit:minimum="4" spirit:maximum="14" spirit:rangeType="long">14</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10391,7 +10400,7 @@
     <spirit:parameter>
       <spirit:name>FIFO_Implementation_wrch</spirit:name>
       <spirit:displayName>FIFO Implementation Type</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Implementation_wrch" spirit:choiceRef="choice_pairs_3c123ec0" spirit:order="107">Common_Clock_Block_RAM</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Implementation_wrch" spirit:choiceRef="choice_pairs_3c123ec0" spirit:order="107">Common_Clock_Distributed_RAM</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10403,11 +10412,11 @@
     <spirit:parameter>
       <spirit:name>FIFO_Application_Type_wrch</spirit:name>
       <spirit:displayName>FIFO Application Type</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Application_Type_wrch" spirit:choiceRef="choice_pairs_8334cf20" spirit:order="108">Data_FIFO</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Application_Type_wrch" spirit:choiceRef="choice_pairs_d45cd093" spirit:order="108">Data_FIFO</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.FIFO_Application_Type_wrch">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.FIFO_Application_Type_wrch">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10483,7 +10492,7 @@
     <spirit:parameter>
       <spirit:name>Full_Threshold_Assert_Value_wrch</spirit:name>
       <spirit:displayName>Full Threshold Assert Value</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value_wrch" spirit:order="116" spirit:minimum="6" spirit:maximum="1023" spirit:rangeType="long">1023</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value_wrch" spirit:order="116" spirit:minimum="6" spirit:maximum="15" spirit:rangeType="long">15</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10507,7 +10516,7 @@
     <spirit:parameter>
       <spirit:name>Empty_Threshold_Assert_Value_wrch</spirit:name>
       <spirit:displayName>Empty Threshold Assert Value</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value_wrch" spirit:order="118" spirit:minimum="4" spirit:maximum="1022" spirit:rangeType="long">1022</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value_wrch" spirit:order="118" spirit:minimum="4" spirit:maximum="14" spirit:rangeType="long">14</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10531,7 +10540,7 @@
     <spirit:parameter>
       <spirit:name>FIFO_Implementation_rach</spirit:name>
       <spirit:displayName>FIFO Implementation Type</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Implementation_rach" spirit:choiceRef="choice_pairs_3c123ec0" spirit:order="120">Common_Clock_Block_RAM</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Implementation_rach" spirit:choiceRef="choice_pairs_3c123ec0" spirit:order="120">Common_Clock_Distributed_RAM</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10547,7 +10556,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.FIFO_Application_Type_rach">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.FIFO_Application_Type_rach">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10623,7 +10632,7 @@
     <spirit:parameter>
       <spirit:name>Full_Threshold_Assert_Value_rach</spirit:name>
       <spirit:displayName>Full Threshold Assert Value</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value_rach" spirit:order="129" spirit:minimum="6" spirit:maximum="1023" spirit:rangeType="long">1023</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value_rach" spirit:order="129" spirit:minimum="6" spirit:maximum="15" spirit:rangeType="long">15</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10647,7 +10656,7 @@
     <spirit:parameter>
       <spirit:name>Empty_Threshold_Assert_Value_rach</spirit:name>
       <spirit:displayName>Empty Threshold Assert Value</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value_rach" spirit:order="131" spirit:minimum="4" spirit:maximum="1022" spirit:rangeType="long">1022</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value_rach" spirit:order="131" spirit:minimum="4" spirit:maximum="14" spirit:rangeType="long">14</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10823,11 +10832,11 @@
     <spirit:parameter>
       <spirit:name>FIFO_Application_Type_axis</spirit:name>
       <spirit:displayName>FIFO Application Type</spirit:displayName>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Application_Type_axis" spirit:choiceRef="choice_pairs_8334cf20" spirit:order="147">Data_FIFO</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.FIFO_Application_Type_axis" spirit:choiceRef="choice_pairs_6b0d53ac" spirit:order="147">Data_FIFO</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.FIFO_Application_Type_axis">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.FIFO_Application_Type_axis">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10838,7 +10847,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Enable_ECC_axis">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Enable_ECC_axis">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10869,7 +10878,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Input_Depth_axis</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Input_Depth_axis" spirit:choiceRef="choice_list_bf1143fa" spirit:order="151">1024</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Input_Depth_axis" spirit:choiceRef="choice_list_bf1143fa" spirit:order="151">16384</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10884,7 +10893,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Enable_Data_Counts_axis">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Enable_Data_Counts_axis">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10896,7 +10905,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Programmable_Full_Type_axis">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Programmable_Full_Type_axis">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10904,7 +10913,7 @@
     <spirit:parameter>
       <spirit:name>Full_Threshold_Assert_Value_axis</spirit:name>
       <spirit:displayName>Full Threshold Assert Value</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value_axis" spirit:order="155" spirit:minimum="6" spirit:maximum="1023" spirit:rangeType="long">1023</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Full_Threshold_Assert_Value_axis" spirit:order="155" spirit:minimum="6" spirit:maximum="16383" spirit:rangeType="long">16383</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -10920,7 +10929,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Programmable_Empty_Type_axis">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Programmable_Empty_Type_axis">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -10928,7 +10937,7 @@
     <spirit:parameter>
       <spirit:name>Empty_Threshold_Assert_Value_axis</spirit:name>
       <spirit:displayName>Empty Threshold Assert Value</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value_axis" spirit:order="157" spirit:minimum="4" spirit:maximum="1022" spirit:rangeType="long">1022</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.Empty_Threshold_Assert_Value_axis" spirit:order="157" spirit:minimum="4" spirit:maximum="16382" spirit:rangeType="long">16382</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
@@ -11028,7 +11037,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Underflow_Sense_AXI">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Underflow_Sense_AXI">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -11052,7 +11061,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Overflow_Sense_AXI">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Overflow_Sense_AXI">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -11118,7 +11127,7 @@
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Use_Embedded_Registers_axis">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Use_Embedded_Registers_axis">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -11180,11 +11189,11 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Enable_Safety_Circuit</spirit:name>
-      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.Enable_Safety_Circuit" spirit:order="180">false</spirit:value>
+      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.Enable_Safety_Circuit" spirit:order="180">true</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Enable_Safety_Circuit">false</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PARAM_ENABLEMENT.Enable_Safety_Circuit">true</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -11226,6 +11235,7 @@
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI.HAS_RRESP" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI.HAS_WSTRB" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXI.PROTOCOL" xilinx:valueSource="auto"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXIS.HAS_TLAST" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXIS.HAS_TREADY" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.M_AXIS.TDATA_NUM_BYTES" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S_AXI.ADDR_WIDTH" xilinx:valueSource="auto"/>
@@ -11240,19 +11250,39 @@
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S_AXI.HAS_RRESP" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S_AXI.HAS_WSTRB" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S_AXI.PROTOCOL" xilinx:valueSource="auto"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S_AXIS.HAS_TLAST" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S_AXIS.HAS_TREADY" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S_AXIS.TDATA_NUM_BYTES" xilinx:valueSource="auto"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Data_Count_Width" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Empty_Threshold_Assert_Value" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Empty_Threshold_Assert_Value_axis" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Empty_Threshold_Assert_Value_rach" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Empty_Threshold_Assert_Value_wach" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Empty_Threshold_Assert_Value_wrch" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Empty_Threshold_Negate_Value" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Enable_Safety_Circuit" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Enable_TLAST" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.FIFO_Application_Type_axis" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.FIFO_Implementation_rach" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.FIFO_Implementation_wach" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.FIFO_Implementation_wrch" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Full_Flags_Reset_Value" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Full_Threshold_Assert_Value" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Full_Threshold_Assert_Value_axis" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Full_Threshold_Assert_Value_rach" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Full_Threshold_Assert_Value_wach" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Full_Threshold_Assert_Value_wrch" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Full_Threshold_Negate_Value" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.INTERFACE_TYPE" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Input_Data_Width" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Input_Depth" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Input_Depth_axis" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Output_Data_Width" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Output_Depth" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Performance_Options" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Read_Data_Count_Width" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Reset_Type" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.TUSER_WIDTH" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Use_Extra_Logic" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Write_Data_Count_Width" xilinx:valueSource="user"/>
       </xilinx:configElementInfos>
