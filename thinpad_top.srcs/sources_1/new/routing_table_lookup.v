@@ -503,7 +503,8 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
-                        rx_finish_flag <= 1;
+                        if(rx_axis_tlast)
+                            rx_finish_flag <= 1;
                     end
                     rx_index <= rx_index + 1;
                 end else if(rx_finish_flag) begin
@@ -525,7 +526,8 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
-                        rx_finish_flag <= 1;
+                        if(rx_axis_tlast)
+                            rx_finish_flag <= 1;
                     end
                     rx_index <= rx_index + 1;
                 end else if(rx_finish_flag) begin
@@ -553,7 +555,8 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
-                        rx_finish_flag <= 1;
+                        if(rx_axis_tlast)
+                            rx_finish_flag <= 1;
                     end
                     rx_index <= rx_index + 1;
                 end else if(rx_finish_flag) begin
@@ -575,7 +578,8 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
-                        rx_finish_flag <= 1;
+                        if(rx_axis_tlast)
+                            rx_finish_flag <= 1;
                     end
                     rx_index <= rx_index + 1;
                 end else if(rx_finish_flag) begin
@@ -616,7 +620,8 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
-                        rx_finish_flag <= 1;
+                        if(rx_axis_tlast)
+                            rx_finish_flag <= 1;
                     end
                     rx_index <= rx_index + 1;
                 end else if(rx_finish_flag) begin
@@ -639,7 +644,8 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
-                        state <= STATE_IDLE;
+                        if(rx_axis_tlast)
+                            state <= STATE_IDLE;
                     end
                     rx_index <= rx_index + 1;
                     finish_index <= finish_index + 1;
@@ -684,10 +690,10 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                 if(receiver_addr<11'h7fc)begin
                     receiver_addr <= 11'h7fc;
                     receiver_data_o <= receiver_frame_length[7:0];
-                end else if(receiver_addr == 11'h7fd) begin
+                end else if(receiver_addr == 11'h7fc) begin
                     receiver_addr <= 11'h7fd;
                     receiver_data_o <= receiver_frame_length[15:8];
-                end else if(receiver_addr == 11'h7fe) begin
+                end else if(receiver_addr == 11'h7fd) begin
                     receiver_addr <= 11'h7fe;
                     receiver_data_o <= receiver_frame_length[23:16];
                 end else if(receiver_addr == 11'h7fe) begin
