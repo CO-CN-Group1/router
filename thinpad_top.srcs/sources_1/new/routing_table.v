@@ -13,7 +13,7 @@ module routing_table
     input wire[31:0] dest_ip,
     input wire dest_ip_valid,
     output reg[31:0] nexthop,
-    output reg[7:0] port,
+    output reg[15:0] port,
     output reg lookup_ready,
     output reg nexthop_valid,
     output reg nexthop_not_found,
@@ -131,7 +131,7 @@ integer pos;
 always @(posedge clk) begin
     if(rst) begin
         nexthop <= 0;
-        port <= 8'b0;
+        port <= 16'b0;
         lookup_ready <= 0;
         state <= STATE_IDLE;
         nexthop_not_found <= 0;
@@ -147,7 +147,7 @@ always @(posedge clk) begin
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     nexthop <= 0;
-                    port <= 8'b0;
+                    port <= 16'b0;
                     if(dest_ip_valid&&lookup_ready)begin
                         dest_ip_cache <= dest_ip;
                         lookup_ready <= 0;
@@ -158,7 +158,7 @@ always @(posedge clk) begin
                     state <= STATE_WAIT;
                 end else begin
                     nexthop <= 0;
-                    port <= 0;
+                    port <= 16'b0;
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     if(lookup_ready && dest_ip_valid) begin
@@ -180,7 +180,7 @@ always @(posedge clk) begin
                 if(locked_by_cpu) begin
                     state <= STATE_WAIT;
                     nexthop <= 0;
-                    port <= 0;
+                    port <= 16'b0;
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     lookup_ready <= 0;
@@ -188,7 +188,7 @@ always @(posedge clk) begin
                     if(dest_ip_cache == 0) begin
                         state <= STATE_IDLE;
                         nexthop <= 0;
-                        port <= 0;
+                        port <= 16'b0;
                         nexthop_not_found <= 0;
                         nexthop_valid <= 0;
                         lookup_ready <= 1;
@@ -199,7 +199,7 @@ always @(posedge clk) begin
                         ans_port <= 2'b0;
                         pos <= 31;
                         nexthop <= 0;
-                        port <= 0;
+                        port <= 16'b0;
                         nexthop_not_found <= 0;
                         nexthop_valid <= 0;
                         lookup_ready <= 0;
@@ -210,7 +210,7 @@ always @(posedge clk) begin
                 if(locked_by_cpu) begin
                     state <= STATE_WAIT;
                     nexthop <= 0;
-                    port <= 0;
+                    port <= 16'b0;
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     lookup_ready <= 0;
@@ -219,8 +219,8 @@ always @(posedge clk) begin
                     if(current == 0)begin
                         nexthop <= ans;
                         case(ans_port)
-                            2'b01,2'b10,2'b11:port<={6'b0,ans_port};
-                            2'b00:port <= (ans==0)?8'b0:8'b00000100;
+                            2'b01,2'b10,2'b11:port <= {14'b0,ans_port};
+                            2'b00:port <= (ans==0)?16'b0:16'b100;
                         endcase
                         if(ans == 0) begin
                             nexthop_not_found <= 1;
@@ -239,7 +239,7 @@ always @(posedge clk) begin
                 if(locked_by_cpu) begin
                     state <= STATE_WAIT;
                     nexthop <= 0;
-                    port <= 0;
+                    port <= 16'b0;
                     nexthop_not_found <= 0;
                     nexthop_valid <= 0;
                     lookup_ready <= 0;
