@@ -176,7 +176,8 @@ localparam[4:0]
     STATE_SENDER_TO_FIFO_SLEEP2 = 15,
     STATE_SENDER_RELISTEN = 16,
     STATE_SENDER_RELISTEN_SLEEP_1 = 17,
-    STATE_SENDER_RELISTEN_SLEEP_2 = 18;
+    STATE_SENDER_RELISTEN_SLEEP_2 = 18,
+    STATE_LENGTH_TO_RECEIVER = 19;
 
 reg[4:0] state;
 
@@ -404,7 +405,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(rx_index-finish_index == 45)begin
                         if({fifo[finish_index_8+16][7:0],fifo[finish_index_8+17][7:0]} == 16'h0800) begin
                             // ip 协议
-                            if({fifo[finish_index_8+34][7:0],fifo[finish_index_8+35][7:0],fifo[finish_index_8+36][7:0],fifo[finish_index_8+37][7:0]} == my_ip[fifo[finish_index_8+15][7:0]]) begin 
+                            if({fifo[finish_index_8+34][7:0],fifo[finish_index_8+35][7:0],fifo[finish_index_8+36][7:0],fifo[finish_index_8+37][7:0]} == my_ip[fifo[finish_index_8+15][7:0]]||{fifo[finish_index_8+34][7:0],fifo[finish_index_8+35][7:0],fifo[finish_index_8+36][7:0],fifo[finish_index_8+37][7:0]} == 32'he0000009) begin 
                                 // cpu 收包
                                 if(receiver_data_i != 8'b0) begin
                                     // 缓冲区还有包，丢�??
@@ -542,7 +543,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     end else begin
                         frame_nexthop <= router_nexthop;
                         frame_nexthop_port <= router_port;
-                        state <= STATE_IP_ARP_TABLE;
+                        state <= STATE_IP_ARP_TABLE1;
                     end
                 end
             end
