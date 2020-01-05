@@ -402,7 +402,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             STATE_INPUT_HEADER: begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
                     fifo[rx_index_8] <= {rx_axis_tlast,rx_axis_tdata};
-                    if(rx_index-finish_index == 45)begin
+                    if(rx_index-finish_index == 59)begin
                         if({fifo[finish_index_8+16][7:0],fifo[finish_index_8+17][7:0]} == 16'h0800) begin
                             // ip 协议
                             if({fifo[finish_index_8+34][7:0],fifo[finish_index_8+35][7:0],fifo[finish_index_8+36][7:0],fifo[finish_index_8+37][7:0]} == my_ip[fifo[finish_index_8+15][7:0]]||{fifo[finish_index_8+34][7:0],fifo[finish_index_8+35][7:0],fifo[finish_index_8+36][7:0],fifo[finish_index_8+37][7:0]} == 32'he0000009) begin 
@@ -431,12 +431,12 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                             // arp 协议
                             state <= STATE_ARP;
                         end else begin
-                            // 
+                            //不认识，丢包
+                            state <= STATE_DROP_PAYLOAD; 
                         end
-                        if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast) begin
+                        if(rx_axis_tlast) begin
                             rx_axis_tready <= 0;
-                            if(rx_axis_tlast)
-                                rx_finish_flag <= 1;
+                            rx_finish_flag <= 1;
                         end
                     end
                     rx_index <= rx_index + 1;
@@ -449,11 +449,11 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                         // request me
                         fifo[finish_index_8+0] <= fifo[finish_index_8+6];fifo[finish_index_8+1] <= fifo[finish_index_8+7];fifo[finish_index_8+2] <= fifo[finish_index_8+8];fifo[finish_index_8+3] <= fifo[finish_index_8+9];fifo[finish_index_8+4] <= fifo[finish_index_8+10];fifo[finish_index_8+5] <= fifo[finish_index_8+11];
 
-                        fifo[rx_index_8+6] <= {1'b0,my_mac[47:40]};fifo[rx_index_8+7] <= {1'b0,my_mac[39:32]};fifo[rx_index_8+8] <= {1'b0,my_mac[31:24]};fifo[rx_index_8+9] <= {1'b0,my_mac[23:16]};fifo[rx_index_8+10] <= {1'b0,my_mac[15:8]};fifo[rx_index_8+11] <= {1'b0,my_mac[7:0]};
+                        fifo[finish_index_8+6] <= {1'b0,my_mac[47:40]};fifo[finish_index_8+7] <= {1'b0,my_mac[39:32]};fifo[finish_index_8+8] <= {1'b0,my_mac[31:24]};fifo[finish_index_8+9] <= {1'b0,my_mac[23:16]};fifo[finish_index_8+10] <= {1'b0,my_mac[15:8]};fifo[finish_index_8+11] <= {1'b0,my_mac[7:0]};
 
-                        fifo[rx_index_8+24] <= 9'h000;fifo[rx_index_8+25] <= 9'h002;
+                        fifo[finish_index_8+24] <= 9'h000;fifo[finish_index_8+25] <= 9'h002;
 
-                        fifo[rx_index_8+26] <= {1'b0,my_mac[47:40]};fifo[rx_index_8+27] <= {1'b0,my_mac[39:32]};fifo[rx_index_8+28] <= {1'b0,my_mac[31:24]};fifo[rx_index_8+29] <= {1'b0,my_mac[23:16]};fifo[rx_index_8+30] <= {1'b0,my_mac[15:8]};fifo[rx_index_8+31] <= {1'b0,my_mac[7:0]};
+                        fifo[finish_index_8+26] <= {1'b0,my_mac[47:40]};fifo[finish_index_8+27] <= {1'b0,my_mac[39:32]};fifo[finish_index_8+28] <= {1'b0,my_mac[31:24]};fifo[finish_index_8+29] <= {1'b0,my_mac[23:16]};fifo[finish_index_8+30] <= {1'b0,my_mac[15:8]};fifo[finish_index_8+31] <= {1'b0,my_mac[7:0]};
 
                         fifo[finish_index_8+32] <= fifo[finish_index_8+42];fifo[finish_index_8+33] <= fifo[finish_index_8+43];fifo[finish_index_8+34] <= fifo[finish_index_8+44];fifo[finish_index_8+35] <= fifo[finish_index_8+45];
 
