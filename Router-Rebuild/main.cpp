@@ -214,11 +214,11 @@ int HAL_SendIPPacket(int if_index, uint8_t *buffer, size_t length,
       //putchar(' ');
     }
     c = (uint8_t*)0xbc000000;
-    /*for (int i = 0; i < (int)legth; i++, c+=1){
+    for (int i = 0; i < (int)legth; i++, c+=1){
       printbase(*c, 2, 16, 0);
       putchar(' ');
-    }*/
-    //putstring("\nsent an packet\n");
+    }/**/
+    putstring("\nsent an packet\n");
     (*hastoWrite) = 0xff;
     return 0;
 }
@@ -933,7 +933,7 @@ int main(int argc, char *argv[]) {
       time++;
       ptime++;
     }
-    if ((time == 0 && last_time == 1)||ptime == 5) {
+    if ((time == 0 && last_time == 1)||ptime == 10) {
       ptime = 0; 
       // What to do?
       // send complete routing table to every interface
@@ -954,14 +954,14 @@ int main(int argc, char *argv[]) {
               resp.entries[resp.numEntries].nexthop = 0x0;
               resp.entries[resp.numEntries].metric = routersList[i].metric;
 
-              printbase(resp.entries[resp.numEntries].addr, 8, 16, 0);
+              /*printbase(resp.entries[resp.numEntries].addr, 8, 16, 0);
               putchar(' ');
               printbase(resp.entries[resp.numEntries].mask, 8, 16, 0);
               putchar(' ');
               printbase(routersList[i].nexthop, 8, 16, 0);
               putchar(' ');
               printbase(resp.entries[resp.numEntries].metric, 1, 10, 0);
-              putchar('\n');/**/
+              putchar('\n');*/
               resp.numEntries++;
 
               
@@ -1090,7 +1090,7 @@ int main(int argc, char *argv[]) {
       // packet is truncated, ignore it
       continue;
     }
-    printbase(res, 1, 10, 0);
+    /*printbase(res, 1, 10, 0);
     putchar(' ');
     for(int i = 0; i < 6; i++)
       printbase(src_mac[i], 2, 16, 0);
@@ -1099,7 +1099,7 @@ int main(int argc, char *argv[]) {
       printbase(dst_mac[i], 2, 16, 0);
     putchar(' ');
     printbase(if_index, 1, 10, 0);
-    putchar('\n');/**/
+    putchar('\n');*/
     // 1. validate
     if (!validateIPChecksum(&packet[0], res)) {
       putstring("Invalid IP Checksum\n");
