@@ -1,6 +1,7 @@
 module routing_table_lookup #
 (
-    parameter FIFO_LENGTH = 256
+    parameter FIFO_LENGTH = 128,
+    parameter FIFO_INDEX_WIDTH = 7
 )(
     input wire clk,
     input wire rst,
@@ -42,28 +43,40 @@ module routing_table_lookup #
     input wire router_table_os_port_en
 );
 
-reg[8:0] fifo[0:FIFO_LENGTH-1]; //数据fifo
+reg[7:0] fifo[0:FIFO_LENGTH-1]; //数据fifo
+reg fifo_tlast[0:FIFO_LENGTH-1]; //tlast fifo
+reg fifo_replace_flag[0:FIFO_LENGTH-1];//是否替换该位
 
-integer tx_index,rx_index,finish_index,index_iter,rx_index_st;
-
-wire[7:0] tx_index_8,rx_index_8,finish_index_8,index_iter_8;
-
-assign tx_index_8 = tx_index[7:0];
-assign rx_index_8 = rx_index[7:0];
-assign finish_index_8 = finish_index[7:0];
-assign index_iter_8 = index_iter[7:0];
-
-assign tx_axis_tdata = fifo[tx_index_8][7:0];
-assign tx_axis_tlast = fifo[tx_index_8][8];
+reg[7:0] fifo_replace_data[0:FIFO_LENGTH/4-1]; // 替换为的数据
 
 
-always@(posedge clk) begin // 持续发包
+integer tx_index,rx_index,finish_index,index_iter,rx_index_st,tx_index2,rx_index2;
+
+wire[FIFO_INDEX_WIDTH-1:0] tx_index_,rx_index_,finish_index_,index_iter_;
+wire[FIFO_INDEX_WIDTH-3:0] tx_index2_,rx_index2_;
+
+assign tx_index_ = tx_index[FIFO_INDEX_WIDTH-1:0];
+assign rx_index_ = rx_index[FIFO_INDEX_WIDTH-1:0];
+assign finish_index_ = finish_index[FIFO_INDEX_WIDTH-1:0];
+assign index_iter_ = index_iter[FIFO_INDEX_WIDTH-1:0];
+assign tx_index2_6 = tx_index2[FIFO_INDEX_WIDTH-3:0];
+assign rx_index2_6 = rx_index2[FIFO_INDEX_WIDTH-3:0];
+
+assign tx_axis_tdata = (fifo_replace_flag[tx_index_] == 1)?fifo_replace_data[tx_index2_6]:fifo[tx_index_];
+assign tx_axis_tlast = fifo_tlast[tx_index_];
+
+
+always@(posedge clk) begin // 持续发包 TODO
     if(rst) begin
         tx_index <= 0;
+        tx_index2 <= 0;
     end else begin
         if(tx_index<finish_index)begin
             if(tx_axis_tvalid && tx_axis_tready) begin
                 tx_index <= tx_index + 1;
+                if(fifo_replace_flag[tx_index_])begin
+                    tx_index2 <= tx_index2 + 1;
+                end 
             end else begin
                 tx_axis_tvalid <= 1;
             end 
@@ -184,6 +197,11 @@ reg[4:0] state;
 reg arp_request_flag; //�??要发送ARP_REQUEST时，置位
 reg[15:0] arp_request_port;
 reg[31:0] arp_request_ip;
+reg arp_response_flag; // 要发送ARP_Response时，置位
+reg[15:0] arp_response_port;
+reg[47:0] arp_response_mac;
+reg[31:0] arp_response_ip;
+
 
 reg rx_finish_flag; //该包已经收完�??
 
@@ -194,6 +212,11 @@ reg[15:0] frame_checksum;
 reg[31:0] frame_nexthop;
 reg[15:0] frame_nexthop_port;
 reg[47:0] frame_nexthop_mac;
+reg[47:0] frame_src_mac;
+reg[31:0] frame_sender_ip;
+reg[31:0] frame_target_ip;
+reg[15:0] frame_protocol;
+reg[15:0] frame_arp_opcode;
 
 integer receiver_frame_length;
 integer sender_frame_length;
@@ -203,10 +226,15 @@ integer sender_iter;
 always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发到了�??么地�??
     if(rst) begin
         rx_index <= 0;
+        rx_index2 <= 0;
         finish_index <= 0;
         arp_request_flag <= 0;
         arp_request_ip <= 0;
         arp_request_port <= 0;
+        arp_response_flag <= 0;
+        arp_response_ip <= 0;
+        arp_response_mac <= 0;
+        arp_response_port <= 0;
         state <= STATE_IDLE; 
 
         rx_finish_flag <= 0;
@@ -268,39 +296,88 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                 //此时finish_index == rx_index
                 if(arp_request_flag) begin // �??要发送一个ARP Request 打断流水�??
                     if(rx_index-tx_index<=FIFO_LENGTH-64) begin
-                        fifo[rx_index_8] <= 9'h0ff;fifo[rx_index_8+1] <= 9'h0ff;fifo[rx_index_8+2] <= 9'h0ff;fifo[rx_index_8+3] <= 9'h0ff;fifo[rx_index_8+4] <= 9'h0ff;fifo[rx_index_8+5] <= 9'h0ff;
+                        {fifo[rx_index_],fifo[rx_index_+1],fifo[rx_index_+2],fifo[rx_index_+3],fifo[rx_index_+4],fifo[rx_index_+5]} <= 48'hffffffffffff;
 
-                        fifo[rx_index_8+6] <= {1'b0,my_mac[47:40]};fifo[rx_index_8+7] <= {1'b0,my_mac[39:32]};fifo[rx_index_8+8] <= {1'b0,my_mac[31:24]};fifo[rx_index_8+9] <= {1'b0,my_mac[23:16]};fifo[rx_index_8+10] <= {1'b0,my_mac[15:8]};fifo[rx_index_8+11] <= {1'b0,my_mac[7:0]};
+                        {fifo[rx_index_+6],fifo[rx_index_+7],fifo[rx_index_+8],fifo[rx_index_+9],fifo[rx_index_+10],fifo[rx_index_+11]} <= my_mac;
+
                         
-                        fifo[rx_index_8+12] <= 9'h081;fifo[rx_index_8+13] <= 9'h000;
+                        {fifo[rx_index_+12],fifo[rx_index_+13]} <= 16'h8100;
                         
-                        fifo[rx_index_8+14] <= {1'b0,arp_request_port[15:8]};fifo[rx_index_8+15] <= {1'b0,arp_request_port[7:0]};
+                        {fifo[rx_index_+14],fifo[rx_index_+15]} <= arp_request_port;
 
-                        fifo[rx_index_8+16] <= 9'h008;fifo[rx_index_8+17] <= 9'h006;
+                        {fifo[rx_index_+16],fifo[rx_index_+17]} <= 16'h0806;
 
-                        fifo[rx_index_8+18] <= 9'h000;fifo[rx_index_8+19] <= 9'h001;
+                        {fifo[rx_index_+18],fifo[rx_index_+19]} <= 16'h0001;
 
-                        fifo[rx_index_8+20] <= 9'h008;fifo[rx_index_8+21] <= 9'h000;
+                        {fifo[rx_index_+20],fifo[rx_index_+21]} <= 16'h0800;
 
-                        fifo[rx_index_8+22] <= 9'h006;fifo[rx_index_8+23] <= 9'h004;
+                        {fifo[rx_index_+22],fifo[rx_index_+23]} <= 16'h0604;
 
-                        fifo[rx_index_8+24] <= 9'h000;fifo[rx_index_8+25] <= 9'h001;
+                        {fifo[rx_index_+24],fifo[rx_index_+25]} <= 16'h0001;
 
-                        fifo[rx_index_8+26] <= {1'b0,my_mac[47:40]};fifo[rx_index_8+27] <= {1'b0,my_mac[39:32]};fifo[rx_index_8+28] <= {1'b0,my_mac[31:24]};fifo[rx_index_8+29] <= {1'b0,my_mac[23:16]};fifo[rx_index_8+30] <= {1'b0,my_mac[15:8]};fifo[rx_index_8+31] <= {1'b0,my_mac[7:0]};
+                        {fifo[rx_index_+26],fifo[rx_index_+27],fifo[rx_index_+28],fifo[rx_index_+29],fifo[rx_index_+30],fifo[rx_index_+31]} <= my_mac;
 
-                        fifo[rx_index_8+32] <= {1'b0,my_ip[arp_request_port][31:24]};fifo[rx_index_8+33] <= {1'b0,my_ip[arp_request_port][23:16]};fifo[rx_index_8+34] <= {1'b0,my_ip[arp_request_port][15:8]};fifo[rx_index_8+35] <= {1'b0,my_ip[arp_request_port][7:0]};
+                        {fifo[rx_index_+32],fifo[rx_index_+33],fifo[rx_index_+34],fifo[rx_index_+35]} <= my_ip[arp_request_port];
 
-                        fifo[rx_index_8+36] <= 9'h000;fifo[rx_index_8+37] <= 9'h000;fifo[rx_index_8+38] <= 9'h000;fifo[rx_index_8+39] <= 9'h000;fifo[rx_index_8+40] <= 9'h000;fifo[rx_index_8+41] <= 9'h000;
+                        {fifo[rx_index_+36],fifo[rx_index_+37],fifo[rx_index_+38],fifo[rx_index_+39],fifo[rx_index_+40],fifo[rx_index_+41]} <= 48'h0;
 
-                        fifo[rx_index_8+42] <= {1'b0,arp_request_ip[31:24]};fifo[rx_index_8+43] <= {1'b0,arp_request_ip[23:16]};fifo[rx_index_8+44] <= {1'b0,arp_request_ip[15:8]};fifo[rx_index_8+45] <= {1'b0,arp_request_ip[7:0]};
+                        {fifo[rx_index_+42],fifo[rx_index_+43],fifo[rx_index_+44],fifo[rx_index_+45]} <= arp_request_ip;
 
-                        {fifo[rx_index_8+46],fifo[rx_index_8+47],fifo[rx_index_8+48],fifo[rx_index_8+49],fifo[rx_index_8+50],fifo[rx_index_8+51],fifo[rx_index_8+52],fifo[rx_index_8+53],fifo[rx_index_8+54],fifo[rx_index_8+55],fifo[rx_index_8+56],fifo[rx_index_8+57],fifo[rx_index_8+58]} <= 117'h0;fifo[rx_index_8+59] <= 9'h100;
+                        {fifo[rx_index_+46],fifo[rx_index_+47],fifo[rx_index_+48],fifo[rx_index_+49],fifo[rx_index_+50],fifo[rx_index_+51],fifo[rx_index_+52],fifo[rx_index_+53],fifo[rx_index_+54],fifo[rx_index_+55],fifo[rx_index_+56],fifo[rx_index_+57],fifo[rx_index_+58],fifo[rx_index_+59]} <= 112'h0;
+                        
+                        {fifo_tlast[rx_index_],fifo_tlast[rx_index_+1],fifo_tlast[rx_index_+2],fifo_tlast[rx_index_+3],fifo_tlast[rx_index_+4],fifo_tlast[rx_index_+5],fifo_tlast[rx_index_+6],fifo_tlast[rx_index_+7],fifo_tlast[rx_index_+8],fifo_tlast[rx_index_+9],fifo_tlast[rx_index_+10],fifo_tlast[rx_index_+11],fifo_tlast[rx_index_+12],fifo_tlast[rx_index_+13],fifo_tlast[rx_index_+14],fifo_tlast[rx_index_+15],fifo_tlast[rx_index_+16],fifo_tlast[rx_index_+17],fifo_tlast[rx_index_+18],fifo_tlast[rx_index_+19],fifo_tlast[rx_index_+20],fifo_tlast[rx_index_+21],fifo_tlast[rx_index_+22],fifo_tlast[rx_index_+23],fifo_tlast[rx_index_+24],fifo_tlast[rx_index_+25],fifo_tlast[rx_index_+26],fifo_tlast[rx_index_+27],fifo_tlast[rx_index_+28],fifo_tlast[rx_index_+29],fifo_tlast[rx_index_+30],fifo_tlast[rx_index_+31],fifo_tlast[rx_index_+32],fifo_tlast[rx_index_+33],fifo_tlast[rx_index_+34],fifo_tlast[rx_index_+35],fifo_tlast[rx_index_+36],fifo_tlast[rx_index_+37],fifo_tlast[rx_index_+38],fifo_tlast[rx_index_+39],fifo_tlast[rx_index_+40],fifo_tlast[rx_index_+41],fifo_tlast[rx_index_+42],fifo_tlast[rx_index_+43],fifo_tlast[rx_index_+44],fifo_tlast[rx_index_+45],fifo_tlast[rx_index_+46],fifo_tlast[rx_index_+47],fifo_tlast[rx_index_+48],fifo_tlast[rx_index_+49],fifo_tlast[rx_index_+50],fifo_tlast[rx_index_+51],fifo_tlast[rx_index_+52],fifo_tlast[rx_index_+53],fifo_tlast[rx_index_+54],fifo_tlast[rx_index_+55],fifo_tlast[rx_index_+56],fifo_tlast[rx_index_+57],fifo_tlast[rx_index_+58],fifo_tlast[rx_index_+59]} <= 60'b1;
+
+                        {fifo_replace_flag[rx_index_],fifo_replace_flag[rx_index_+1],fifo_replace_flag[rx_index_+2],fifo_replace_flag[rx_index_+3],fifo_replace_flag[rx_index_+4],fifo_replace_flag[rx_index_+5],fifo_replace_flag[rx_index_+6],fifo_replace_flag[rx_index_+7],fifo_replace_flag[rx_index_+8],fifo_replace_flag[rx_index_+9],fifo_replace_flag[rx_index_+10],fifo_replace_flag[rx_index_+11],fifo_replace_flag[rx_index_+12],fifo_replace_flag[rx_index_+13],fifo_replace_flag[rx_index_+14],fifo_replace_flag[rx_index_+15],fifo_replace_flag[rx_index_+16],fifo_replace_flag[rx_index_+17],fifo_replace_flag[rx_index_+18],fifo_replace_flag[rx_index_+19],fifo_replace_flag[rx_index_+20],fifo_replace_flag[rx_index_+21],fifo_replace_flag[rx_index_+22],fifo_replace_flag[rx_index_+23],fifo_replace_flag[rx_index_+24],fifo_replace_flag[rx_index_+25],fifo_replace_flag[rx_index_+26],fifo_replace_flag[rx_index_+27],fifo_replace_flag[rx_index_+28],fifo_replace_flag[rx_index_+29],fifo_replace_flag[rx_index_+30],fifo_replace_flag[rx_index_+31],fifo_replace_flag[rx_index_+32],fifo_replace_flag[rx_index_+33],fifo_replace_flag[rx_index_+34],fifo_replace_flag[rx_index_+35],fifo_replace_flag[rx_index_+36],fifo_replace_flag[rx_index_+37],fifo_replace_flag[rx_index_+38],fifo_replace_flag[rx_index_+39],fifo_replace_flag[rx_index_+40],fifo_replace_flag[rx_index_+41],fifo_replace_flag[rx_index_+42],fifo_replace_flag[rx_index_+43],fifo_replace_flag[rx_index_+44],fifo_replace_flag[rx_index_+45],fifo_replace_flag[rx_index_+46],fifo_replace_flag[rx_index_+47],fifo_replace_flag[rx_index_+48],fifo_replace_flag[rx_index_+49],fifo_replace_flag[rx_index_+50],fifo_replace_flag[rx_index_+51],fifo_replace_flag[rx_index_+52],fifo_replace_flag[rx_index_+53],fifo_replace_flag[rx_index_+54],fifo_replace_flag[rx_index_+55],fifo_replace_flag[rx_index_+56],fifo_replace_flag[rx_index_+57],fifo_replace_flag[rx_index_+58],fifo_replace_flag[rx_index_+59]} <= 60'b0;
+
                         rx_index <= rx_index + 60;
                         finish_index <= finish_index + 60;
                         
                         arp_request_flag <= 0;
                         arp_request_ip <= 0;
                         arp_request_port <= 0;
+                    end
+                end else if(arp_response_flag) begin // �??要发送一个ARP response 打断流水�??
+                    if(rx_index-tx_index<=FIFO_LENGTH-64) begin
+                        {fifo[rx_index_],fifo[rx_index_+1],fifo[rx_index_+2],fifo[rx_index_+3],fifo[rx_index_+4],fifo[rx_index_+5]} <= arp_response_mac;
+
+                        {fifo[rx_index_+6],fifo[rx_index_+7],fifo[rx_index_+8],fifo[rx_index_+9],fifo[rx_index_+10],fifo[rx_index_+11]} <= my_mac;
+
+                        
+                        {fifo[rx_index_+12],fifo[rx_index_+13]} <= 16'h8100;
+                        
+                        {fifo[rx_index_+14],fifo[rx_index_+15]} <= arp_response_port;
+
+                        {fifo[rx_index_+16],fifo[rx_index_+17]} <= 16'h0806;
+
+                        {fifo[rx_index_+18],fifo[rx_index_+19]} <= 16'h0001;
+
+                        {fifo[rx_index_+20],fifo[rx_index_+21]} <= 16'h0800;
+
+                        {fifo[rx_index_+22],fifo[rx_index_+23]} <= 16'h0604;
+
+                        {fifo[rx_index_+24],fifo[rx_index_+25]} <= 16'h0002;
+
+                        {fifo[rx_index_+26],fifo[rx_index_+27],fifo[rx_index_+28],fifo[rx_index_+29],fifo[rx_index_+30],fifo[rx_index_+31]} <= my_mac;
+
+                        {fifo[rx_index_+32],fifo[rx_index_+33],fifo[rx_index_+34],fifo[rx_index_+35]} <= my_ip[arp_response_port];
+
+                        {fifo[rx_index_+36],fifo[rx_index_+37],fifo[rx_index_+38],fifo[rx_index_+39],fifo[rx_index_+40],fifo[rx_index_+41]} <= arp_response_mac;
+
+                        {fifo[rx_index_+42],fifo[rx_index_+43],fifo[rx_index_+44],fifo[rx_index_+45]} <= arp_response_ip;
+
+                        {fifo[rx_index_+46],fifo[rx_index_+47],fifo[rx_index_+48],fifo[rx_index_+49],fifo[rx_index_+50],fifo[rx_index_+51],fifo[rx_index_+52],fifo[rx_index_+53],fifo[rx_index_+54],fifo[rx_index_+55],fifo[rx_index_+56],fifo[rx_index_+57],fifo[rx_index_+58],fifo[rx_index_+59]} <= 112'h0;
+                        
+                        {fifo_tlast[rx_index_],fifo_tlast[rx_index_+1],fifo_tlast[rx_index_+2],fifo_tlast[rx_index_+3],fifo_tlast[rx_index_+4],fifo_tlast[rx_index_+5],fifo_tlast[rx_index_+6],fifo_tlast[rx_index_+7],fifo_tlast[rx_index_+8],fifo_tlast[rx_index_+9],fifo_tlast[rx_index_+10],fifo_tlast[rx_index_+11],fifo_tlast[rx_index_+12],fifo_tlast[rx_index_+13],fifo_tlast[rx_index_+14],fifo_tlast[rx_index_+15],fifo_tlast[rx_index_+16],fifo_tlast[rx_index_+17],fifo_tlast[rx_index_+18],fifo_tlast[rx_index_+19],fifo_tlast[rx_index_+20],fifo_tlast[rx_index_+21],fifo_tlast[rx_index_+22],fifo_tlast[rx_index_+23],fifo_tlast[rx_index_+24],fifo_tlast[rx_index_+25],fifo_tlast[rx_index_+26],fifo_tlast[rx_index_+27],fifo_tlast[rx_index_+28],fifo_tlast[rx_index_+29],fifo_tlast[rx_index_+30],fifo_tlast[rx_index_+31],fifo_tlast[rx_index_+32],fifo_tlast[rx_index_+33],fifo_tlast[rx_index_+34],fifo_tlast[rx_index_+35],fifo_tlast[rx_index_+36],fifo_tlast[rx_index_+37],fifo_tlast[rx_index_+38],fifo_tlast[rx_index_+39],fifo_tlast[rx_index_+40],fifo_tlast[rx_index_+41],fifo_tlast[rx_index_+42],fifo_tlast[rx_index_+43],fifo_tlast[rx_index_+44],fifo_tlast[rx_index_+45],fifo_tlast[rx_index_+46],fifo_tlast[rx_index_+47],fifo_tlast[rx_index_+48],fifo_tlast[rx_index_+49],fifo_tlast[rx_index_+50],fifo_tlast[rx_index_+51],fifo_tlast[rx_index_+52],fifo_tlast[rx_index_+53],fifo_tlast[rx_index_+54],fifo_tlast[rx_index_+55],fifo_tlast[rx_index_+56],fifo_tlast[rx_index_+57],fifo_tlast[rx_index_+58],fifo_tlast[rx_index_+59]} <= 60'b1;
+
+                        {fifo_replace_flag[rx_index_],fifo_replace_flag[rx_index_+1],fifo_replace_flag[rx_index_+2],fifo_replace_flag[rx_index_+3],fifo_replace_flag[rx_index_+4],fifo_replace_flag[rx_index_+5],fifo_replace_flag[rx_index_+6],fifo_replace_flag[rx_index_+7],fifo_replace_flag[rx_index_+8],fifo_replace_flag[rx_index_+9],fifo_replace_flag[rx_index_+10],fifo_replace_flag[rx_index_+11],fifo_replace_flag[rx_index_+12],fifo_replace_flag[rx_index_+13],fifo_replace_flag[rx_index_+14],fifo_replace_flag[rx_index_+15],fifo_replace_flag[rx_index_+16],fifo_replace_flag[rx_index_+17],fifo_replace_flag[rx_index_+18],fifo_replace_flag[rx_index_+19],fifo_replace_flag[rx_index_+20],fifo_replace_flag[rx_index_+21],fifo_replace_flag[rx_index_+22],fifo_replace_flag[rx_index_+23],fifo_replace_flag[rx_index_+24],fifo_replace_flag[rx_index_+25],fifo_replace_flag[rx_index_+26],fifo_replace_flag[rx_index_+27],fifo_replace_flag[rx_index_+28],fifo_replace_flag[rx_index_+29],fifo_replace_flag[rx_index_+30],fifo_replace_flag[rx_index_+31],fifo_replace_flag[rx_index_+32],fifo_replace_flag[rx_index_+33],fifo_replace_flag[rx_index_+34],fifo_replace_flag[rx_index_+35],fifo_replace_flag[rx_index_+36],fifo_replace_flag[rx_index_+37],fifo_replace_flag[rx_index_+38],fifo_replace_flag[rx_index_+39],fifo_replace_flag[rx_index_+40],fifo_replace_flag[rx_index_+41],fifo_replace_flag[rx_index_+42],fifo_replace_flag[rx_index_+43],fifo_replace_flag[rx_index_+44],fifo_replace_flag[rx_index_+45],fifo_replace_flag[rx_index_+46],fifo_replace_flag[rx_index_+47],fifo_replace_flag[rx_index_+48],fifo_replace_flag[rx_index_+49],fifo_replace_flag[rx_index_+50],fifo_replace_flag[rx_index_+51],fifo_replace_flag[rx_index_+52],fifo_replace_flag[rx_index_+53],fifo_replace_flag[rx_index_+54],fifo_replace_flag[rx_index_+55],fifo_replace_flag[rx_index_+56],fifo_replace_flag[rx_index_+57],fifo_replace_flag[rx_index_+58],fifo_replace_flag[rx_index_+59]} <= 60'b0;
+
+                        rx_index <= rx_index + 60;
+                        finish_index <= finish_index + 60;
+                        
+                        arp_response_ip <= 0;
+                        arp_response_flag <= 0;
+                        arp_response_mac <= 0;
+                        arp_response_port <= 0;
                     end
                 end else if(sender_data_i[31:24] != 8'b0) begin
                     // 需要发送数据
@@ -337,30 +414,29 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                 state <= STATE_SENDER_TO_FIFO;
             end
             STATE_SENDER_TO_FIFO: begin
-                fifo[rx_index_8] <= {1'b0,sender_data_o[7:0]};
-                fifo[rx_index_8+1] <= {1'b0,sender_data_o[15:8]};                
-                fifo[rx_index_8+2] <= {1'b0,sender_data_o[23:16]};                
-                fifo[rx_index_8+3] <= {1'b0,sender_data_o[31:24]};                
+                {fifo[rx_index_+3],fifo[rx_index_+2],fifo[rx_index_+1],fifo[rx_index_]} <= sender_data_o;
+                {fifo_tlast[rx_index_],fifo_tlast[rx_index_+1],fifo_tlast[rx_index_+2],fifo_tlast[rx_index_+3]} <= 4'b0;
+                {fifo_replace_flag[rx_index_],fifo_replace_flag[rx_index_+1],fifo_replace_flag[rx_index_+2],fifo_replace_flag[rx_index_+3]} <= 4'b0;
                 if(rx_index+4-rx_index_st>=sender_frame_length) begin
                     //发完了，�??�??4byte
                     case(sender_frame_length[1:0])
                         2'b00:begin
-                            fifo[rx_index_8+3] <= {1'b1,sender_data_o[31:24]};
+                            fifo_tlast[rx_index_+3] <= 1'b1;
                             rx_index <= rx_index + 4;
                             finish_index <= finish_index + 4;
                         end
                         2'b01:begin
-                            fifo[rx_index_8] <= {1'b1,sender_data_o[7:0]};
+                            fifo_tlast[rx_index_] <= 1'b1;
                             rx_index <= rx_index + 1;
                             finish_index <= finish_index + 1;
                         end
                         2'b10:begin
-                            fifo[rx_index_8+1] <= {1'b1,sender_data_o[15:8]};
+                            fifo_tlast[rx_index_+1] <= 1'b1;
                             rx_index <= rx_index + 2;
                             finish_index <= finish_index + 2;
                         end
                         2'b11:begin
-                            fifo[rx_index_8+2] <= {1'b1,sender_data_o[23:16]};
+                            fifo_tlast[rx_index_+2] <= 1'b1;
                             rx_index <= rx_index + 3;
                             finish_index <= finish_index + 3;
                         end
@@ -401,67 +477,122 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             end
             STATE_INPUT_HEADER: begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_8] <= {rx_axis_tlast,rx_axis_tdata};
-                    if(rx_index-finish_index == 59)begin
-                        if({fifo[finish_index_8+16][7:0],fifo[finish_index_8+17][7:0]} == 16'h0800) begin
+                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo_replace_flag[rx_index_] <= 0;
+                    case(rx_index-finish_index)
+                        0,1,2,3,4,5:fifo_replace_flag[rx_index_] <= 1;
+                        6: begin
+                            frame_src_mac[47:40] <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        7: begin
+                            frame_src_mac[39:32] <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        8: begin
+                            frame_src_mac[31:24] <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        9: begin
+                            frame_src_mac[23:16] <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        10: begin
+                            frame_src_mac[15:8] <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        11: begin
+                            frame_src_mac[7:0] <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        14: begin
+                            frame_port[15:8] <= rx_axis_tdata;
+                            //fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        15:begin
+                            frame_port[7:0] <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        16:frame_protocol[15:8] <= rx_axis_tdata;
+                        17:frame_protocol[7:0] <= rx_axis_tdata;
+                        24:frame_arp_opcode[15:8] <= rx_axis_tdata;
+                        25:frame_arp_opcode[7:0] <= rx_axis_tdata;
+                        26: begin 
+                            frame_ttl <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        28: begin 
+                            frame_checksum[15:8] <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        29:begin
+                            frame_checksum[7:0] <= rx_axis_tdata;
+                            fifo_replace_flag[rx_index_] <= 1;
+                        end
+                        32:frame_sender_ip[31:24] <= rx_axis_tdata; //arp包里用，不要在ip中使用
+                        33:frame_sender_ip[23:16] <= rx_axis_tdata; //arp包里用，不要在ip中使用
+                        34: begin
+                            frame_dest_ip[31:24] <= rx_axis_tdata;
+                            frame_sender_ip[15:8] <= rx_axis_tdata; //arp包里用，不要在ip中使用
+                        end
+                        35: begin
+                            frame_dest_ip[23:16] <= rx_axis_tdata;
+                            frame_sender_ip[7:0] <= rx_axis_tdata; //arp包里用，不要在ip中使用
+                        end
+                        36:frame_dest_ip[15:8] <= rx_axis_tdata;
+                        37:frame_dest_ip[7:0] <= rx_axis_tdata;
+                        42:frame_target_ip[31:24] <= rx_axis_tdata;
+                        43:frame_target_ip[23:16] <= rx_axis_tdata;
+                        44:frame_target_ip[15:8] <= rx_axis_tdata;
+                        45:frame_target_ip[7:0] <= rx_axis_tdata;
+                        59:begin
+                            if(frame_protocol == 16'h0800) begin
                             // ip 协议
-                            if({fifo[finish_index_8+34][7:0],fifo[finish_index_8+35][7:0],fifo[finish_index_8+36][7:0],fifo[finish_index_8+37][7:0]} == my_ip[fifo[finish_index_8+15][7:0]]||{fifo[finish_index_8+34][7:0],fifo[finish_index_8+35][7:0],fifo[finish_index_8+36][7:0],fifo[finish_index_8+37][7:0]} == 32'he0000009) begin 
-                                // cpu 收包
-                                if(receiver_data_i != 8'b0) begin
-                                    // 缓冲区还有包，丢�??
-                                    state <= STATE_DROP_PAYLOAD;
-                                    rx_index <= finish_index;
+                                if(frame_dest_ip == my_ip[frame_port]||frame_dest_ip == 32'he0000009) begin 
+                                    // cpu 收包
+                                    if(receiver_data_i != 8'b0) begin
+                                        // 缓冲区还有包，丢�??
+                                        state <= STATE_DROP_PAYLOAD;
+                                        rx_index <= finish_index;
+                                    end else begin
+                                        //缓冲区没有包了，向缓冲区�??
+                                        state <= STATE_TDATA_TO_RECEIVER;
+                                        receiver_frame_length <= rx_index+1-finish_index;
+                                    end
                                 end else begin
-                                    //缓冲区没有包了，向缓冲区�??
-                                    state <= STATE_TDATA_TO_RECEIVER;
-                                    receiver_frame_length <= rx_index+1-finish_index;
+                                    if(frame_ttl <= 1) begin
+                                        state <= STATE_DROP_PAYLOAD;
+                                        rx_index <= finish_index;
+                                    end else                                  
+                                        state <= STATE_IP_ROUTE_TABLE1;
                                 end
+                            end else if(frame_protocol == 16'h0806) begin
+                                // arp 协议
+                                state <= STATE_ARP;
                             end else begin
-                                frame_dest_ip <= {fifo[finish_index_8+34][7:0],fifo[finish_index_8+35][7:0],fifo[finish_index_8+36][7:0],fifo[finish_index_8+37][7:0]};
-                                frame_port <= {fifo[finish_index_8+14][7:0],fifo[finish_index_8+15][7:0]};
-                                frame_checksum <= {fifo[finish_index_8+28][7:0],fifo[finish_index_8+29][7:0]};
-                                frame_ttl <= fifo[finish_index_8+26][7:0];
-                                if(fifo[finish_index_8+26][7:0] == 8'h1) begin
-                                    state <= STATE_DROP_PAYLOAD;
-                                    rx_index <= finish_index;
-                                end else                                  
-                                    state <= STATE_IP_ROUTE_TABLE1;
+                                //不认识，丢包
+                                state <= STATE_DROP_PAYLOAD; 
                             end
-                        end else if({fifo[finish_index_8+16][7:0],fifo[finish_index_8+17][7:0]} == 16'h0806) begin
-                            // arp 协议
-                            state <= STATE_ARP;
-                        end else begin
-                            //不认识，丢包
-                            state <= STATE_DROP_PAYLOAD; 
+                            if(rx_axis_tlast) begin
+                                rx_axis_tready <= 0;
+                                rx_finish_flag <= 1;
+                            end
                         end
-                        if(rx_axis_tlast) begin
-                            rx_axis_tready <= 0;
-                            rx_finish_flag <= 1;
-                        end
-                    end
+                    endcase
                     rx_index <= rx_index + 1;
                 end
             end
             STATE_ARP:begin
-                if({fifo[finish_index_8+24][7:0],fifo[finish_index_8+25][7:0]} == 16'h0001) begin
+                if(frame_arp_opcode == 16'h0001) begin
                     // request
-                    if({fifo[finish_index_8+42][7:0],fifo[finish_index_8+43][7:0],fifo[finish_index_8+44][7:0],fifo[finish_index_8+45][7:0]} == my_ip[fifo[finish_index_8+15][7:0]])begin
+                    if(frame_target_ip == my_ip[frame_port])begin
                         // request me
-                        fifo[finish_index_8+0] <= fifo[finish_index_8+6];fifo[finish_index_8+1] <= fifo[finish_index_8+7];fifo[finish_index_8+2] <= fifo[finish_index_8+8];fifo[finish_index_8+3] <= fifo[finish_index_8+9];fifo[finish_index_8+4] <= fifo[finish_index_8+10];fifo[finish_index_8+5] <= fifo[finish_index_8+11];
-
-                        fifo[finish_index_8+6] <= {1'b0,my_mac[47:40]};fifo[finish_index_8+7] <= {1'b0,my_mac[39:32]};fifo[finish_index_8+8] <= {1'b0,my_mac[31:24]};fifo[finish_index_8+9] <= {1'b0,my_mac[23:16]};fifo[finish_index_8+10] <= {1'b0,my_mac[15:8]};fifo[finish_index_8+11] <= {1'b0,my_mac[7:0]};
-
-                        fifo[finish_index_8+24] <= 9'h000;fifo[finish_index_8+25] <= 9'h002;
-
-                        fifo[finish_index_8+26] <= {1'b0,my_mac[47:40]};fifo[finish_index_8+27] <= {1'b0,my_mac[39:32]};fifo[finish_index_8+28] <= {1'b0,my_mac[31:24]};fifo[finish_index_8+29] <= {1'b0,my_mac[23:16]};fifo[finish_index_8+30] <= {1'b0,my_mac[15:8]};fifo[finish_index_8+31] <= {1'b0,my_mac[7:0]};
-
-                        fifo[finish_index_8+32] <= fifo[finish_index_8+42];fifo[finish_index_8+33] <= fifo[finish_index_8+43];fifo[finish_index_8+34] <= fifo[finish_index_8+44];fifo[finish_index_8+35] <= fifo[finish_index_8+45];
-
-                        fifo[finish_index_8+42] <= fifo[finish_index_8+32];fifo[finish_index_8+43] <= fifo[finish_index_8+33];fifo[finish_index_8+44] <= fifo[finish_index_8+34];fifo[finish_index_8+45] <= fifo[finish_index_8+35];
-
-                        fifo[finish_index_8+36] <= fifo[finish_index_8+26];fifo[finish_index_8+37] <= fifo[finish_index_8+27];fifo[finish_index_8+38] <= fifo[finish_index_8+28];fifo[finish_index_8+39] <= fifo[finish_index_8+29];fifo[finish_index_8+40] <= fifo[finish_index_8+30];fifo[finish_index_8+41] <= fifo[finish_index_8+31];
-
-                        finish_index <= finish_index + 60;
+                        arp_response_flag <= 1;
+                        arp_response_ip <= frame_sender_ip;
+                        arp_response_mac <= frame_src_mac;
+                        arp_response_port <= frame_port;
+                        
+                        rx_index <= finish_index;
                         state <= STATE_IDLE;
 
                     end else begin
@@ -469,12 +600,12 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                         rx_index <= finish_index;
                         state <= STATE_IDLE;
                     end 
-                end else if({fifo[finish_index_8+24][7:0],fifo[finish_index_8+25][7:0]} == 16'h0002) begin
+                end else if(frame_arp_opcode == 16'h0002) begin
                     // response
                     if(arp_insert_ready) begin
-                        arp_insert_ip <= {fifo[finish_index_8+32][7:0],fifo[finish_index_8+33][7:0],fifo[finish_index_8+34][7:0],fifo[finish_index_8+35][7:0]};
-                        arp_insert_mac <= {fifo[finish_index_8+26][7:0],fifo[finish_index_8+27][7:0],fifo[finish_index_8+28][7:0],fifo[finish_index_8+29][7:0],fifo[finish_index_8+30][7:0],fifo[finish_index_8+31][7:0]};
-                        arp_insert_port <= {fifo[finish_index_8+14][7:0],fifo[finish_index_8+15][7:0]};
+                        arp_insert_ip <= frame_sender_ip;
+                        arp_insert_mac <= frame_src_mac;
+                        arp_insert_port <= frame_port;
                         arp_insert_valid <= 1;
                         
                         rx_index <= finish_index;
@@ -499,7 +630,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             
             STATE_IP_ROUTE_TABLE1: begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_8] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -522,7 +653,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             end
             STATE_IP_ROUTE_TABLE2: begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_8] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -551,7 +682,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             end
             STATE_IP_ARP_TABLE1:begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_8] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -574,7 +705,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             end
             STATE_IP_ARP_TABLE2:begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_8] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -616,7 +747,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             end
             STATE_FORWARD:begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_8] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -630,17 +761,18 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(rx_index-tx_index<=FIFO_LENGTH-1)
                         rx_axis_tready <= 1;
                 end
-                {fifo[finish_index_8+0][7:0],fifo[finish_index_8+1][7:0],fifo[finish_index_8+2][7:0],fifo[finish_index_8+3][7:0],fifo[finish_index_8+4][7:0],fifo[finish_index_8+5][7:0]} <= frame_nexthop_mac;
-                {fifo[finish_index_8+6][7:0],fifo[finish_index_8+7][7:0],fifo[finish_index_8+8][7:0],fifo[finish_index_8+9][7:0],fifo[finish_index_8+10][7:0],fifo[finish_index_8+11][7:0]} <= my_mac;
-                {fifo[finish_index_8+14][7:0],fifo[finish_index_8+15][7:0]}<= frame_nexthop_port;
-                fifo[finish_index_8+26][7:0] <= frame_ttl-1;
-                {fifo[finish_index_8+28][7:0],fifo[finish_index_8+29][7:0]} <= frame_checksum;
+                {fifo_replace_data[rx_index2_6],fifo_replace_data[rx_index2_6+1],fifo_replace_data[rx_index2_6+2],fifo_replace_data[rx_index2_6+3],fifo_replace_data[rx_index2_6+4],fifo_replace_data[rx_index2_6+5]} <= frame_nexthop_mac;
+                {fifo_replace_data[rx_index2_6+6],fifo_replace_data[rx_index2_6+7],fifo_replace_data[rx_index2_6+8],fifo_replace_data[rx_index2_6+9],fifo_replace_data[rx_index2_6+10],fifo_replace_data[rx_index2_6+11]} <= my_mac;
+                {fifo_replace_data[rx_index2_6+12]} <= frame_nexthop_port[7:0];
+                {fifo_replace_data[rx_index2_6+13]} <= frame_ttl-1;
+                {fifo_replace_data[rx_index2+14],fifo_replace_data[rx_index2_6+15]} <= frame_checksum;
+                rx_index2 <= rx_index2 + 16;
                 state <= STATE_FORWARD_PAYLOAD;
                 finish_index <= rx_index;
             end
             STATE_FORWARD_PAYLOAD:begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_8] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -677,7 +809,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             end
             STATE_FIFO_TO_RECEIVER: begin
                 receiver_addr <= index_iter-finish_index;
-                receiver_data_o <= fifo[index_iter_8];
+                receiver_data_o <= fifo[index_iter_];
                 receiver_ce <= 1;
                 receiver_we <= 1;
                 if(index_iter+1 == rx_index)
