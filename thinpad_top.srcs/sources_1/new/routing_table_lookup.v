@@ -49,7 +49,6 @@ reg fifo_replace_flag[0:FIFO_LENGTH-1];//是否替换该位
 
 reg[7:0] fifo_replace_data[0:FIFO_LENGTH/4-1]; // 替换为的数据
 
-
 integer tx_index,rx_index,finish_index,index_iter,rx_index_st,tx_index2,rx_index2;
 
 wire[FIFO_INDEX_WIDTH-1:0] tx_index_,rx_index_,finish_index_,index_iter_;
@@ -59,10 +58,10 @@ assign tx_index_ = tx_index[FIFO_INDEX_WIDTH-1:0];
 assign rx_index_ = rx_index[FIFO_INDEX_WIDTH-1:0];
 assign finish_index_ = finish_index[FIFO_INDEX_WIDTH-1:0];
 assign index_iter_ = index_iter[FIFO_INDEX_WIDTH-1:0];
-assign tx_index2_6 = tx_index2[FIFO_INDEX_WIDTH-3:0];
-assign rx_index2_6 = rx_index2[FIFO_INDEX_WIDTH-3:0];
+assign tx_index2_ = tx_index2[FIFO_INDEX_WIDTH-3:0];
+assign rx_index2_ = rx_index2[FIFO_INDEX_WIDTH-3:0];
 
-assign tx_axis_tdata = (fifo_replace_flag[tx_index_] == 1)?fifo_replace_data[tx_index2_6]:fifo[tx_index_];
+assign tx_axis_tdata = (fifo_replace_flag[tx_index_] == 1)?fifo_replace_data[tx_index2_]:fifo[tx_index_];
 assign tx_axis_tlast = fifo_tlast[tx_index_];
 
 
@@ -70,13 +69,15 @@ always@(posedge clk) begin // 持续发包 TODO
     if(rst) begin
         tx_index <= 0;
         tx_index2 <= 0;
+        tx_axis_tvalid <= 0;
     end else begin
         if(tx_index<finish_index)begin
             if(tx_axis_tvalid && tx_axis_tready) begin
-                tx_index <= tx_index + 1;
                 if(fifo_replace_flag[tx_index_])begin
                     tx_index2 <= tx_index2 + 1;
-                end 
+                    tx_index <= tx_index + 1;
+                end else
+                    tx_index <= tx_index + 1;
             end else begin
                 tx_axis_tvalid <= 1;
             end 
@@ -202,20 +203,21 @@ reg[15:0] arp_response_port;
 reg[47:0] arp_response_mac;
 reg[31:0] arp_response_ip;
 
-
 reg rx_finish_flag; //该包已经收完�??
 
-reg[31:0] frame_dest_ip;
-reg[15:0] frame_port;
-reg[7:0] frame_ttl;
-reg[15:0] frame_checksum;
-reg[31:0] frame_nexthop;
-reg[15:0] frame_nexthop_port;
-reg[47:0] frame_nexthop_mac;
+reg[31:0] frame_ip_dest_ip;
+reg[7:0] frame_ip_ttl;
+reg[15:0] frame_ip_checksum;
+reg[31:0] frame_ip_nexthop;
+reg[15:0] frame_ip_nexthop_port;
+reg[47:0] frame_ip_nexthop_mac;
+
 reg[47:0] frame_src_mac;
-reg[31:0] frame_sender_ip;
-reg[31:0] frame_target_ip;
+reg[15:0] frame_port;
 reg[15:0] frame_protocol;
+
+reg[31:0] frame_arp_sender_ip;
+reg[31:0] frame_arp_target_ip;
 reg[15:0] frame_arp_opcode;
 
 integer receiver_frame_length;
@@ -228,6 +230,9 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
         rx_index <= 0;
         rx_index2 <= 0;
         finish_index <= 0;
+        index_iter <= 0;
+        rx_index_st <= 0;
+
         arp_request_flag <= 0;
         arp_request_ip <= 0;
         arp_request_port <= 0;
@@ -235,6 +240,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
         arp_response_ip <= 0;
         arp_response_mac <= 0;
         arp_response_port <= 0;
+        
         state <= STATE_IDLE; 
 
         rx_finish_flag <= 0;
@@ -261,7 +267,8 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
         sender_ce <= 0;
         sender_we <= 0;
         sender_data_o <= 0;
-        sender_iter <= 0;
+        
+        rx_axis_tready <= 0;
     end else begin
         case(state)
             STATE_IDLE:begin // 对应进入�??个新的帧
@@ -280,7 +287,6 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                 sender_ce <= 1;
                 sender_we <= 0;
                 sender_data_o <= 0;
-                sender_iter <= 0;
 
 
                 arp_lookup_ip <= 0;
@@ -293,9 +299,10 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                 router_dest_ip <= 0;
                 router_dest_ip_valid <= 0;
 
+                rx_axis_tready <= 0;
                 //此时finish_index == rx_index
                 if(arp_request_flag) begin // �??要发送一个ARP Request 打断流水�??
-                    if(rx_index-tx_index<=FIFO_LENGTH-64) begin
+                    if(rx_index-tx_index<=FIFO_LENGTH-60) begin
                         {fifo[rx_index_],fifo[rx_index_+1],fifo[rx_index_+2],fifo[rx_index_+3],fifo[rx_index_+4],fifo[rx_index_+5]} <= 48'hffffffffffff;
 
                         {fifo[rx_index_+6],fifo[rx_index_+7],fifo[rx_index_+8],fifo[rx_index_+9],fifo[rx_index_+10],fifo[rx_index_+11]} <= my_mac;
@@ -337,7 +344,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                         arp_request_port <= 0;
                     end
                 end else if(arp_response_flag) begin // �??要发送一个ARP response 打断流水�??
-                    if(rx_index-tx_index<=FIFO_LENGTH-64) begin
+                    if(rx_index-tx_index<=FIFO_LENGTH-60) begin
                         {fifo[rx_index_],fifo[rx_index_+1],fifo[rx_index_+2],fifo[rx_index_+3],fifo[rx_index_+4],fifo[rx_index_+5]} <= arp_response_mac;
 
                         {fifo[rx_index_+6],fifo[rx_index_+7],fifo[rx_index_+8],fifo[rx_index_+9],fifo[rx_index_+10],fifo[rx_index_+11]} <= my_mac;
@@ -414,7 +421,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                 state <= STATE_SENDER_TO_FIFO;
             end
             STATE_SENDER_TO_FIFO: begin
-                {fifo[rx_index_+3],fifo[rx_index_+2],fifo[rx_index_+1],fifo[rx_index_]} <= sender_data_o;
+                {fifo[rx_index_+3],fifo[rx_index_+2],fifo[rx_index_+1],fifo[rx_index_]} <= sender_data_i;
                 {fifo_tlast[rx_index_],fifo_tlast[rx_index_+1],fifo_tlast[rx_index_+2],fifo_tlast[rx_index_+3]} <= 4'b0;
                 {fifo_replace_flag[rx_index_],fifo_replace_flag[rx_index_+1],fifo_replace_flag[rx_index_+2],fifo_replace_flag[rx_index_+3]} <= 4'b0;
                 if(rx_index+4-rx_index_st>=sender_frame_length) begin
@@ -477,7 +484,8 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             end
             STATE_INPUT_HEADER: begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= rx_axis_tdata;
+                    fifo_tlast[rx_index_] <= rx_axis_tlast;
                     fifo_replace_flag[rx_index_] <= 0;
                     case(rx_index-finish_index)
                         0,1,2,3,4,5:fifo_replace_flag[rx_index_] <= 1;
@@ -518,37 +526,37 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                         24:frame_arp_opcode[15:8] <= rx_axis_tdata;
                         25:frame_arp_opcode[7:0] <= rx_axis_tdata;
                         26: begin 
-                            frame_ttl <= rx_axis_tdata;
+                            frame_ip_ttl <= rx_axis_tdata;
                             fifo_replace_flag[rx_index_] <= 1;
                         end
                         28: begin 
-                            frame_checksum[15:8] <= rx_axis_tdata;
+                            frame_ip_checksum[15:8] <= rx_axis_tdata;
                             fifo_replace_flag[rx_index_] <= 1;
                         end
                         29:begin
-                            frame_checksum[7:0] <= rx_axis_tdata;
+                            frame_ip_checksum[7:0] <= rx_axis_tdata;
                             fifo_replace_flag[rx_index_] <= 1;
                         end
-                        32:frame_sender_ip[31:24] <= rx_axis_tdata; //arp包里用，不要在ip中使用
-                        33:frame_sender_ip[23:16] <= rx_axis_tdata; //arp包里用，不要在ip中使用
+                        32:frame_arp_sender_ip[31:24] <= rx_axis_tdata;
+                        33:frame_arp_sender_ip[23:16] <= rx_axis_tdata;
                         34: begin
-                            frame_dest_ip[31:24] <= rx_axis_tdata;
-                            frame_sender_ip[15:8] <= rx_axis_tdata; //arp包里用，不要在ip中使用
+                            frame_ip_dest_ip[31:24] <= rx_axis_tdata;
+                            frame_arp_sender_ip[15:8] <= rx_axis_tdata;
                         end
                         35: begin
-                            frame_dest_ip[23:16] <= rx_axis_tdata;
-                            frame_sender_ip[7:0] <= rx_axis_tdata; //arp包里用，不要在ip中使用
+                            frame_ip_dest_ip[23:16] <= rx_axis_tdata;
+                            frame_arp_sender_ip[7:0] <= rx_axis_tdata;
                         end
-                        36:frame_dest_ip[15:8] <= rx_axis_tdata;
-                        37:frame_dest_ip[7:0] <= rx_axis_tdata;
-                        42:frame_target_ip[31:24] <= rx_axis_tdata;
-                        43:frame_target_ip[23:16] <= rx_axis_tdata;
-                        44:frame_target_ip[15:8] <= rx_axis_tdata;
-                        45:frame_target_ip[7:0] <= rx_axis_tdata;
+                        36:frame_ip_dest_ip[15:8] <= rx_axis_tdata;
+                        37:frame_ip_dest_ip[7:0] <= rx_axis_tdata;
+                        42:frame_arp_target_ip[31:24] <= rx_axis_tdata;
+                        43:frame_arp_target_ip[23:16] <= rx_axis_tdata;
+                        44:frame_arp_target_ip[15:8] <= rx_axis_tdata;
+                        45:frame_arp_target_ip[7:0] <= rx_axis_tdata;
                         59:begin
                             if(frame_protocol == 16'h0800) begin
                             // ip 协议
-                                if(frame_dest_ip == my_ip[frame_port]||frame_dest_ip == 32'he0000009) begin 
+                                if(frame_ip_dest_ip == my_ip[frame_port]||frame_ip_dest_ip == 32'he0000009) begin 
                                     // cpu 收包
                                     if(receiver_data_i != 8'b0) begin
                                         // 缓冲区还有包，丢�??
@@ -560,10 +568,10 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                                         receiver_frame_length <= rx_index+1-finish_index;
                                     end
                                 end else begin
-                                    if(frame_ttl <= 1) begin
+                                    if(frame_ip_ttl <= 1) begin
                                         state <= STATE_DROP_PAYLOAD;
                                         rx_index <= finish_index;
-                                    end else                                  
+                                    end else
                                         state <= STATE_IP_ROUTE_TABLE1;
                                 end
                             end else if(frame_protocol == 16'h0806) begin
@@ -571,6 +579,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                                 state <= STATE_ARP;
                             end else begin
                                 //不认识，丢包
+                                rx_index <= finish_index;
                                 state <= STATE_DROP_PAYLOAD; 
                             end
                             if(rx_axis_tlast) begin
@@ -585,10 +594,10 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             STATE_ARP:begin
                 if(frame_arp_opcode == 16'h0001) begin
                     // request
-                    if(frame_target_ip == my_ip[frame_port])begin
+                    if(frame_arp_target_ip == my_ip[frame_port])begin
                         // request me
                         arp_response_flag <= 1;
-                        arp_response_ip <= frame_sender_ip;
+                        arp_response_ip <= frame_arp_sender_ip;
                         arp_response_mac <= frame_src_mac;
                         arp_response_port <= frame_port;
                         
@@ -603,7 +612,7 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                 end else if(frame_arp_opcode == 16'h0002) begin
                     // response
                     if(arp_insert_ready) begin
-                        arp_insert_ip <= frame_sender_ip;
+                        arp_insert_ip <= frame_arp_sender_ip;
                         arp_insert_mac <= frame_src_mac;
                         arp_insert_port <= frame_port;
                         arp_insert_valid <= 1;
@@ -630,7 +639,9 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             
             STATE_IP_ROUTE_TABLE1: begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= rx_axis_tdata;
+                    fifo_tlast[rx_index_] <= rx_axis_tlast;
+                    fifo_replace_flag[rx_index_] <= 0;
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -646,14 +657,16 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                 end
                 
                 if(router_lookup_ready) begin
-                    router_dest_ip <= frame_dest_ip;
+                    router_dest_ip <= frame_ip_dest_ip;
                     router_dest_ip_valid <= 1; 
                     state <= STATE_IP_ROUTE_TABLE2;
                 end
             end
             STATE_IP_ROUTE_TABLE2: begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= rx_axis_tdata;
+                    fifo_tlast[rx_index_] <= rx_axis_tlast;
+                    fifo_replace_flag[rx_index_] <= 0;
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -674,15 +687,17 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                         rx_index <= finish_index;
                         state <= STATE_DROP_PAYLOAD;
                     end else begin
-                        frame_nexthop <= router_nexthop;
-                        frame_nexthop_port <= router_port;
+                        frame_ip_nexthop <= router_nexthop;
+                        frame_ip_nexthop_port <= router_port;
                         state <= STATE_IP_ARP_TABLE1;
                     end
                 end
             end
             STATE_IP_ARP_TABLE1:begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= rx_axis_tdata;
+                    fifo_tlast[rx_index_] <= rx_axis_tlast;
+                    fifo_replace_flag[rx_index_] <= 0;
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -698,14 +713,16 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                 end
 
                 if(arp_lookup_ready) begin
-                    arp_lookup_ip <= frame_nexthop;
+                    arp_lookup_ip <= frame_ip_nexthop;
                     arp_lookup_valid <= 1; 
                     state <= STATE_IP_ARP_TABLE2;
                 end
             end
             STATE_IP_ARP_TABLE2:begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= rx_axis_tdata;
+                    fifo_tlast[rx_index_] <= rx_axis_tlast;
+                    fifo_replace_flag[rx_index_] <= 0;
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -725,21 +742,21 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(arp_lookup_mac_not_found)begin
                         rx_index <= finish_index;
                         arp_request_flag <= 1;
-                        arp_request_ip <= frame_nexthop;
-                        arp_request_port <= frame_nexthop_port;
+                        arp_request_ip <= frame_ip_nexthop;
+                        arp_request_port <= frame_ip_nexthop_port;
                         state <= STATE_DROP_PAYLOAD;
                     end else begin
-                        frame_nexthop_mac <= arp_lookup_mac;
-                        frame_nexthop_port <= arp_lookup_port;
-                        frame_ttl <= frame_ttl-1;
-                        if (frame_checksum[15:8]==8'hff) begin
-                                frame_checksum[15:8]<=8'h00;
-                                frame_checksum[7:0]<=frame_checksum[7:0]+1;
-                        end else if (frame_checksum[15:8]==8'hfe && frame_checksum[7:0]==8'hff) begin
-                            frame_checksum[15:8]<=8'h00;
-                            frame_checksum[7:0]<=8'h00;
+                        frame_ip_nexthop_mac <= arp_lookup_mac;
+                        frame_ip_nexthop_port <= arp_lookup_port;
+                        frame_ip_ttl <= frame_ip_ttl-1;
+                        if (frame_ip_checksum[15:8]==8'hff) begin
+                                frame_ip_checksum[15:8]<=8'h00;
+                                frame_ip_checksum[7:0]<=frame_ip_checksum[7:0]+1;
+                        end else if (frame_ip_checksum[15:8]==8'hfe && frame_ip_checksum[7:0]==8'hff) begin
+                            frame_ip_checksum[15:8]<=8'h00;
+                            frame_ip_checksum[7:0]<=8'h00;
                         end else begin
-                            frame_checksum[15:8]<=frame_checksum[15:8]+1;
+                            frame_ip_checksum[15:8]<=frame_ip_checksum[15:8]+1;
                         end 
                         state <= STATE_FORWARD;
                     end
@@ -747,7 +764,9 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
             end
             STATE_FORWARD:begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= rx_axis_tdata;
+                    fifo_tlast[rx_index_] <= rx_axis_tlast;
+                    fifo_replace_flag[rx_index_] <= 0;
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
@@ -761,18 +780,20 @@ always@(posedge clk) begin // 只关注输入到了什么地步，不在乎发�
                     if(rx_index-tx_index<=FIFO_LENGTH-1)
                         rx_axis_tready <= 1;
                 end
-                {fifo_replace_data[rx_index2_6],fifo_replace_data[rx_index2_6+1],fifo_replace_data[rx_index2_6+2],fifo_replace_data[rx_index2_6+3],fifo_replace_data[rx_index2_6+4],fifo_replace_data[rx_index2_6+5]} <= frame_nexthop_mac;
-                {fifo_replace_data[rx_index2_6+6],fifo_replace_data[rx_index2_6+7],fifo_replace_data[rx_index2_6+8],fifo_replace_data[rx_index2_6+9],fifo_replace_data[rx_index2_6+10],fifo_replace_data[rx_index2_6+11]} <= my_mac;
-                {fifo_replace_data[rx_index2_6+12]} <= frame_nexthop_port[7:0];
-                {fifo_replace_data[rx_index2_6+13]} <= frame_ttl-1;
-                {fifo_replace_data[rx_index2+14],fifo_replace_data[rx_index2_6+15]} <= frame_checksum;
+                {fifo_replace_data[rx_index2_],fifo_replace_data[rx_index2_+1],fifo_replace_data[rx_index2_+2],fifo_replace_data[rx_index2_+3],fifo_replace_data[rx_index2_+4],fifo_replace_data[rx_index2_+5]} <= frame_ip_nexthop_mac;
+                {fifo_replace_data[rx_index2_+6],fifo_replace_data[rx_index2_+7],fifo_replace_data[rx_index2_+8],fifo_replace_data[rx_index2_+9],fifo_replace_data[rx_index2_+10],fifo_replace_data[rx_index2_+11]} <= my_mac;
+                {fifo_replace_data[rx_index2_+12]} <= frame_ip_nexthop_port[7:0];
+                {fifo_replace_data[rx_index2_+13]} <= frame_ip_ttl-1;
+                {fifo_replace_data[rx_index2+14],fifo_replace_data[rx_index2_+15]} <= frame_ip_checksum;
                 rx_index2 <= rx_index2 + 16;
                 state <= STATE_FORWARD_PAYLOAD;
                 finish_index <= rx_index;
             end
             STATE_FORWARD_PAYLOAD:begin
                 if(rx_axis_tvalid && rx_axis_tready) begin
-                    fifo[rx_index_] <= {rx_axis_tlast,rx_axis_tdata};
+                    fifo[rx_index_] <= rx_axis_tdata;
+                    fifo_tlast[rx_index_] <= rx_axis_tlast;
+                    fifo_replace_flag[rx_index_] <= 0;
                     if(rx_index-tx_index == FIFO_LENGTH-1||rx_axis_tlast)begin
                         //FIFO满了或收完这个包�??
                         rx_axis_tready <= 0;
