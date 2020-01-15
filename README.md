@@ -1,7 +1,4 @@
-Thinpad 模板工程
----------------
+所有我们实现的硬件代码都在 /thinpad_top.srcs/sources_1/new 下，而软件代码在 /Router-Rebuild 中。
 
-工程包含示例代码和所有引脚约束，可以直接编译。
-
-代码中包含中文注释，编码为utf-8，在Windows版Vivado下可能出现乱码问题。  
-请用别的代码编辑器打开文件，并将编码改为GBK。
+/Router-Rebuild/main.bin 是我们最终使用的软件，开始位置 BaseRAM 0x0.
+/Router-Rebuild/thinpad_top.bit 是我们最终使用的 Bitstream.

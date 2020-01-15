@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="26288833333fs"></ZoomStartTime>
+      <ZoomEndTime time="30643833334fs"></ZoomEndTime>
+      <Cursor1Time time="28406000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="205"></NameColumnWidth>
+      <ValueColumnWidth column_width="80"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="114" />
+   <wvobject fp_name="/tb/dut/lookup_inst/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_axis_tdata" type="array">
+      <obj_property name="ElementShortName">rx_axis_tdata[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_axis_tdata[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_axis_tvalid" type="logic">
+      <obj_property name="ElementShortName">rx_axis_tvalid</obj_property>
+      <obj_property name="ObjectShortName">rx_axis_tvalid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_axis_tlast" type="logic">
+      <obj_property name="ElementShortName">rx_axis_tlast</obj_property>
+      <obj_property name="ObjectShortName">rx_axis_tlast</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_axis_tready" type="logic">
+      <obj_property name="ElementShortName">rx_axis_tready</obj_property>
+      <obj_property name="ObjectShortName">rx_axis_tready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/receiver_data_i" type="array">
+      <obj_property name="ElementShortName">receiver_data_i[7:0]</obj_property>
+      <obj_property name="ObjectShortName">receiver_data_i[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/receiver_data_o" type="array">
+      <obj_property name="ElementShortName">receiver_data_o[7:0]</obj_property>
+      <obj_property name="ObjectShortName">receiver_data_o[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/receiver_addr" type="array">
+      <obj_property name="ElementShortName">receiver_addr[10:0]</obj_property>
+      <obj_property name="ObjectShortName">receiver_addr[10:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/receiver_ce" type="logic">
+      <obj_property name="ElementShortName">receiver_ce</obj_property>
+      <obj_property name="ObjectShortName">receiver_ce</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/receiver_we" type="logic">
+      <obj_property name="ElementShortName">receiver_we</obj_property>
+      <obj_property name="ObjectShortName">receiver_we</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/tx_axis_tdata" type="array">
+      <obj_property name="ElementShortName">tx_axis_tdata[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_axis_tdata[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/tx_axis_tvalid" type="logic">
+      <obj_property name="ElementShortName">tx_axis_tvalid</obj_property>
+      <obj_property name="ObjectShortName">tx_axis_tvalid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/tx_axis_tlast" type="logic">
+      <obj_property name="ElementShortName">tx_axis_tlast</obj_property>
+      <obj_property name="ObjectShortName">tx_axis_tlast</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/tx_axis_tready" type="logic">
+      <obj_property name="ElementShortName">tx_axis_tready</obj_property>
+      <obj_property name="ObjectShortName">tx_axis_tready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/sender_data_i" type="array">
+      <obj_property name="ElementShortName">sender_data_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sender_data_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/sender_data_o" type="array">
+      <obj_property name="ElementShortName">sender_data_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sender_data_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/sender_addr" type="array">
+      <obj_property name="ElementShortName">sender_addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">sender_addr[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/sender_ce" type="logic">
+      <obj_property name="ElementShortName">sender_ce</obj_property>
+      <obj_property name="ObjectShortName">sender_ce</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/sender_we" type="array">
+      <obj_property name="ElementShortName">sender_we[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sender_we[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_clk" type="logic">
+      <obj_property name="ElementShortName">router_table_os_clk</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_addr" type="array">
+      <obj_property name="ElementShortName">router_table_os_addr[15:0]</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_addr[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_din" type="array">
+      <obj_property name="ElementShortName">router_table_os_din[63:0]</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_din[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_dout" type="array">
+      <obj_property name="ElementShortName">router_table_os_dout[63:0]</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_dout[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_we" type="array">
+      <obj_property name="ElementShortName">router_table_os_we[7:0]</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_we[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_rst" type="array">
+      <obj_property name="ElementShortName">router_table_os_rst[7:0]</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_rst[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_en" type="logic">
+      <obj_property name="ElementShortName">router_table_os_en</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_port_addr" type="array">
+      <obj_property name="ElementShortName">router_table_os_port_addr[13:0]</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_port_addr[13:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_port_din" type="array">
+      <obj_property name="ElementShortName">router_table_os_port_din[31:0]</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_port_din[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_port_dout" type="array">
+      <obj_property name="ElementShortName">router_table_os_port_dout[31:0]</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_port_dout[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_port_we" type="array">
+      <obj_property name="ElementShortName">router_table_os_port_we[3:0]</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_port_we[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_table_os_port_en" type="logic">
+      <obj_property name="ElementShortName">router_table_os_port_en</obj_property>
+      <obj_property name="ObjectShortName">router_table_os_port_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/fifo" type="array">
+      <obj_property name="ElementShortName">fifo[0:127][7:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo[0:127][7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/fifo_tlast" type="array">
+      <obj_property name="ElementShortName">fifo_tlast[0:127]</obj_property>
+      <obj_property name="ObjectShortName">fifo_tlast[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/fifo_replace_flag" type="array">
+      <obj_property name="ElementShortName">fifo_replace_flag[0:127]</obj_property>
+      <obj_property name="ObjectShortName">fifo_replace_flag[0:127]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/fifo_replace_data" type="array">
+      <obj_property name="ElementShortName">fifo_replace_data[0:31][7:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_replace_data[0:31][7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/tx_index" type="array">
+      <obj_property name="ElementShortName">tx_index[31:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_index[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_index" type="array">
+      <obj_property name="ElementShortName">rx_index[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_index[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/finish_index" type="array">
+      <obj_property name="ElementShortName">finish_index[31:0]</obj_property>
+      <obj_property name="ObjectShortName">finish_index[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/index_iter" type="array">
+      <obj_property name="ElementShortName">index_iter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">index_iter[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_index_st" type="array">
+      <obj_property name="ElementShortName">rx_index_st[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_index_st[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/tx_index2" type="array">
+      <obj_property name="ElementShortName">tx_index2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_index2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_index2" type="array">
+      <obj_property name="ElementShortName">rx_index2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_index2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/tx_index_" type="array">
+      <obj_property name="ElementShortName">tx_index_[6:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_index_[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_index_" type="array">
+      <obj_property name="ElementShortName">rx_index_[6:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_index_[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/finish_index_" type="array">
+      <obj_property name="ElementShortName">finish_index_[6:0]</obj_property>
+      <obj_property name="ObjectShortName">finish_index_[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/index_iter_" type="array">
+      <obj_property name="ElementShortName">index_iter_[6:0]</obj_property>
+      <obj_property name="ObjectShortName">index_iter_[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/tx_index2_" type="array">
+      <obj_property name="ElementShortName">tx_index2_[4:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_index2_[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_index2_" type="array">
+      <obj_property name="ElementShortName">rx_index2_[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_index2_[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_lookup_mac" type="array">
+      <obj_property name="ElementShortName">arp_lookup_mac[47:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_lookup_mac[47:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_lookup_port" type="array">
+      <obj_property name="ElementShortName">arp_lookup_port[15:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_lookup_port[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_lookup_ip" type="array">
+      <obj_property name="ElementShortName">arp_lookup_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_lookup_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_lookup_valid" type="logic">
+      <obj_property name="ElementShortName">arp_lookup_valid</obj_property>
+      <obj_property name="ObjectShortName">arp_lookup_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_lookup_mac_valid" type="logic">
+      <obj_property name="ElementShortName">arp_lookup_mac_valid</obj_property>
+      <obj_property name="ObjectShortName">arp_lookup_mac_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_lookup_mac_not_found" type="logic">
+      <obj_property name="ElementShortName">arp_lookup_mac_not_found</obj_property>
+      <obj_property name="ObjectShortName">arp_lookup_mac_not_found</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_lookup_ready" type="logic">
+      <obj_property name="ElementShortName">arp_lookup_ready</obj_property>
+      <obj_property name="ObjectShortName">arp_lookup_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_insert_ip" type="array">
+      <obj_property name="ElementShortName">arp_insert_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_insert_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_insert_mac" type="array">
+      <obj_property name="ElementShortName">arp_insert_mac[47:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_insert_mac[47:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_insert_port" type="array">
+      <obj_property name="ElementShortName">arp_insert_port[15:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_insert_port[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_insert_valid" type="logic">
+      <obj_property name="ElementShortName">arp_insert_valid</obj_property>
+      <obj_property name="ObjectShortName">arp_insert_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_insert_ready" type="logic">
+      <obj_property name="ElementShortName">arp_insert_ready</obj_property>
+      <obj_property name="ObjectShortName">arp_insert_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_dest_ip" type="array">
+      <obj_property name="ElementShortName">router_dest_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">router_dest_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_dest_ip_valid" type="logic">
+      <obj_property name="ElementShortName">router_dest_ip_valid</obj_property>
+      <obj_property name="ObjectShortName">router_dest_ip_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_nexthop" type="array">
+      <obj_property name="ElementShortName">router_nexthop[31:0]</obj_property>
+      <obj_property name="ObjectShortName">router_nexthop[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_port" type="array">
+      <obj_property name="ElementShortName">router_port[15:0]</obj_property>
+      <obj_property name="ObjectShortName">router_port[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_lookup_ready" type="logic">
+      <obj_property name="ElementShortName">router_lookup_ready</obj_property>
+      <obj_property name="ObjectShortName">router_lookup_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_nexthop_valid" type="logic">
+      <obj_property name="ElementShortName">router_nexthop_valid</obj_property>
+      <obj_property name="ObjectShortName">router_nexthop_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/router_nexthop_not_found" type="logic">
+      <obj_property name="ElementShortName">router_nexthop_not_found</obj_property>
+      <obj_property name="ObjectShortName">router_nexthop_not_found</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/my_ip" type="array">
+      <obj_property name="ElementShortName">my_ip[0:5][31:0]</obj_property>
+      <obj_property name="ObjectShortName">my_ip[0:5][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/my_mac" type="array">
+      <obj_property name="ElementShortName">my_mac[47:0]</obj_property>
+      <obj_property name="ObjectShortName">my_mac[47:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/state" type="array">
+      <obj_property name="ElementShortName">state[4:0]</obj_property>
+      <obj_property name="ObjectShortName">state[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_request_flag" type="logic">
+      <obj_property name="ElementShortName">arp_request_flag</obj_property>
+      <obj_property name="ObjectShortName">arp_request_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_request_port" type="array">
+      <obj_property name="ElementShortName">arp_request_port[15:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_request_port[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_request_ip" type="array">
+      <obj_property name="ElementShortName">arp_request_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_request_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_response_flag" type="logic">
+      <obj_property name="ElementShortName">arp_response_flag</obj_property>
+      <obj_property name="ObjectShortName">arp_response_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_response_port" type="array">
+      <obj_property name="ElementShortName">arp_response_port[15:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_response_port[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_response_mac" type="array">
+      <obj_property name="ElementShortName">arp_response_mac[47:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_response_mac[47:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/arp_response_ip" type="array">
+      <obj_property name="ElementShortName">arp_response_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">arp_response_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/rx_finish_flag" type="logic">
+      <obj_property name="ElementShortName">rx_finish_flag</obj_property>
+      <obj_property name="ObjectShortName">rx_finish_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_ip_dest_ip" type="array">
+      <obj_property name="ElementShortName">frame_ip_dest_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_ip_dest_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_ip_ttl" type="array">
+      <obj_property name="ElementShortName">frame_ip_ttl[7:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_ip_ttl[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_ip_checksum" type="array">
+      <obj_property name="ElementShortName">frame_ip_checksum[15:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_ip_checksum[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_ip_nexthop" type="array">
+      <obj_property name="ElementShortName">frame_ip_nexthop[31:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_ip_nexthop[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_ip_nexthop_port" type="array">
+      <obj_property name="ElementShortName">frame_ip_nexthop_port[15:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_ip_nexthop_port[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_ip_nexthop_mac" type="array">
+      <obj_property name="ElementShortName">frame_ip_nexthop_mac[47:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_ip_nexthop_mac[47:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_src_mac" type="array">
+      <obj_property name="ElementShortName">frame_src_mac[47:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_src_mac[47:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_port" type="array">
+      <obj_property name="ElementShortName">frame_port[15:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_port[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_protocol" type="array">
+      <obj_property name="ElementShortName">frame_protocol[15:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_protocol[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_arp_sender_ip" type="array">
+      <obj_property name="ElementShortName">frame_arp_sender_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_arp_sender_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_arp_target_ip" type="array">
+      <obj_property name="ElementShortName">frame_arp_target_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_arp_target_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/frame_arp_opcode" type="array">
+      <obj_property name="ElementShortName">frame_arp_opcode[15:0]</obj_property>
+      <obj_property name="ObjectShortName">frame_arp_opcode[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/receiver_frame_length" type="array">
+      <obj_property name="ElementShortName">receiver_frame_length[31:0]</obj_property>
+      <obj_property name="ObjectShortName">receiver_frame_length[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/sender_frame_length" type="array">
+      <obj_property name="ElementShortName">sender_frame_length[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sender_frame_length[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/sender_iter" type="array">
+      <obj_property name="ElementShortName">sender_iter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sender_iter[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/FIFO_LENGTH" type="array">
+      <obj_property name="ElementShortName">FIFO_LENGTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">FIFO_LENGTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/FIFO_INDEX_WIDTH" type="array">
+      <obj_property name="ElementShortName">FIFO_INDEX_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">FIFO_INDEX_WIDTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_IDLE" type="array">
+      <obj_property name="ElementShortName">STATE_IDLE[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_IDLE[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_INPUT_HEADER" type="array">
+      <obj_property name="ElementShortName">STATE_INPUT_HEADER[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_INPUT_HEADER[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_IP_ROUTE_TABLE1" type="array">
+      <obj_property name="ElementShortName">STATE_IP_ROUTE_TABLE1[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_IP_ROUTE_TABLE1[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_IP_ROUTE_TABLE2" type="array">
+      <obj_property name="ElementShortName">STATE_IP_ROUTE_TABLE2[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_IP_ROUTE_TABLE2[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_IP_ARP_TABLE1" type="array">
+      <obj_property name="ElementShortName">STATE_IP_ARP_TABLE1[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_IP_ARP_TABLE1[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_IP_ARP_TABLE2" type="array">
+      <obj_property name="ElementShortName">STATE_IP_ARP_TABLE2[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_IP_ARP_TABLE2[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_DROP_PAYLOAD" type="array">
+      <obj_property name="ElementShortName">STATE_DROP_PAYLOAD[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_DROP_PAYLOAD[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_ARP" type="array">
+      <obj_property name="ElementShortName">STATE_ARP[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_ARP[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_FORWARD" type="array">
+      <obj_property name="ElementShortName">STATE_FORWARD[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_FORWARD[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_FORWARD_PAYLOAD" type="array">
+      <obj_property name="ElementShortName">STATE_FORWARD_PAYLOAD[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_FORWARD_PAYLOAD[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_TDATA_TO_RECEIVER" type="array">
+      <obj_property name="ElementShortName">STATE_TDATA_TO_RECEIVER[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_TDATA_TO_RECEIVER[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_FIFO_TO_RECEIVER" type="array">
+      <obj_property name="ElementShortName">STATE_FIFO_TO_RECEIVER[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_FIFO_TO_RECEIVER[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_SENDER_TO_FIFO" type="array">
+      <obj_property name="ElementShortName">STATE_SENDER_TO_FIFO[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_SENDER_TO_FIFO[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_SENDER_TO_FIFO_SLEEP0" type="array">
+      <obj_property name="ElementShortName">STATE_SENDER_TO_FIFO_SLEEP0[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_SENDER_TO_FIFO_SLEEP0[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_SENDER_TO_FIFO_SLEEP1" type="array">
+      <obj_property name="ElementShortName">STATE_SENDER_TO_FIFO_SLEEP1[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_SENDER_TO_FIFO_SLEEP1[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_SENDER_RELISTEN" type="array">
+      <obj_property name="ElementShortName">STATE_SENDER_RELISTEN[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_SENDER_RELISTEN[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_SENDER_RELISTEN_SLEEP_1" type="array">
+      <obj_property name="ElementShortName">STATE_SENDER_RELISTEN_SLEEP_1[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_SENDER_RELISTEN_SLEEP_1[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/lookup_inst/STATE_LENGTH_TO_RECEIVER" type="array">
+      <obj_property name="ElementShortName">STATE_LENGTH_TO_RECEIVER[4:0]</obj_property>
+      <obj_property name="ObjectShortName">STATE_LENGTH_TO_RECEIVER[4:0]</obj_property>
+   </wvobject>
+</wave_config>

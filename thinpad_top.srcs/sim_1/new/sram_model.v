@@ -29,6 +29,7 @@ module sram_model(Address, DataIO, OE_n, CE_n,WE_n, LB_n, UB_n);
 input [19:0] Address;
 inout [15:0] DataIO ;
 input OE_n,CE_n,WE_n, LB_n, UB_n;
+reg LB_n_write1,LB_n_write2,UB_n_write1,UB_n_write2;
 
 // Write Cycle Timing Parameters
 
@@ -83,6 +84,14 @@ reg   [7:0] dummy_array0 [1048575:0];
 reg   [15:8] dummy_array1 [1048575:0];
 reg   [7:0] mem_array0 [1048575:0];
 reg   [15:8] mem_array1 [1048575:0];
+reg succ2,succ3;
+reg dd20,dd21,dd30,dd31;
+reg ee20,ee21,ee30,ee31;
+reg [7:0] datatmp01,datatmp02,datatmp03;
+reg [15:8] datatmp11,datatmp12,datatmp13;
+reg [19:0] addrtmp01,addrtmp02,addrtmp03;
+reg [19:0] addrtmp11,addrtmp12,addrtmp13;
+time tmptime1,tmptime2,tmptime3;
 reg   [15:0] dataIO1;
 
             //For Read Access       
@@ -141,6 +150,25 @@ initial
     temptaa =  taa;
     temptoe =  toe;
     
+    succ2=1'b0;
+    succ3=1'b0;
+    datatmp01=8'hff;
+    datatmp02=8'hff;
+    datatmp03=8'hff;
+    datatmp11=8'hff;
+    datatmp12=8'hff;
+    datatmp13=8'hff;
+    addrtmp01=20'hfffff;
+    addrtmp02=20'hfffff;
+    addrtmp03=20'hfffff;
+    addrtmp11=20'hfffff;
+    addrtmp12=20'hfffff;
+    addrtmp13=20'hfffff;
+    dd20=1'b0;
+    dd21=1'b0;
+    dd30=1'b0;
+    dd31=1'b0;
+    
     end
   
  
@@ -165,6 +193,8 @@ initial
             if ( (WE_n == 1'b0) && ( ($time - write_WE_n_start_time) >=twp1) )
             begin
               Address_write2 <= Address_write1;
+              LB_n_write2<=LB_n_write1;
+              UB_n_write2<=UB_n_write1;
                     dummy_array0[Address_write1] <= dataIO1[7:0];  
                   dummy_array1[Address_write1] <= dataIO1[15:8] ;  
                     activate_cebar <= 1'b1;
@@ -209,7 +239,9 @@ initial
       begin
             if ( (CE_n == 1'b0) && ( ($time - write_CE_n_start_time) >= tcw) )
             begin
-          Address_write2 <= Address_write1;  
+          Address_write2 <= Address_write1;
+              LB_n_write2<=LB_n_write1;
+              UB_n_write2<=UB_n_write1;  
           dummy_array0[Address_write1] <= dataIO1[7:0]; 
                 dummy_array1[Address_write1] <= dataIO1[15:8] ;
                 activate_webar <= 1'b1;
@@ -231,6 +263,8 @@ initial
            if ( ( ($time - write_WE_n_start_time) >=twp1) && (($time-write_CE_n_start_time) >=tcw))
      begin
           Address_write2 <= Address_write1;  
+              LB_n_write2<=LB_n_write1;
+              UB_n_write2<=UB_n_write1;
           dummy_array0[Address_write1] <= dataIO1[7:0]; 
                 dummy_array1[Address_write1] <= dataIO1[15:8] ;
                 activate_webar <= 1'b1;
@@ -250,6 +284,10 @@ initial
      begin
             Address_write1 <= Address;
                 Address_write2 <= Address_write1;
+              LB_n_write1<=LB_n;
+              UB_n_write1<=UB_n;
+              LB_n_write2<=LB_n_write1;
+              UB_n_write2<=UB_n_write1;
               dataIO1  <= DataIO;  
         dummy_array0[Address_write1] <=  dataIO1[7:0] ;
               dummy_array1[Address_write1] <=  dataIO1[15:8] ;
@@ -325,57 +363,85 @@ end
 
 always@( initiate_write1 )   
   begin
+tmptime1<=$time;
    if ( ( ($time - write_WE_n_start_time) >=twp1) && ( ($time - write_CE_n_start_time) >=tcw) )   
       begin
-    if(UB_n == 1'b0 && (($time - UB_n_start_time) >= tbw))
+    if(UB_n_write2 == 1'b0 && (($time - UB_n_start_time) >= tbw))
     begin
                   mem_array1[Address_write2] <= dummy_array1[Address_write2];
+                  datatmp11<=dummy_array1[Address_write2];
+                  addrtmp11<=Address_write2;
         end
-    if (LB_n == 1'b0 && (($time - LB_n_start_time) >= tbw))
+    if (LB_n_write2 == 1'b0 && (($time - LB_n_start_time) >= tbw))
     begin
       mem_array0[Address_write2] <= dummy_array0[Address_write2];
+      datatmp01<=dummy_array1[Address_write2];
+      addrtmp01<=Address_write2;
     end   
       end 
       initiate_write1 <=1'b0;
+      //#1 initiate_write1 <=1'b0;
 end
 
 always @(initiate_write2 )  
 begin
+tmptime2<=$time;
        if ( ( ($time - write_WE_n_start_time) >=twp1) && ( ($time - write_CE_n_start_time) >=tcw))
        begin
-    if(UB_n == 1'b0 && (($time - UB_n_start_time) >= tbw))
+                  succ2<=1;
+                  ee21=UB_n;
+                  ee20=LB_n;
+                  dd21=UB_n == 1'b0;
+                  dd20=LB_n == 1'b0;
+    if(UB_n_write2 == 1'b0 && (($time - UB_n_start_time) >= tbw))
     begin
                   mem_array1[Address_write2] <= dummy_array1[Address_write2];
+                  datatmp12<=dummy_array1[Address_write2];
+                  addrtmp12<=Address_write2;
         end
-    if (LB_n == 1'b0 && (($time - LB_n_start_time) >= tbw))
+    if (LB_n_write2 == 1'b0 && (($time - LB_n_start_time) >= tbw))
     begin
       mem_array0[Address_write2] <= dummy_array0[Address_write2];
+      datatmp02<=dummy_array1[Address_write2];
+      addrtmp02<=Address_write2;
     end   
       end
 
     if ( (initiate_write2==1'b1)) 
        begin  
     initiate_write2 <=1'b0;
+    //#1 initiate_write2 <=1'b0;
    end
 end
 
 always @(initiate_write3 )  
 begin
+tmptime3<=$time;
        if ( ( ($time - write_WE_n_start_time) >=twp1) && ( ($time - write_CE_n_start_time) >=tcw))
        begin
-    if(UB_n == 1'b0 && (($time - UB_n_start_time) >= tbw))
+                  succ3<=1;
+                  ee31=UB_n;
+                  ee30=LB_n;
+                  dd31=UB_n == 1'b0;
+                  dd30=LB_n == 1'b0;
+    if(UB_n_write2 == 1'b0 && (($time - UB_n_start_time) >= tbw))
     begin
                   mem_array1[Address_write2] <= dummy_array1[Address_write2];
+                  datatmp13<=dummy_array1[Address_write2];
+                  addrtmp13<=Address_write2;
         end
-    if (LB_n == 1'b0 && (($time - LB_n_start_time) >= tbw))
+    if (LB_n_write2 == 1'b0 && (($time - LB_n_start_time) >= tbw))
     begin
       mem_array0[Address_write2] <= dummy_array0[Address_write2];
+      datatmp03<=dummy_array1[Address_write2];
+      addrtmp03<=Address_write2;
     end   
       end
       
    if ( (initiate_write3==1'b1)) 
        begin  
     initiate_write3 <=1'b0;
+    //#1 initiate_write3 <=1'b0;
    end
 end
 
